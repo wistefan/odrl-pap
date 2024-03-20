@@ -1,5 +1,8 @@
 # Example
 
+Target archtiecture:
+![arch](odrl-pdp.png)
+
 In order to get familiar with OPA, you can run it as following:
 
 ```shell
