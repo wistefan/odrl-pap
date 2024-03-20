@@ -4,6 +4,12 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
+## Getting familiar with policies
+
+The project aims to take [ODRL Policies](https://www.w3.org/TR/odrl-model/) and execute them using the [Open Policy Agent](https://www.openpolicyagent.org).
+
+In order to get familiar with the languages and tools, see [test/examples](src/test/resources/examples).
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
