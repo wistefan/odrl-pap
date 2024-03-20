@@ -1,0 +1,14 @@
+{
+    "did:web:dome-marketplace.org": {
+      "id": "urn:ngsi-ld:organization:6295e56f-96f7-4d01-a8c4-de1c6d4e4292",
+      "tradingName": "dome-marketplace.org"
+    },
+    "did:web:provider.dome.fiware.dev": {
+      "id": "urn:ngsi-ld:organization:ca5393ab-1322-48cc-90aa-5af33e619331",
+      "tradingName": "provider.dome.fiware.dev"
+    },
+    "did:web:consumer.dome.fiware.dev": {
+      "id": "urn:ngsi-ld:organization:ca5393ab-1322-48cc-90aa12345",
+      "tradingName": "consumer.dome.fiware.dev"
+    }
+}

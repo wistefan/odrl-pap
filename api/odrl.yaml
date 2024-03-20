@@ -1,0 +1,229 @@
+openapi: 3.0.3
+info:
+  title: ODRL PoC
+  description: ODRL PoC
+  version: 4.0.0
+paths:
+  /policy:
+    post:
+      operationId: createPolicy
+      summary: creates a new policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Policy'
+      responses:
+        '201':
+          description: Successfully created the policy.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: location of the created policy
+  /policy/{id}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary: get a policy by its id
+      operationId: getPolicyById
+      responses:
+        '200':
+          description: Successfully retrieved the policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        '404':
+          description: No such policy
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Uid'
+  schemas:
+    Uid:
+      type: string
+      format: https://datatracker.ietf.org/doc/html/rfc3987
+    Policy:
+      type: object
+      properties:
+        uid:
+          $ref: '#/components/schemas/Uid'
+        permission:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+        profile:
+          type: array
+          items:
+            type: string
+            format: https://datatracker.ietf.org/doc/html/rfc3987
+        inheritFrom:
+          type: array
+          items:
+            type: string
+            format: https://datatracker.ietf.org/doc/html/rfc3987
+        conflict:
+          $ref: '#/components/schemas/ConflictTerm'
+      required:
+        - uid
+    Rule:
+      type: object
+      properties:
+        uid:
+          $ref: '#/components/schemas/Uid'
+        action:
+          $ref: '#/components/schemas/Action'
+        relation:
+          $ref: '#/components/schemas/Asset'
+        function:
+          $ref: '#/components/schemas/Party'
+        failure:
+          $ref: '#/components/schemas/Rule'
+        constraint:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Constraint'
+              - $ref: '#/components/schemas/LogicalConstraint'
+      required:
+        - action
+    ConflictTerm:
+      type: string
+      enum:
+        - "or"
+        - "xone"
+        - "and"
+        - "andSequence"
+    Action:
+      oneOf:
+        - type: string
+        - type: object
+          properties:
+            refinement:
+              type: array
+              items:
+                $ref: '#/components/schemas/Constraint'
+            implies:
+              $ref: '#/components/schemas/Action'
+    Use:
+      allOf:
+        - $ref: '#/components/schemas/Action'
+    Asset:
+      oneOf:
+        - type: string
+        - type: object
+          properties:
+            uid:
+              $ref: '#/components/schemas/Uid'
+            partOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/AssetCollection'
+          required:
+            - uid
+    AssetCollection:
+      allOf:
+        - $ref: '#/components/schemas/Asset'
+        - type: object
+          properties:
+            source:
+              type: string
+              format: https://datatracker.ietf.org/doc/html/rfc3987
+            refinment:
+              type: array
+              items:
+                $ref: '#/components/schemas/Constraint'
+    Party:
+      type: object
+      properties:
+        uid:
+          $ref: '#/components/schemas/Uid'
+        partOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartyCollection'
+    PartyCollection:
+      allOf:
+        - $ref: '#/components/schemas/Party'
+        - type: object
+          properties:
+            source:
+              type: string
+              format: https://datatracker.ietf.org/doc/html/rfc3987
+            refinment:
+              type: array
+              items:
+                $ref: '#/components/schemas/Constraint'
+    Constraint:
+      type: object
+      properties:
+        uid:
+          $ref: '#/components/schemas/Uid'
+        leftOperand:
+          $ref: '#/components/schemas/LeftOperand'
+        operator:
+          $ref: '#/components/schemas/Operator'
+        rightOperand:
+          $ref: '#/components/schemas/RightOperand'
+    RightOperand:
+      oneOf:
+        - $ref: '#/components/schemas/RightOperand'
+        - type: string
+          format: https://datatracker.ietf.org/doc/html/rfc3987
+        - type: array
+          items:
+            $ref: '#/components/schemas/RightOperand'
+    LeftOperand:
+      type: object
+      additionalProperties: true
+    Operator:
+      type: string
+      enum:
+        - eq
+        - gt
+        - gteq
+        - hasPart
+        - isA
+        - isAllOf
+        - isAnyOf
+        - isNoneOf
+        - isPartOf
+        - lt
+        - lteq
+        - neq
+    LogicalConstraint:
+      allOf:
+        - $ref: '#/components/schemas/Constraint'
+        - type: object
+          properties:
+            uid:
+              $ref: '#/components/schemas/Uid'
+            operand:
+              $ref: '#/components/schemas/Operand'
+          required:
+            - operand
+    Operand:
+      type: string
+      enum:
+        - or
+        - xone
+        - and
+        - andSequence
+    Permission:
+      allOf:
+        - $ref: '#/components/schemas/Rule'
+        - type: object
+          properties:
+            target:
+              $ref: '#/components/schemas/Asset'
+            assigner:
+              $ref: '#/components/schemas/Party'
+            assignee:
+              $ref: '#/components/schemas/Party'
