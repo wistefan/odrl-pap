@@ -13,7 +13,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Policy'
+              $ref: '#/components/schemas/PolicyJson'
       responses:
         '201':
           description: Successfully created the policy.
@@ -34,7 +34,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Policy'
+                $ref: '#/components/schemas/PolicyJson'
         '404':
           description: No such policy
 
@@ -50,6 +50,9 @@ components:
     Uid:
       type: string
       format: https://datatracker.ietf.org/doc/html/rfc3987
+    PolicyJson:
+      type: object
+      additionalProperties: true
     Policy:
       type: object
       properties:

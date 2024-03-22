@@ -1,12 +1,12 @@
-package odrl.leftOperand
+package dome.leftOperand
 
 import rego.v1
 
 ## dome-op:role
-subject_roles(subject) := subject.credentialSubject.rolesAndDuties[_].roleNames
+role(subject) := subject.credentialSubject.rolesAndDuties[_].roleNames
 
 ## dome-op:currentParty
-current_party(inputData) := inputData.credential
+current_party(inputData) := inputData.credential.issuer.id
 
 ## dome-op:relatedParty
 related_party(entity) := entity.relatedParty
