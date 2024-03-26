@@ -1,0 +1,184 @@
+{
+  "action": {
+    "odrl": {
+      "modify": {
+        "regoPackage": "odrl.action",
+        "regoMethod": "is_modification(helper.req.request())"
+      },
+      "delete": {
+        "regoPackage": "odrl.action",
+        "regoMethod": "is_deletion(helper.req.request())"
+      },
+      "read": {
+        "regoPackage": "odrl.action",
+        "regoMethod": "is_read(helper.req.request())"
+      },
+      "use": {
+        "regoPackage": "odrl.action",
+        "regoMethod": "is_use(helper.req.request())"
+      }
+    },
+    "dome-op": {
+      "modify": {
+        "regoPackage": "odrl.action",
+        "regoMethod": "is_modification(helper.req.request())"
+      },
+      "write": {
+        "regoPackage": "odrl.action",
+        "regoMethod": "is_modification(helper.req.request())"
+      },
+      "read": {
+        "regoPackage": "odrl.action",
+        "regoMethod": "is_read(helper.req.request())"
+      },
+      "create": {
+        "regoPackage": "dome.action",
+        "regoMethod": "is_creation(helper.req.request())"
+      },
+      "set_published": {
+        "regoPackage": "dome.action",
+        "regoMethod": "TODO(set_published)"
+      }
+    }
+  },
+  "operator": {
+    "odrl": {
+      "eq": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "eq_operator(%s,%s)"
+      },
+      "hasPart": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "has_part_operator(%s,%s)"
+      },
+      "gt": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "gt_operator(%s,%s)"
+      },
+      "gteq": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "gt_eq_operator(%s,%s)"
+      },
+      "isAllOf": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "is_all_of_operator(%s,%s)"
+      },
+      "isAnyOf": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "is_any_of_operator(%s,%s)"
+      },
+      "isNoneOf": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "is_none_of_operator(%s,%s)"
+      },
+      "isPartOf": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "is_part_of_operator(%s,%s)"
+      },
+      "lt": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "lt_operator(%s,%s)"
+      },
+      "lteq": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "lt_eq_operator(%s,%s)"
+      },
+      "neq": {
+        "regoPackage": "odrl.operator",
+        "regoMethod": "n_eq_operator(%s,%s)"
+      }
+    }
+  },
+  "operand": {
+    "odrl": {
+      "and": {
+        "regoPackage": "odrl.operand",
+        "regoMethod": "and_operand(%s)"
+      },
+      "andSequence": {
+        "regoPackage": "odrl.operand",
+        "regoMethod": "and_sequence_operand(%s)"
+      },
+      "or": {
+        "regoPackage": "odrl.operand",
+        "regoMethod": "or_operand(%s)"
+      },
+      "xone": {
+        "regoPackage": "odrl.operand",
+        "regoMethod": "only_one_operand(%s)"
+      }
+    }
+  },
+  "rightOperand": {
+    "dome-op": {
+      "currentParty": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "current_party(helper.req.credential())"
+      }
+    }
+  },
+  "leftOperand": {
+    "odrl": {
+      "dateTime": {
+        "regoPackage": "odrl.leftOperand",
+        "regoMethod": "TODO(dateTime)"
+      }
+    },
+    "dome-op": {
+      "role": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "role(helper.req.credential())"
+      },
+      "currentParty": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "current_party(helper.req.credential())"
+      },
+      "relatedParty": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "related_party(helper.reg.entity())"
+      },
+      "relatedParty_role": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "related_party_role(helper.reg.entity())"
+      },
+      "validFor_startDateTime": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "TODO(validFor_startDateTime)"
+      },
+      "validFor_endDateTime": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "TODO(validFor_endDateTime)"
+      }
+    },
+    "TMF-PCMA": {
+      "lifecycleStatus": {
+        "regoPackage": "dome.leftOperand",
+        "regoMethod": "life_cycle_status(helper.reg.entity())"
+      }
+    }
+  },
+  "assignee": {
+    "odrl": {
+      "uid": {
+        "regoPackage": "odrl.assignee",
+        "regoMethod": "is_user(helper.reg.subject(),%s)"
+      },
+      "assignee": {
+        "regoPackage": "odrl.assignee",
+        "regoMethod": "is_user(helper.reg.subject(),%s)"
+      }
+    }
+  },
+  "target": {
+    "odrl": {
+      "uid": {
+        "regoPackage": "odrl.target",
+        "regoMethod": "is_target(helper.reg.target(),%s)"
+      },
+      "target": {
+        "regoPackage": "odrl.target",
+        "regoMethod": "is_target(helper.reg.target(),%s)"
+      }
+    }
+  }
+}

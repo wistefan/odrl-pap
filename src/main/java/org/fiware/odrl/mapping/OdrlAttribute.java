@@ -1,0 +1,29 @@
+package org.fiware.odrl.mapping;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+
+/**
+ * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
+ */
+public enum OdrlAttribute {
+
+    LEFT_OPERAND("leftOperand"),
+    RIGHT_OPERAND("rightOperand"),
+    OPERATOR("operator"),
+    ASSIGNEE("assignee"),
+    ACTION("action"),
+    OPERAND("operand"),
+    TARGET("target");
+
+    private final String value;
+
+    OdrlAttribute(String value) {
+        this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+}
