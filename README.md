@@ -25,7 +25,7 @@ The project aims to take [ODRL Policies](https://www.w3.org/TR/odrl-model/) and 
 
 In order to get familiar with the languages and tools, see [test/examples](src/test/resources/examples).
 
-## Running Open Policy Agent
+## Running the application
 
 To test the application together with OPA, run the following:
 ```shell
@@ -103,15 +103,6 @@ curl -X POST http://localhost:8181/ -H 'Content-Type: application/json' -d '{
 }
 ```
 It evaluates to false and is denied.
-
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
-```
-
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
 
 ## Packaging and running the application
 
