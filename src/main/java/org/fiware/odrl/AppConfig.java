@@ -24,7 +24,7 @@ public class AppConfig {
     @ApplicationScoped
     public MappingConfiguration mappingConfiguration() {
         try {
-            return objectMapper.readValue(configuration.path(), MappingConfiguration.class);
+            return objectMapper.readValue(configuration.mapping(), MappingConfiguration.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

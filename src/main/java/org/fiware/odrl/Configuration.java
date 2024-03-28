@@ -9,7 +9,8 @@ import java.io.File;
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @StaticInitSafe
-@ConfigMapping(prefix = "mapping")
+@ConfigMapping(prefix = "paths")
 public interface Configuration {
-    File path();
+    File mapping();
+    File rego();
 }

@@ -29,6 +29,31 @@ paths:
                 type: string
               description: location of the created policy
   /policy/{id}:
+    put:
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      operationId: createPolicyWithId
+      summary: creates a new policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyJson'
+      responses:
+        '200':
+          description: the rego
+          content:
+            text/plain:
+              schema:
+                type: string
+        '201':
+          description: Successfully created the policy.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: location of the created policy
     get:
       parameters:
         - $ref: '#/components/parameters/Id'

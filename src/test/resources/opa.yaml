@@ -1,0 +1,19 @@
+services:
+  - name: bundle-server
+    url: http://localhost:8080/bundles/service/v1
+
+bundles:
+  policies:
+      service: bundle-server
+      resource: policies.tar.gz
+      polling:
+        min_delay_seconds: 10
+        max_delay_seconds: 15
+  methods:
+      service: bundle-server
+      resource: methods.tar.gz
+      polling:
+        min_delay_seconds: 5
+        max_delay_seconds: 15
+
+default_decision: /policy/main/allow

@@ -26,13 +26,7 @@ public class MappingResult {
 
     public MappingResult() {
         imports.add("import rego.v1");
-        imports.add("import helper.req");
-    }
-
-    public MappingResult addFailure(String reason) {
-        failureReasons.add(reason);
-        failed = true;
-        return this;
+        imports.add("import data.utils.helper as helper");
     }
 
     public MappingResult addFailure(String reason, String... parameters) {
@@ -46,7 +40,7 @@ public class MappingResult {
     }
 
     public MappingResult addImport(String importPackage) {
-        imports.add(String.format("import %s", importPackage));
+        imports.add(String.format("import data.%s", importPackage));
         return this;
     }
 
@@ -55,17 +49,15 @@ public class MappingResult {
         return this;
     }
 
-    public String getRego() {
+    public String getRego(String packageName) {
 
         StringJoiner regoJoiner = new StringJoiner(System.getProperty("line.separator"));
 
-        regoJoiner.add("package system");
+        regoJoiner.add(String.format("package %s", packageName));
         regoJoiner.add("");
         imports.forEach(regoJoiner::add);
         regoJoiner.add("");
-        regoJoiner.add("default allow := false");
-        regoJoiner.add("");
-        regoJoiner.add("allow if {");
+        regoJoiner.add("is_allowed if {");
         rules.forEach(regoJoiner::add);
         regoJoiner.add("}");
 
