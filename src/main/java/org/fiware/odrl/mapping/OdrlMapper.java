@@ -2,8 +2,13 @@ package org.fiware.odrl.mapping;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.checkerframework.checker.units.qual.C;
 import org.fiware.odrl.rego.RegoMethod;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +17,7 @@ import java.util.StringJoiner;
 import static org.fiware.odrl.mapping.OdrlConstants.ACTION_KEY;
 import static org.fiware.odrl.mapping.OdrlConstants.ASSIGNEE_KEY;
 import static org.fiware.odrl.mapping.OdrlConstants.CONSTRAINT_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.DATE_TYPE;
 import static org.fiware.odrl.mapping.OdrlConstants.GRAPH_KEY;
 import static org.fiware.odrl.mapping.OdrlConstants.ID_KEY;
 import static org.fiware.odrl.mapping.OdrlConstants.LEFT_OPERAND_KEY;
@@ -38,8 +44,8 @@ import static org.fiware.odrl.mapping.OdrlConstants.VALUE_KEY;
  */
 public class OdrlMapper {
 
-    public static final String OR_TEMPLATE = "true in [%s, %s]";
     public static final String STRING_ESCAPE_TEMPLATE = "\"%s\"";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private final ObjectMapper objectMapper;
     private final MappingConfiguration mappingConfiguration;
@@ -112,7 +118,9 @@ public class OdrlMapper {
         mapAssignee(thePermission.get(ASSIGNEE_KEY));
         mapTarget(thePermission.get(TARGET_KEY));
         if (thePermission.containsKey(CONSTRAINT_KEY) && thePermission.get(CONSTRAINT_KEY) instanceof List<?> constraints) {
-            mappingResult.addRule(toLogicalConstraintString(new NamespacedValue("odrl", "andSequence"), constraints));
+            var constraint = toLogicalConstraintString(new NamespacedValue("odrl", "andSequence"), constraints);
+            mappingResult.addRule(constraint.constraint());
+            constraint.packagesToImport().forEach(mappingResult::addImport);
         } else if (thePermission.containsKey(CONSTRAINT_KEY)) {
             mapRefinementObject(convertToMap(thePermission.get(CONSTRAINT_KEY)));
         }
@@ -151,7 +159,7 @@ public class OdrlMapper {
             mapStringAssignee(assignee, getStringOrByKey(theAssignee, ID_KEY));
             return;
         } catch (MappingException e) {
-            // no-op, it a map
+            // no-op, its a map
         }
 
         Map<String, Object> assigneeMap = convertToMap(theAssignee);
@@ -177,7 +185,9 @@ public class OdrlMapper {
         }
         if (theRefinementCollection.get(REFINEMENT_KEY) instanceof List<?> constraintsList) {
             // list of constraints -> and_sequence
-            mappingResult.addRule(toLogicalConstraintString(new NamespacedValue("odrl", "andSequence"), constraintsList));
+            var constraint = toLogicalConstraintString(new NamespacedValue("odrl", "andSequence"), constraintsList);
+            mappingResult.addRule(constraint.constraint());
+            constraint.packagesToImport().forEach(mappingResult::addImport);
             return;
         }
 
@@ -192,15 +202,19 @@ public class OdrlMapper {
         }
         String type = (String) refinementObject.get(TYPE_KEY);
         if (type.equals(TYPE_CONSTRAINT)) {
-            mappingResult.addRule(getConstraint(refinementObject));
+            var constraint = getConstraint(refinementObject);
+            mappingResult.addRule(constraint.constraint());
+            constraint.packagesToImport().forEach(mappingResult::addImport);
         } else if (type.equals(TYPE_LOGICAL_CONSTRAINT)) {
-            mappingResult.addRule(getLogicalConstraint(refinementObject));
+            var constraint = getLogicalConstraint(refinementObject);
+            mappingResult.addRule(constraint.constraint());
+            constraint.packagesToImport().forEach(mappingResult::addImport);
         } else {
             mappingResult.addFailure("The type %s is not supported for refinements.", type);
         }
     }
 
-    private String getLogicalConstraint(Map<String, Object> logicalConstraint) throws MappingException {
+    private Constraint getLogicalConstraint(Map<String, Object> logicalConstraint) throws MappingException {
         String operand = getSupportedOperands().stream()
                 .filter(logicalConstraint::containsKey)
                 .findAny()
@@ -218,18 +232,21 @@ public class OdrlMapper {
         }
     }
 
-    private String toLogicalConstraintString(NamespacedValue namespacedOperand, List<?> constraints) throws MappingException {
+    private Constraint toLogicalConstraintString(NamespacedValue namespacedOperand, List<?> constraints) throws MappingException {
         StringJoiner constraintListStringJoiner = new StringJoiner(",");
         List<Map<String, Object>> constraintMaps = constraints
                 .stream()
                 .map(this::convertToMap).toList();
-
+        List<String> packagesToImport = new ArrayList<>();
         for (Map<String, Object> constraintMap : constraintMaps) {
-            constraintListStringJoiner.add(getConstraint(constraintMap));
+            var constraint = getConstraint(constraintMap);
+            packagesToImport.addAll(constraint.packagesToImport());
+            constraintListStringJoiner.add(constraint.constraint());
         }
         String constraintsParameter = String.format("[%s]", constraintListStringJoiner);
         RegoMethod regoOperand = getFromConfig(OdrlAttribute.OPERAND, namespacedOperand);
-        return String.format(regoOperand.regoMethod(), constraintsParameter);
+        packagesToImport.add(regoOperand.regoPackage());
+        return new Constraint(String.format(regoOperand.regoMethod(), constraintsParameter), packagesToImport);
     }
 
     private Map<String, Object> convertToMap(Object theObject) {
@@ -250,7 +267,7 @@ public class OdrlMapper {
                 .toList();
     }
 
-    private String getConstraint(Map<String, Object> constraint) throws MappingException {
+    private Constraint getConstraint(Map<String, Object> constraint) throws MappingException {
         if (constraint.containsKey(TYPE_KEY) && constraint.get(TYPE_KEY).equals(TYPE_LOGICAL_CONSTRAINT)) {
             return getLogicalConstraint(constraint);
         }
@@ -278,8 +295,6 @@ public class OdrlMapper {
 
         String operator = getStringOrByKey(constraint.get(OPERATOR_KEY), ID_KEY);
         RegoMethod operatorMethod = getFromConfig(OdrlAttribute.OPERATOR, getNamespaced(operator));
-        mappingResult.addImport(operatorMethod.regoPackage());
-
         if (constraint.get(RIGHT_OPERAND_KEY) instanceof List<?> operandList) {
             List<?> rightOperands = operandList.stream().map(operand -> {
                 if (operand instanceof String stringOperand) {
@@ -288,14 +303,22 @@ public class OdrlMapper {
                     return operand;
                 }
             }).toList();
-            return String.format(operatorMethod.regoMethod(), leftOperand, rightOperands);
+            return new Constraint(String.format(operatorMethod.regoMethod(), leftOperand, rightOperands), List.of(operatorMethod.regoPackage()));
         } else {
             Object operandObject = constraint.get(RIGHT_OPERAND_KEY);
             Object rightOperand = null;
             if (operandObject instanceof Map<?, ?> operandMap) {
                 if (operandMap.containsKey(TYPE_KEY) && operandMap.get(TYPE_KEY).equals(STRING_TYPE)) {
                     rightOperand = String.format(STRING_ESCAPE_TEMPLATE, operandMap.get(VALUE_KEY));
-                } else if (operandMap.containsKey(VALUE_KEY)){
+                } else if (operandMap.containsKey(TYPE_KEY) && operandMap.get(TYPE_KEY).equals(DATE_TYPE)) {
+                    String dateString = (String) operandMap.get(VALUE_KEY);
+                    try {
+                        Date parsedDate = DATE_FORMAT.parse(dateString);
+                        rightOperand = parsedDate.getTime();
+                    } catch (ParseException e) {
+                        throw new MappingException(String.format("The date %s is not valid", dateString), e);
+                    }
+                } else if (operandMap.containsKey(VALUE_KEY)) {
                     rightOperand = operandMap.get(VALUE_KEY);
                 } else if (operandMap.containsKey(ID_KEY)) {
                     rightOperand = operandMap.get(ID_KEY);
@@ -307,10 +330,12 @@ public class OdrlMapper {
             }
 
             if (rightOperand instanceof String rightOperandString && isNamespaced(rightOperandString)) {
-                rightOperand = getFromConfig(OdrlAttribute.RIGHT_OPERAND, getNamespaced(rightOperandString)).regoMethod();
+                RegoMethod ro = getFromConfig(OdrlAttribute.RIGHT_OPERAND, getNamespaced(rightOperandString));
+                rightOperand = ro.regoMethod();
+                mappingResult.addImport(ro.regoPackage());
             }
 
-            return String.format(operatorMethod.regoMethod(), leftOperand, rightOperand);
+            return new Constraint(String.format(operatorMethod.regoMethod(), leftOperand, rightOperand), List.of(operatorMethod.regoPackage()));
         }
     }
 
@@ -393,5 +418,8 @@ public class OdrlMapper {
     }
 
     private record NamespacedValue(String namespace, String value) {
+    }
+
+    private record Constraint(String constraint, List<String> packagesToImport) {
     }
 }

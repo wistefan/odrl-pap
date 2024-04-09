@@ -29,10 +29,8 @@ import java.util.Set;
 @Slf4j
 public class OpaBackedPolicyService implements RegoPolicyService {
 
-
     @RestClient
     public PolicyApiApi opaPolicyApi;
-
 
     @Override
     public void createPolicy(String packageName, String policy) {

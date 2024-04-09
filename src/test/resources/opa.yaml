@@ -1,6 +1,6 @@
 services:
   - name: bundle-server
-    url: http://localhost:8080/bundles/service/v1
+    url: http://localhost:8081/bundles/service/v1
 
 bundles:
   policies:

@@ -5,9 +5,8 @@ import rego.v1
 #### Logical constraint operands
 
 ## odrl:and
-and_operand(constraintA, constraintB) if {
-	constraintA
-	constraintB
+and_operand(constraints) if {
+	some constraint in constraints
 }
 
 ## odrl:andSequence

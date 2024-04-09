@@ -15,6 +15,7 @@ public class OdrlConstants {
     public static final String LIST_KEY = "@list";
 
     public static final String STRING_TYPE = "xsd:string";
+    public static final String DATE_TYPE = "xsd:date";
     public static final String TYPE_POLICY = "odrl:Policy";
     public static final String TYPE_PERMISSION = "odrl:Permission";
     public static final String TYPE_PARTY = "odrl:Party";

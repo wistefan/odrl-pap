@@ -16,3 +16,9 @@ related_party_role(entity) := related_party(entity).role
 
 ## TMF-PCMA:lifecycleStatus
 life_cycle_status(entity) := entity.lifeCycleStatus
+
+## dome-op:validFor_endDateTime
+valid_for_end_date_time(entity) := time.parse_rfc3339_ns(entity.validFor.endDataTime)
+
+## dome-op:validFor_startDateTime
+valid_for_start_date_time(entity) := time.parse_rfc3339_ns(entity.validFor.startDataTime)

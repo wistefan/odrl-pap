@@ -37,7 +37,7 @@
       },
       "set_published": {
         "regoPackage": "dome.action as dome_action",
-        "regoMethod": "dome_action.TODO(set_published)"
+        "regoMethod": "dome_action.is_set_published(helper.http_part)"
       }
     }
   },
@@ -110,6 +110,12 @@
     }
   },
   "rightOperand": {
+    "odrl":{
+      "policyUsage": {
+        "regoPackage": "odrl.rightOperand as odrl_ro",
+        "regoMethod": "odrl_ro.policy_usage"
+      }
+    },
     "dome-op": {
       "currentParty": {
         "regoPackage": "dome.leftOperand as dome_lo",
@@ -121,7 +127,7 @@
     "odrl": {
       "dateTime": {
         "regoPackage": "odrl.leftOperand as odrl_lo",
-        "regoMethod": "odrl_lo.TODO(dateTime)"
+        "regoMethod": "odrl_lo.currentTime"
       }
     },
     "dome-op": {
@@ -143,11 +149,11 @@
       },
       "validFor_startDateTime": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.TODO(validFor_startDateTime)"
+        "regoMethod": "dome_lo.valid_for_start_date_time(helper.entity)"
       },
       "validFor_endDateTime": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.TODO(validFor_endDateTime)"
+        "regoMethod": "dome_lo.valid_for_end_date_time(helper.entity)"
       }
     },
     "TMF-PCMA": {

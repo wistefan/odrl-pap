@@ -46,9 +46,7 @@ public class PolicyRepository {
 
 
     public void addPolicy(String id, String policy) {
-       // policyService.createPolicy(id, policy);
         policies.put(id, policy);
-
     }
 
     public Map<String, String> getPolicies() {
