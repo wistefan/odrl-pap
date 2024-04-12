@@ -3,6 +3,7 @@ package org.fiware.odrl;
 import com.google.common.collect.ImmutableMap;
 import io.quarkus.test.common.DevServicesContext;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.MountableFile;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
+@Slf4j
 public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycleManager, DevServicesContext.ContextAware {
 
     private Optional<String> containerNetworkId;
@@ -19,9 +21,9 @@ public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycle
 
     @Override
     public Map<String, String> start() {
-        opaContainer = new GenericContainer("openpolicyagent/opa:0.62.1")
+        opaContainer = new GenericContainer("openpolicyagent/opa:0.63.0")
                 .withCopyToContainer(MountableFile.forClasspathResource("opa.yaml"), "/opa.yaml")
-                .withCommand("run", "--server", "-c", "/opa.yaml", "--addr", "localhost:8181")
+                .withCommand("run", "--server", "-l", "debug", "--set", "decision_logs.console=true", "--log-format", "text", "-c", "/opa.yaml", "--addr", "localhost:8181")
                 .withNetworkMode("host");
         containerNetworkId.ifPresent(opaContainer::withNetworkMode);
         opaContainer.start();
@@ -30,6 +32,7 @@ public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycle
 
     @Override
     public void stop() {
+        log.info(opaContainer.getLogs());
         opaContainer.stop();
     }
 

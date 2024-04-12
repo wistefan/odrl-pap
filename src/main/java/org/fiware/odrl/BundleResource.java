@@ -3,14 +3,12 @@ package org.fiware.odrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +16,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.fiware.odrl.rego.Manifest;
 import org.fiware.odrl.rego.PolicyRepository;
+import org.fiware.odrl.rego.PolicyWrapper;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -25,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -55,12 +53,15 @@ public class BundleResource {
     private ObjectMapper objectMapper;
 
     @Inject
-    private Configuration configuration;
+    private PathsConfiguration pathsConfiguration;
+
+    @Inject
+    private GeneralConfig generalConfig;
 
     private Map<String, String> methods = new HashMap<>();
 
     public void initMethods(@Observes StartupEvent event) throws IOException {
-        java.nio.file.Path folderPath = Paths.get(configuration.rego().getAbsolutePath());
+        java.nio.file.Path folderPath = Paths.get(pathsConfiguration.rego().getAbsolutePath());
         Set<String> fileSet = getFiles(folderPath);
 
         for (String file : fileSet) {
@@ -71,43 +72,53 @@ public class BundleResource {
     @GET
     @Path("/policies.tar.gz")
     @Produces("application/octect-stream")
-    public Response getBundle() {
+    public Response getBundle() throws JsonProcessingException {
         var policies = ImmutableMap.copyOf(policyRepository.getPolicies());
         String mainPolicy = getMainPolicy(policies);
 
-
         var toZip = policies.entrySet().stream()
-                .collect(Collectors.toMap(e -> String.format("policy.%s", e.getKey()), Map.Entry::getValue, (e1, e2) -> e1));
+                .collect(Collectors.toMap(e -> String.format("policy.%s", e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
         toZip.put("policy.main", mainPolicy);
-        return Response.ok(zipMap(toZip)).build();
+        return Response.ok(zipMap(toZip, "rego", objectMapper.writeValueAsString(getManifest(toZip)))).build();
     }
 
     @GET
     @Path("/methods.tar.gz")
     @Produces("application/octect-stream")
-    public Response getMethods() {
-        return Response.ok(zipMap(ImmutableMap.copyOf(methods))).build();
+    public Response getMethods() throws JsonProcessingException {
+
+        return Response.ok(zipMap(ImmutableMap.copyOf(methods), "rego", objectMapper.writeValueAsString(getManifest(methods)))).build();
     }
 
-    private StreamingOutput zipMap(Map<String, String> theMap) {
-        return (StreamingOutput) outputStream -> {
+    private StreamingOutput zipMap(Map<String, String> theMap, String type, String manifest) {
+        return outputStream -> {
 
             var gzOut = new TarArchiveOutputStream(
                     new GZIPOutputStream(
                             new BufferedOutputStream(outputStream)));
             for (var policyEntry : theMap.entrySet()) {
-                addPolicyArchive(gzOut, policyEntry.getKey(), policyEntry.getValue());
+                addPolicyArchive(gzOut, policyEntry.getKey(), policyEntry.getValue(), type);
             }
-            addContentAddPath(gzOut, ".manifest", objectMapper.writeValueAsString(getManifest(theMap)));
+            addContentAddPath(gzOut, ".manifest", manifest);
             gzOut.close();
         };
     }
 
-    private void addPolicyArchive(TarArchiveOutputStream archiveOutputStream, String policyId, String policy) throws IOException {
+    @GET
+    @Path(("data.tar.gz"))
+    @Produces("application/octet-stream")
+    public Response getData() throws JsonProcessingException {
+        Map<String, Object> theData = Map.of("data", Map.of("organizationDid", generalConfig.organizationDid()));
+
+        Manifest manifest = new Manifest().setRoots(List.of("data"));
+        return Response.ok(zipMap(ImmutableMap.of("data", objectMapper.writeValueAsString(theData)), "json", objectMapper.writeValueAsString(manifest))).build();
+    }
+
+    private void addPolicyArchive(TarArchiveOutputStream archiveOutputStream, String policyId, String policy, String type) throws IOException {
         List<String> packageParts = Arrays.asList(policyId.split("\\."));
         StringJoiner pathJoiner = new StringJoiner("/");
         packageParts.forEach(pathJoiner::add);
-        addContentAddPath(archiveOutputStream, String.format("%s.rego", pathJoiner), policy);
+        addContentAddPath(archiveOutputStream, String.format("%s.%s", pathJoiner, type), policy);
     }
 
     private void addContentAddPath(TarArchiveOutputStream archiveOutputStream, String path, String content) throws IOException {
@@ -177,7 +188,7 @@ public class BundleResource {
         return new Manifest().setRoots(List.copyOf(rootPaths));
     }
 
-    private String getMainPolicy(Map<String, String> policies) {
+    private String getMainPolicy(Map<String, PolicyWrapper> policies) {
 
         StringJoiner regoJoiner = new StringJoiner(System.getProperty("line.separator"));
         regoJoiner.add("package policy.main");
@@ -188,7 +199,6 @@ public class BundleResource {
         regoJoiner.add("default allow := false");
         regoJoiner.add("");
         policies.keySet().stream().map(policy -> String.format("allow if %s.is_allowed", policy)).forEach(regoJoiner::add);
-
         return regoJoiner.toString();
     }
 

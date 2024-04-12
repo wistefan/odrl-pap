@@ -18,13 +18,13 @@ public class AppConfig {
     private ObjectMapper objectMapper;
 
     @Inject
-    private Configuration configuration;
+    private PathsConfiguration pathsConfiguration;
 
     @Produces
     @ApplicationScoped
     public MappingConfiguration mappingConfiguration() {
         try {
-            return objectMapper.readValue(configuration.mapping(), MappingConfiguration.class);
+            return objectMapper.readValue(pathsConfiguration.mapping(), MappingConfiguration.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

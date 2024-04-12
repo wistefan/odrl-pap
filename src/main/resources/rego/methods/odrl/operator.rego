@@ -32,10 +32,10 @@ is_none_of_operator(leftOperand, rightOperand) if not leftOperand in rightOperan
 is_part_of_operator(leftOperand, rightOperand) if rightOperand in leftOperand
 
 ## odrl:lt
-lt_operator(leftOperand, rightOperand) if leftOperand < rightOperand
+lt_operator(leftOperand, rightOperand) if rightOperand > leftOperand
 
 ## odrl:lteq
-lt_eq_operator(leftOperand, rightOperand) if leftOperand <= rightOperand
+lt_eq_operator(leftOperand, rightOperand) if rightOperand >= leftOperand
 
 ## odrl:neq
 n_eq_operator(leftOperand, rightOperand) if leftOperand != rightOperand

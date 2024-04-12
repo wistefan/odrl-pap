@@ -1,27 +1,21 @@
 package org.fiware.odrl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
-import io.quarkus.scheduler.Scheduled;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.fiware.odrl.api.PolicyApi;
 import org.fiware.odrl.mapping.MappingConfiguration;
 import org.fiware.odrl.mapping.MappingResult;
 import org.fiware.odrl.mapping.OdrlMapper;
-import org.fiware.odrl.rego.OpaBackedPolicyService;
+import org.fiware.odrl.model.Policy;
+import org.fiware.odrl.rego.OdrlPolicy;
 import org.fiware.odrl.rego.PolicyRepository;
+import org.fiware.odrl.rego.PolicyWrapper;
+import org.fiware.odrl.rego.RegoPolicy;
 
-import java.nio.charset.Charset;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringJoiner;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
@@ -39,12 +33,12 @@ public class PolicyResource implements PolicyApi {
     private PolicyRepository policyRepository;
 
     @Override
-    public String createPolicy(Map<String, Object> requestBody) {
+    public Response createPolicy(Map<String, Object> requestBody) {
         return createPolicyWithId(policyRepository.generatePolicyId(), requestBody);
     }
 
     @Override
-    public String createPolicyWithId(String id, Map<String, Object> policy) {
+    public Response createPolicyWithId(String id, Map<String, Object> policy) {
         if (id.equals("main")) {
             throw new IllegalArgumentException("Policy `main` cannot be manually modified.");
         }
@@ -55,14 +49,25 @@ public class PolicyResource implements PolicyApi {
         }
         String packagedId = String.format("policy.%s", id);
         String regoPolicy = mappingResult.getRego(packagedId);
-        policyRepository.addPolicy(id, regoPolicy);
-        return regoPolicy;
+        try {
+            PolicyWrapper thePolicy = new PolicyWrapper(new OdrlPolicy(objectMapper.writeValueAsString(policy)), new RegoPolicy(regoPolicy));
+            policyRepository.createPolicy(id, thePolicy);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Was not able to persist the odrl representation.", e);
+        }
+        return Response.ok(regoPolicy).header("Location", id).build();
     }
 
     @Override
-    public Map<String, Object> getPolicyById(String id) {
-        log.info("Get policy");
-        return Map.of();
+    public Response getPolicyById(String id) {
+        return policyRepository
+                .getPolicy(id)
+                .map(pw -> new Policy()
+                        .id(id)
+                        .odrl(pw.odrl().policy())
+                        .rego(pw.rego().policy()))
+                .map(Response::ok)
+                .map(Response.ResponseBuilder::build)
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
-
 }

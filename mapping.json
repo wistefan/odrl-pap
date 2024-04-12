@@ -119,7 +119,7 @@
     "dome-op": {
       "currentParty": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.current_party(helper.name)"
+        "regoMethod": "dome_lo.current_party(helper.issuer)"
       }
     }
   },
@@ -127,21 +127,25 @@
     "odrl": {
       "dateTime": {
         "regoPackage": "odrl.leftOperand as odrl_lo",
-        "regoMethod": "odrl_lo.currentTime"
+        "regoMethod": "odrl_lo.current_time"
       }
     },
     "dome-op": {
       "role": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.role(helper.name)"
+        "regoMethod": "dome_lo.role(helper.verifiable_credential, helper.organization_did)"
       },
       "currentParty": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.current_party(helper.name)"
+        "regoMethod": "dome_lo.current_party(helper.verifiable_credential)"
       },
       "relatedParty": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.related_party(helper.entity)"
+        "regoMethod": "dome_lo.related_party(helper.http_part)"
+      },
+      "owner": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.owner(helper.http_part)"
       },
       "relatedParty_role": {
         "regoPackage": "dome.leftOperand as dome_lo",
@@ -167,11 +171,11 @@
     "odrl": {
       "uid": {
         "regoPackage": "odrl.assignee as odrl_assignee",
-        "regoMethod": "odrl_assignee.is_user(helper.name,%s)"
+        "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
       },
       "assignee": {
         "regoPackage": "odrl.assignee as odrl_assignee",
-        "regoMethod": "odrl_assignee.is_user(helper.name,%s)"
+        "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
       }
     }
   },

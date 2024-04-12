@@ -13,7 +13,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyJson'
+              $ref: '#/components/schemas/OdrlPolicyJson'
       responses:
         '200':
           description: the rego
@@ -39,7 +39,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyJson'
+              $ref: '#/components/schemas/OdrlPolicyJson'
       responses:
         '200':
           description: the rego
@@ -65,7 +65,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyJson'
+                $ref: '#/components/schemas/Policy'
         '404':
           description: No such policy
 
@@ -78,13 +78,22 @@ components:
       schema:
         $ref: '#/components/schemas/Uid'
   schemas:
+    Policy:
+      type: object
+      properties:
+        id:
+          type: string
+        odrl:
+          type: string
+        rego:
+          type: string
     Uid:
       type: string
       format: https://datatracker.ietf.org/doc/html/rfc3987
-    PolicyJson:
+    OdrlPolicyJson:
       type: object
       additionalProperties: true
-    Policy:
+    OdrlPolicy:
       type: object
       properties:
         uid:
