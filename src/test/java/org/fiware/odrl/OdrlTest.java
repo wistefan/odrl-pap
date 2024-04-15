@@ -4,9 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agroal.api.AgroalDataSource;
-import io.quarkiverse.mockserver.runtime.MockServerConfig;
-import io.quarkiverse.mockserver.test.InjectMockServerClient;
-import io.quarkiverse.mockserver.test.MockServerTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -25,7 +22,12 @@ import org.fiware.odrl.model.OpaInput;
 import org.fiware.odrl.model.Request;
 import org.fiware.odrl.model.RolesAndDuties;
 import org.fiware.odrl.persistence.PolicyEntity;
-import org.junit.jupiter.api.Test;
+import org.fiware.odrl.resources.InjectMockServerClient;
+import org.fiware.odrl.resources.InjectOpa;
+import org.fiware.odrl.resources.MockServerTestResource;
+import org.fiware.odrl.resources.OpenPolicyAgentTestResource;
+import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,7 +39,6 @@ import org.keycloak.crypto.KeyUse;
 import org.keycloak.crypto.KeyWrapper;
 import org.keycloak.crypto.SignatureSignerContext;
 import org.keycloak.jose.jws.JWSBuilder;
-import org.keycloak.protocol.oid4vc.issuance.signing.JwtSigningService;
 import org.keycloak.protocol.oid4vc.model.CredentialSubject;
 import org.keycloak.protocol.oid4vc.model.VerifiableCredential;
 import org.keycloak.representations.JsonWebToken;
@@ -83,9 +84,6 @@ public class OdrlTest {
     public MockServerClient mockServerClient;
 
     @Inject
-    public MockServerConfig msc;
-
-    @Inject
     private EntityManager entityManager;
 
     @Inject
@@ -108,14 +106,19 @@ public class OdrlTest {
     @BeforeEach
     @Transactional
     public void reset() {
-        entityManager.createQuery(String.format("DELETE FROM %s", PolicyEntity.TABLE_NAME)).executeUpdate();
         opaContainer.stop();
         log.info(opaContainer.getLogs());
         opaContainer.start();
         Awaitility.await()
                 .pollInterval(Duration.ofSeconds(2l))
-                .atMost(Duration.ofSeconds(300l))
+                .atMost(Duration.ofSeconds(30l))
                 .until(this::checkOpaHealth);
+    }
+
+    @AfterEach
+    @Transactional
+    public void clean() {
+        PolicyEntity.deleteAll();
     }
 
     @ParameterizedTest
@@ -249,7 +252,7 @@ public class OdrlTest {
                         List.of("/examples/dome/1005/_1005.json"),
                         getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
                                 "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6?q=something",
-                                "PUT"))
+                                "PATCH"))
         );
     }
 
@@ -337,7 +340,7 @@ public class OdrlTest {
         http.setMethod(method);
         http.setPath(path);
         // we set the host to the current application, in order to allow mocking of responses
-        http.setHost(MockServerConfig.HOST);
+        http.setHost("http://localhost:1080");
         Request request = new Request();
         request.setHttp(http);
         OpaInput opaInput = new OpaInput();

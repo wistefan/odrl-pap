@@ -141,9 +141,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.mockserver</groupId>
-            <artifactId>quarkus-mockserver-test</artifactId>
-            <version>1.7.0</version>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-client-java</artifactId>
+            <version>5.15.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

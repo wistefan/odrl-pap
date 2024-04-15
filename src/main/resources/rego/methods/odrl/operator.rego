@@ -3,7 +3,7 @@ package odrl.operator
 import rego.v1
 
 ## odrl:eq
-eq_operator(leftOperand, rightOperand) if leftOperand == rightOperand
+eq_operator(leftOperand, rightOperand) := leftOperand == rightOperand
 
 ## odrl:hasPart
 has_part_operator(leftOperand, rightOperand) if rightOperand in leftOperand

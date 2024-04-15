@@ -10,14 +10,15 @@ role(verifiable_credential,organization_id) := r if {
 }
 
 ## dome-op:currentParty
-current_party(credential) := credential.issuer.id
+current_party(credential) := credential.issuer
 
 ## dome-op:relatedParty
 ## get the entity from tm-forum and extract related party
 related_party(http_part) := rp if {
     path_without_query := split(http_part.path, "?")[0]
     ## will be one or multiple entities
-    rp = http.send({"method": "get", "url": sprintf("%v%v", [http_part.host, path_without_query])}).body
+    responseBody := http.send({"method": "get", "url": sprintf("%v%v", [http_part.host, path_without_query])}).body
+    rp = responseBody.relatedParty
 }
 
 ## dome-op:owner

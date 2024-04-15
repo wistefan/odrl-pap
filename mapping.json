@@ -119,7 +119,7 @@
     "dome-op": {
       "currentParty": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.current_party(helper.issuer)"
+        "regoMethod": "dome_lo.current_party(helper.verifiable_credential)"
       }
     }
   },
@@ -145,7 +145,7 @@
       },
       "owner": {
         "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.owner(helper.http_part)"
+        "regoMethod": "dome_lo.owner(dome_lo.related_party(helper.http_part))"
       },
       "relatedParty_role": {
         "regoPackage": "dome.leftOperand as dome_lo",

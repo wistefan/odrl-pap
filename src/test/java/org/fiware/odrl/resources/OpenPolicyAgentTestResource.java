@@ -1,4 +1,4 @@
-package org.fiware.odrl;
+package org.fiware.odrl.resources;
 
 import com.google.common.collect.ImmutableMap;
 import io.quarkus.test.common.DevServicesContext;
@@ -14,7 +14,7 @@ import java.util.Optional;
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @Slf4j
-public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycleManager, DevServicesContext.ContextAware {
+public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycleManager {
 
     private Optional<String> containerNetworkId;
     private GenericContainer opaContainer;
@@ -22,10 +22,10 @@ public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycle
     @Override
     public Map<String, String> start() {
         opaContainer = new GenericContainer("openpolicyagent/opa:0.63.0")
+                .withReuse(false)
                 .withCopyToContainer(MountableFile.forClasspathResource("opa.yaml"), "/opa.yaml")
-                .withCommand("run", "--server", "-l", "debug", "--set", "decision_logs.console=true", "--log-format", "text", "-c", "/opa.yaml", "--addr", "localhost:8181")
+                .withCommand("run", "--server", "-l", "debug", "-c", "/opa.yaml", "--addr", "localhost:8181")
                 .withNetworkMode("host");
-        containerNetworkId.ifPresent(opaContainer::withNetworkMode);
         opaContainer.start();
         return ImmutableMap.of("quarkus.rest-client.opa_yaml.url", String.format("http://%s:%s/", opaContainer.getHost(), 8181));
     }
@@ -39,11 +39,6 @@ public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycle
     @Override
     public void inject(TestInjector testInjector) {
         testInjector.injectIntoFields(opaContainer, new TestInjector.Annotated(InjectOpa.class));
-    }
-
-    @Override
-    public void setIntegrationTestContext(DevServicesContext context) {
-        containerNetworkId = context.containerNetworkId();
     }
 
 }

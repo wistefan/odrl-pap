@@ -1,4 +1,4 @@
-package org.fiware.odrl;
+package org.fiware.odrl.resources;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface InjectOpa {
+public @interface InjectMockServerClient {
 }
