@@ -33,7 +33,7 @@ public class AppConfig {
         try {
             mappingConfiguration.putAll(objectMapper.readValue(defaultMappingInputStream, MappingConfiguration.class));
         } catch (IOException e) {
-            throw new RuntimeException("Was not able to read the default mapping.", e);
+            throw new IllegalArgumentException("Was not able to read the default mapping.", e);
         }
 
         if (pathsConfiguration.mapping().isPresent() && pathsConfiguration.mapping().get().exists()) {

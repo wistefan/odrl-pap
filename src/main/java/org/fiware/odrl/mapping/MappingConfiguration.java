@@ -1,7 +1,6 @@
 package org.fiware.odrl.mapping;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import org.fiware.odrl.rego.RegoMethod;
 
 import java.util.HashMap;
 

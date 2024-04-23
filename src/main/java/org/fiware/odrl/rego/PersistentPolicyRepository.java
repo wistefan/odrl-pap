@@ -1,13 +1,11 @@
 package org.fiware.odrl.rego;
 
 import com.google.common.collect.ImmutableMap;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.fiware.odrl.mapping.EntityMapper;
-import org.fiware.odrl.persistence.PersistentRepository;
 import org.fiware.odrl.persistence.PolicyEntity;
 
 import java.util.HashMap;

@@ -1,7 +1,6 @@
 package org.fiware.odrl.rego;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
 import lombok.Getter;
 
 import java.util.ArrayList;

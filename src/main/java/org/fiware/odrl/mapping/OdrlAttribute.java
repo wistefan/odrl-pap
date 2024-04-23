@@ -2,7 +2,6 @@ package org.fiware.odrl.mapping;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Getter;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>

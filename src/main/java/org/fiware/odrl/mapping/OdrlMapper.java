@@ -2,7 +2,6 @@ package org.fiware.odrl.mapping;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.checkerframework.checker.units.qual.C;
 import org.fiware.odrl.rego.RegoMethod;
 
 import java.text.ParseException;
@@ -267,6 +266,7 @@ public class OdrlMapper {
                 .toList();
     }
 
+    // TODO: reduce cognitive load
     private Constraint getConstraint(Map<String, Object> constraint) throws MappingException {
         if (constraint.containsKey(TYPE_KEY) && constraint.get(TYPE_KEY).equals(TYPE_LOGICAL_CONSTRAINT)) {
             return getLogicalConstraint(constraint);
