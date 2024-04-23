@@ -1,23 +1,32 @@
-# odrl-poc
+# ODRL-PAP
 
-> :warning: Still under construction
-
-The odrl-poc aims to enforce policies written in [ODRL](https://www.w3.org/TR/odrl-model/) by translating them
-to [rego](https://www.openpolicyagent.org/docs/latest/policy-language/)
-and offer them via a [bundles-endpoint](https://www.openpolicyagent.org/docs/latest/management-bundles/) to
-the [Open Policy Agent(OPA)](https://www.openpolicyagent.org).
-
+The ODRL-PAP allows to configure policies written in [ODRL](https://www.w3.org/TR/odrl-model/) to be consumed by the by translating the  [Open Policy Agent(OPA)](https://www.openpolicyagent.org).
+Therefor it translates the ODRL in to [rego](https://www.openpolicyagent.org/docs/latest/policy-language/) equivalents and offers them via the [bundles-endpoint](https://www.openpolicyagent.org/docs/latest/management-bundles/).
 It uses the following architecture:
 ![architecture](./doc/odrl-pap.jpg)
 
-The odrl-pap offers three bundles:
+## API 
 
-* the `methods`-bundle: It contains the rego-equivalent to certain odrl-classes.
-  The [rego.methods-folder](src/main/resources/regomethods/methods) contains the initial set of methods. It can be
-  overwritten by providing methods in a folder at `paths.rego`
-* the `policies`-bundle: It contains the actual policies and the `main`-policy, combining all configured policies. All
-  request have to be evaluated against the `main` policy.
-* the `data`-bundle: Contains additional data to be taken into account for the evaluation.
+The ODRL-PAP offers two APIS
+
+* the Policy-API to manage policies in ODRL: [OpenAPI](./api/odrl.yaml)
+* the Bundle-API to offers bundles for OPA: [OpenAPI](./api/bundle.yaml)
+  * the `methods`-bundle: It contains the rego-equivalent to certain odrl-classes.
+    The [rego.methods-folder](src/main/resources/regomethods/methods) contains the initial set of methods. It can be
+    overwritten by providing methods in a folder at `paths.rego`
+  * the `policies`-bundle: It contains the actual policies and the `main`-policy, combining all configured policies. All
+    request have to be evaluated against the `main` policy.
+  * the `data`-bundle: Contains additional data to be taken into account for the evaluation.
+
+## Enforcement
+
+To actually enforce policies, a Policy-Enforcment-Point is required. This role can in principle be taken by any OPA-compatible component.
+We recommend (and test) the usage of [Apisix](https://apisix.apache.org/) for that. Apisix is an OpenSource API-Gateway, that has a built-in plugin to connect OPA.
+See the [it-test Apisix-Chart](./charts/apisix) for an example configuration.
+
+Alternative options are:
+* [Kong](https://konghq.com): provides an OPA-Plugin for payed-usage, format is supported by the ODRL-PAP
+* [Envoy](https://www.envoyproxy.io/): Just a proxy, no API-Gateway functionality, supports OPA integration
 
 ## Translation
 

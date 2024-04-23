@@ -65,4 +65,9 @@ public class PersistentPolicyRepository implements PolicyRepository {
 
         return ImmutableMap.copyOf(policies);
     }
+
+    @Override
+    public void deletePolicy(String id) {
+        PolicyEntity.findByPolicyId(id).map(policyEntity -> policyEntity.id).ifPresent(PolicyEntity::deleteById);
+    }
 }

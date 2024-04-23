@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.fiware.odrl.api.PolicyApi;
 import org.fiware.odrl.mapping.MappingConfiguration;
 import org.fiware.odrl.mapping.MappingResult;
@@ -40,7 +41,7 @@ public class PolicyResource implements PolicyApi {
     @Override
     public Response createPolicyWithId(String id, Map<String, Object> policy) {
         if (id.equals("main")) {
-            throw new IllegalArgumentException("Policy `main` cannot be manually modified.");
+            return Response.status(HttpStatus.SC_CONFLICT).entity("Policy `main` cannot be manually modified.").build();
         }
         OdrlMapper odrlMapper = new OdrlMapper(objectMapper, mappingConfiguration);
         MappingResult mappingResult = odrlMapper.mapOdrl(policy);
@@ -53,9 +54,15 @@ public class PolicyResource implements PolicyApi {
             PolicyWrapper thePolicy = new PolicyWrapper(new OdrlPolicy(objectMapper.writeValueAsString(policy)), new RegoPolicy(regoPolicy));
             policyRepository.createPolicy(id, thePolicy);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Was not able to persist the odrl representation.", e);
+            throw new IllegalArgumentException("Was not able to persist the odrl representation.", e);
         }
         return Response.ok(regoPolicy).header("Location", id).build();
+    }
+
+    @Override
+    public Response deletePolicyById(String id) {
+        policyRepository.deletePolicy(id);
+        return Response.noContent().build();
     }
 
     @Override

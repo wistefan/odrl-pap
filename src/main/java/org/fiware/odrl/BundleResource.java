@@ -15,6 +15,8 @@ import jakarta.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.http.HttpStatus;
+import org.fiware.odrl.bundle.api.BundlesApi;
 import org.fiware.odrl.rego.Manifest;
 import org.fiware.odrl.rego.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
@@ -45,8 +47,7 @@ import java.util.zip.GZIPOutputStream;
  */
 @Slf4j
 @Startup
-@Path("/bundles/service/v1")
-public class BundleResource {
+public class BundleResource implements BundlesApi {
 
     private static final String REGO_RESOURCES_FILE = "rego-resources.txt";
     private static final String UTILS_PATH = "rego/utils";
@@ -80,25 +81,28 @@ public class BundleResource {
         }
     }
 
-    @GET
-    @Path("/policies.tar.gz")
-    @Produces("application/octect-stream")
-    public Response getBundle() throws JsonProcessingException {
+    public Response getPolicies() {
         var policies = ImmutableMap.copyOf(policyRepository.getPolicies());
         String mainPolicy = getMainPolicy(policies);
 
         var toZip = policies.entrySet().stream()
                 .collect(Collectors.toMap(e -> String.format("policy.%s", e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
         toZip.put("policy.main", mainPolicy);
-        return Response.ok(zipMap(toZip, "rego", objectMapper.writeValueAsString(getManifest(toZip)))).build();
+        try {
+            return Response.ok(zipMap(toZip, "rego", objectMapper.writeValueAsString(getManifest(toZip)))).build();
+        } catch (JsonProcessingException e) {
+            log.warn("Was not able to provide policies bundle.", e);
+            return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    @GET
-    @Path("/methods.tar.gz")
-    @Produces("application/octect-stream")
-    public Response getMethods() throws JsonProcessingException {
-
-        return Response.ok(zipMap(ImmutableMap.copyOf(methods), "rego", objectMapper.writeValueAsString(getManifest(methods)))).build();
+    public Response getMethods() {
+        try {
+            return Response.ok(zipMap(ImmutableMap.copyOf(methods), "rego", objectMapper.writeValueAsString(getManifest(methods)))).build();
+        } catch (JsonProcessingException e) {
+            log.warn("Was not able to provide methods bundle.", e);
+            return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     private StreamingOutput zipMap(Map<String, String> theMap, String type, String manifest) {
@@ -115,14 +119,16 @@ public class BundleResource {
         };
     }
 
-    @GET
-    @Path(("data.tar.gz"))
-    @Produces("application/octet-stream")
-    public Response getData() throws JsonProcessingException {
+    public Response getData() {
         Map<String, Object> theData = Map.of("data", Map.of("organizationDid", generalConfig.organizationDid()));
 
         Manifest manifest = new Manifest().setRoots(List.of("data"));
-        return Response.ok(zipMap(ImmutableMap.of("data", objectMapper.writeValueAsString(theData)), "json", objectMapper.writeValueAsString(manifest))).build();
+        try {
+            return Response.ok(zipMap(ImmutableMap.of("data", objectMapper.writeValueAsString(theData)), "json", objectMapper.writeValueAsString(manifest))).build();
+        } catch (JsonProcessingException e) {
+            log.warn("Was not able to provide data bundle.", e);
+            return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     private void addPolicyArchive(TarArchiveOutputStream archiveOutputStream, String policyId, String policy, String type) throws IOException {
@@ -134,7 +140,7 @@ public class BundleResource {
 
     private void addContentAddPath(TarArchiveOutputStream archiveOutputStream, String path, String content) throws IOException {
 
-        byte fileContent[] = content.getBytes();
+        byte[] fileContent = content.getBytes();
 
         TarArchiveEntry tarArchiveEntry = new TarArchiveEntry(path);
         tarArchiveEntry.setSize(fileContent.length);

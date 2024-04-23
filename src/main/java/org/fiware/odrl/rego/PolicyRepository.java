@@ -29,4 +29,5 @@ public interface PolicyRepository {
 
     Map<String, PolicyWrapper> getPolicies();
 
+    void deletePolicy(String id);
 }
