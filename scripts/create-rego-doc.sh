@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# generates the documenatation for the rego methods, based on their doc.
+# Every method should have:
+#  - first a line with all its ODRL-Keys, prefixed with `## `
+#  - second a line with the method documentation
+#  - the method itself
+
 resource_folder="src/main/resources/"
 rego_doc_file="doc/REGO.md"
 

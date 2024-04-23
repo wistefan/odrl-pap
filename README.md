@@ -68,6 +68,9 @@ To create an invocation, the input-parameters need to be taken into account. As 
 The parameters need to be defined with the ```%s``` placeholder. The methods can user other methods as input(f.e. from
 the ```helper```) but no additional parameter replacement.
 
+The mapping.json can be extended via a mapping file, configured at ```paths.mapping```. If provided, all contents will
+be added to the default mapping. Existing keys will be overwritten, e.g. the provided one superseeds the defaults.
+
 ## Running the application
 
 ### Locally
@@ -181,6 +184,23 @@ curl -X POST http://localhost:8181/ -H 'Content-Type: application/json' -d '{
 
 It evaluates to false and is denied.
 
+## Configuration
+
+Since the [Quarkus Framework](https://quarkus.io) is used, its standard configuration methods can be used.
+See [https://quarkus.io/guides/config](https://quarkus.io/guides/config) for a detailed documentation.
+
+The most important parameters are listed in the table below:
+
+| Property                    | Env-Var                     | Description                                                                                                                                                     | Default                              |
+|-----------------------------|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| general.organization-did    | GENERAL_ORGANIZATION_DID    | Did of the organization running the pap. Is used for evaluating roles in the DOME use-case(see [dome-op:role](./src/main/resources/rego/dome/leftOperand.rego)) |
+| general.pep                 | GENERAL_PEP                 | The PEP to be supported. Will decide about the input format used for the policies. Currently ```apisix``` and ```kong``` are supported.                         | ```apisix```                         |
+| quarkus.datasource.username | QUARKUS_DATASOURCE_USERNAME | Username to be used for connecting the database.                                                                                                                | ```postgres```                       |
+| quarkus.datasource.password | QUARKUS_DATASOURCE_PASSWORD | Password to be used for connecting the database.                                                                                                                | ```postgres```                       |
+| quarkus.datasource.jdbc.url | QUARKUS_DATASOURCE_JDBC_URL | Connection string to the DB, only postgres is supported at the moment.                                                                                          | jdbc:postgresql://localhost:5432/pap |
+| paths.mapping               | PATHS_MAPPING               | Path to an additional mapping.json                                                                                                                              | null                                 |
+| paths.rego                  | PATHS_REGO                  | Path to additional rego packages.                                                                                                                               | null                                 | 
+ 
 ## Test
 
 API Tests can be executed via:
@@ -213,6 +233,10 @@ If you want to use such environment for development, use:
 ```
 
 ## Creating a native executable
+
+> :warning: If you add any rego-resource, execute ```./scripts/create-rego-resource-list.sh``` first. It updates the
+> list
+> of rego-resource, so that the native application can access them properly.
 
 You can create a native executable using:
 
