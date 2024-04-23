@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agroal.api.AgroalDataSource;
-import io.quarkus.test.TestReactiveTransaction;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -29,11 +28,9 @@ import org.fiware.odrl.resources.OpenPolicyAgentTestResource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.model.JsonBody;
 import org.openapi.quarkus.opa_yaml.api.HealthApiApi;
 import org.openapi.quarkus.opa_yaml.api.PolicyApiApi;
 import org.openapi.quarkus.opa_yaml.api.QueryApiApi;
@@ -48,8 +45,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 
 /**
@@ -157,12 +152,6 @@ public class OdrlApiTest extends OdrlTest {
         return objectMapper.readValue(this.getClass().getResourceAsStream(path), new TypeReference<Map<String, Object>>() {
         });
     }
-
-    @Test
-    public void test(){
-        getTestJwt("Test Organisation Inc.", List.of("Owner"));
-    }
-
     @ParameterizedTest
     @MethodSource("validCombinations")
     public void testSuccessfullRequest(List<String> policyPaths, HttpRequest theRequest, MockEntity mockEntity) throws IOException, InterruptedException {

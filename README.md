@@ -227,7 +227,7 @@ first:
   mvn clean package -Dnative -Dquarkus.container-image.build=true
 ```
 
-The image will automatically be copüied to the k3s-cluster, running the tests. Start the tests via:
+The image will automatically be copied to the k3s-cluster, running the tests. Start the tests via:
 
 ```shell
   mvn clean install -Pk8s-it
