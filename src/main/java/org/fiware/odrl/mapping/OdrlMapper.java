@@ -2,6 +2,7 @@ package org.fiware.odrl.mapping;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.fiware.odrl.rego.RegoMethod;
 
 import java.text.ParseException;
@@ -41,10 +42,11 @@ import static org.fiware.odrl.mapping.OdrlConstants.VALUE_KEY;
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
+@Slf4j
 public class OdrlMapper {
 
     public static final String STRING_ESCAPE_TEMPLATE = "\"%s\"";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private final ObjectMapper objectMapper;
     private final MappingConfiguration mappingConfiguration;
@@ -195,11 +197,10 @@ public class OdrlMapper {
     }
 
     private void mapRefinementObject(Map<String, Object> refinementObject) throws MappingException {
-        if (!refinementObject.containsKey(TYPE_KEY) || !(refinementObject.get(TYPE_KEY) instanceof String)) {
+        if (!refinementObject.containsKey(TYPE_KEY) || !(refinementObject.get(TYPE_KEY) instanceof String type)) {
             mappingResult.addFailure("The refinement does not contain a @type.");
             return;
         }
-        String type = (String) refinementObject.get(TYPE_KEY);
         if (type.equals(TYPE_CONSTRAINT)) {
             var constraint = getConstraint(refinementObject);
             mappingResult.addRule(constraint.constraint());
@@ -266,11 +267,7 @@ public class OdrlMapper {
                 .toList();
     }
 
-    // TODO: reduce cognitive load
-    private Constraint getConstraint(Map<String, Object> constraint) throws MappingException {
-        if (constraint.containsKey(TYPE_KEY) && constraint.get(TYPE_KEY).equals(TYPE_LOGICAL_CONSTRAINT)) {
-            return getLogicalConstraint(constraint);
-        }
+    private void checkValidConstraing(Map<String, Object> constraint) throws MappingException {
         if (!constraint.containsKey(LEFT_OPERAND_KEY)) {
             throw new MappingException("The constraint does not contain a left-operand");
         }
@@ -280,12 +277,71 @@ public class OdrlMapper {
         if (!constraint.containsKey(OPERATOR_KEY)) {
             throw new MappingException("The constraint does not contain an operator");
         }
-        String leftOperand;
+    }
+
+    private String getLeftOperandFromConstraint(Map<String, Object> constraint) throws MappingException {
         try {
-            leftOperand = getStringOrByKey(constraint.get(LEFT_OPERAND_KEY), ID_KEY);
+            return getStringOrByKey(constraint.get(LEFT_OPERAND_KEY), ID_KEY);
         } catch (MappingException e) {
-            leftOperand = getStringOrByKey(constraint.get(LEFT_OPERAND_KEY), VALUE_KEY);
+            return getStringOrByKey(constraint.get(LEFT_OPERAND_KEY), VALUE_KEY);
         }
+    }
+
+    private Constraint handleRightOperandList(List<?> rightOperand, String leftOperand, RegoMethod operatorMethod) {
+        List<?> rightOperands = rightOperand.stream().map(operand -> {
+            if (operand instanceof String stringOperand) {
+                return String.format(STRING_ESCAPE_TEMPLATE, stringOperand);
+            } else {
+                return operand;
+            }
+        }).toList();
+        return new Constraint(String.format(operatorMethod.regoMethod(), leftOperand, rightOperands), List.of(operatorMethod.regoPackage()));
+    }
+
+    /* Extracts the rego method from an rightOperand in that is in form of an object
+     * Potential objects:
+     * "odrl:rightOperand": {
+     *        "@id": "odrl:policyUsage"
+     * }
+     *  "odrl:rightOperand": {
+     *        "@value": "SomeOperandValue"
+     * }
+     *  "odrl:rightOperand": {
+     *        "@type": "xsd:string",
+     *        "@value": "myString"
+     * }
+     *  "odrl:rightOperand": {
+     *        "@type": "xsd:date",
+     *        "@value": "2023-12-31"
+     * }
+     */
+    private Object handleRightOperandMap(Map<?, ?> operandMap) throws MappingException {
+        if (operandMap.containsKey(TYPE_KEY) && operandMap.get(TYPE_KEY).equals(STRING_TYPE)) {
+            return String.format(STRING_ESCAPE_TEMPLATE, operandMap.get(VALUE_KEY));
+        } else if (operandMap.containsKey(TYPE_KEY) && operandMap.get(TYPE_KEY).equals(DATE_TYPE)) {
+            String dateString = (String) operandMap.get(VALUE_KEY);
+            try {
+                Date parsedDate = dateFormat.parse(dateString);
+                return parsedDate.getTime();
+            } catch (ParseException e) {
+                throw new MappingException(String.format("The date %s is not valid", dateString), e);
+            }
+        } else if (operandMap.containsKey(VALUE_KEY)) {
+            return operandMap.get(VALUE_KEY);
+        } else if (operandMap.containsKey(ID_KEY)) {
+            return operandMap.get(ID_KEY);
+        }
+        log.debug("The given operandMap is not in a supported format: {}", operandMap);
+        throw new MappingException("The given operandMap is not in a supported format.");
+    }
+
+    private Constraint getConstraint(Map<String, Object> constraint) throws MappingException {
+        if (constraint.containsKey(TYPE_KEY) && constraint.get(TYPE_KEY).equals(TYPE_LOGICAL_CONSTRAINT)) {
+            return getLogicalConstraint(constraint);
+        }
+
+        checkValidConstraing(constraint);
+        String leftOperand = getLeftOperandFromConstraint(constraint);
 
         if (isNamespaced(leftOperand)) {
             RegoMethod leftOperandMethod = getFromConfig(OdrlAttribute.LEFT_OPERAND, getNamespaced(leftOperand));
@@ -296,33 +352,12 @@ public class OdrlMapper {
         String operator = getStringOrByKey(constraint.get(OPERATOR_KEY), ID_KEY);
         RegoMethod operatorMethod = getFromConfig(OdrlAttribute.OPERATOR, getNamespaced(operator));
         if (constraint.get(RIGHT_OPERAND_KEY) instanceof List<?> operandList) {
-            List<?> rightOperands = operandList.stream().map(operand -> {
-                if (operand instanceof String stringOperand) {
-                    return String.format(STRING_ESCAPE_TEMPLATE, stringOperand);
-                } else {
-                    return operand;
-                }
-            }).toList();
-            return new Constraint(String.format(operatorMethod.regoMethod(), leftOperand, rightOperands), List.of(operatorMethod.regoPackage()));
+            return handleRightOperandList(operandList, leftOperand, operatorMethod);
         } else {
             Object operandObject = constraint.get(RIGHT_OPERAND_KEY);
-            Object rightOperand = null;
+            Object rightOperand;
             if (operandObject instanceof Map<?, ?> operandMap) {
-                if (operandMap.containsKey(TYPE_KEY) && operandMap.get(TYPE_KEY).equals(STRING_TYPE)) {
-                    rightOperand = String.format(STRING_ESCAPE_TEMPLATE, operandMap.get(VALUE_KEY));
-                } else if (operandMap.containsKey(TYPE_KEY) && operandMap.get(TYPE_KEY).equals(DATE_TYPE)) {
-                    String dateString = (String) operandMap.get(VALUE_KEY);
-                    try {
-                        Date parsedDate = DATE_FORMAT.parse(dateString);
-                        rightOperand = parsedDate.getTime();
-                    } catch (ParseException e) {
-                        throw new MappingException(String.format("The date %s is not valid", dateString), e);
-                    }
-                } else if (operandMap.containsKey(VALUE_KEY)) {
-                    rightOperand = operandMap.get(VALUE_KEY);
-                } else if (operandMap.containsKey(ID_KEY)) {
-                    rightOperand = operandMap.get(ID_KEY);
-                }
+                rightOperand = handleRightOperandMap(operandMap);
             } else if (operandObject instanceof String) {
                 rightOperand = String.format(STRING_ESCAPE_TEMPLATE, operandObject);
             } else {
