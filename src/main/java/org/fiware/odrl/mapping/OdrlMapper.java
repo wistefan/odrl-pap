@@ -57,7 +57,6 @@ public class OdrlMapper {
         this.mappingConfiguration = mappingConfiguration;
     }
 
-
     public MappingResult mapOdrl(Map<String, Object> policy) {
         mappingResult = new MappingResult();
 
