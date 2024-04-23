@@ -3,6 +3,7 @@ package org.fiware.odrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -43,9 +44,13 @@ import java.util.zip.GZIPOutputStream;
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @Slf4j
+@Startup
 @Path("/bundles/service/v1")
 public class BundleResource {
 
+    private static final String REGO_RESOURCES_FILE = "rego-resources.txt";
+    private static final String UTILS_PATH = "rego/utils";
+    private static final String UTILS_FILE_TEMPLATE = UTILS_PATH + "/%s.rego";
     @Inject
     private PolicyRepository policyRepository;
 
@@ -61,11 +66,17 @@ public class BundleResource {
     private Map<String, String> methods = new HashMap<>();
 
     public void initMethods(@Observes StartupEvent event) throws IOException {
-        java.nio.file.Path folderPath = Paths.get(pathsConfiguration.rego().getAbsolutePath());
-        Set<String> fileSet = getFiles(folderPath);
-
-        for (String file : fileSet) {
-            addRegoMethodFromFile(file);
+        log.warn("Startup bundle resource!");
+        for (String file : getRegoResourceFiles()) {
+            if (file.startsWith(UTILS_PATH) && !file.equals(String.format(UTILS_FILE_TEMPLATE, generalConfig.pep().getValue()))) {
+                continue;
+            }
+            addRegoMethodFromResource(file);
+        }
+        if (pathsConfiguration.rego().isPresent() && pathsConfiguration.rego().get().exists()) {
+            for (String file : getFiles(Paths.get(pathsConfiguration.rego().get().getAbsolutePath()))) {
+                addRegoMethodFromFile(file);
+            }
         }
     }
 
@@ -133,9 +144,40 @@ public class BundleResource {
     }
 
 
+    private Set<String> getRegoResourceFiles() throws IOException {
+        Set<String> filenames = new HashSet<>();
+
+        try (
+                InputStream in = getResourceAsStream(REGO_RESOURCES_FILE);
+                BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            String resource;
+            while ((resource = br.readLine()) != null) {
+                filenames.add(resource);
+            }
+        }
+
+        return filenames;
+    }
+
+    private InputStream getResourceAsStream(String resource) {
+        final InputStream in
+                = this.getClass().getClassLoader().getResourceAsStream(resource);
+        return in == null ? this.getClass().getResourceAsStream(resource) : in;
+    }
+
+
+    private void addRegoMethodFromResource(String methodFile) throws IOException {
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(methodFile);
+        addRegoMethod(inputStream);
+    }
+
     private void addRegoMethodFromFile(String methodFile) throws IOException {
-        StringBuilder resultStringBuilder = new StringBuilder();
         InputStream inputStream = new FileInputStream(methodFile);
+        addRegoMethod(inputStream);
+    }
+
+    private void addRegoMethod(InputStream inputStream) throws IOException {
+        StringBuilder resultStringBuilder = new StringBuilder();
         String packageLine = "";
         try (BufferedReader br
                      = new BufferedReader(new InputStreamReader(inputStream))) {

@@ -1,5 +1,6 @@
 package org.fiware.odrl.rego;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.Getter;
 
@@ -9,6 +10,7 @@ import java.util.List;
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
+@RegisterForReflection
 @Getter
 public class Manifest {
 

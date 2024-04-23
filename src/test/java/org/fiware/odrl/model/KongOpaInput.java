@@ -8,12 +8,7 @@ import lombok.Data;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Http {
-    private String id;
-    private String method;
-    private String host;
-    private String path;
-    private String protocol;
-    private String body;
-    private Headers headers;
+public class KongOpaInput {
+
+    private Request request;
 }

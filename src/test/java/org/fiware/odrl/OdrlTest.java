@@ -1,38 +1,14 @@
 package org.fiware.odrl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.agroal.api.AgroalDataSource;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.h2.H2DatabaseTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.fiware.odrl.model.Headers;
-import org.fiware.odrl.model.Http;
-import org.fiware.odrl.model.OpaInput;
+import org.fiware.odrl.model.HttpRequest;
+import org.fiware.odrl.model.KongOpaInput;
+import org.fiware.odrl.model.MockEntity;
+import org.fiware.odrl.model.RelatedParty;
 import org.fiware.odrl.model.Request;
 import org.fiware.odrl.model.RolesAndDuties;
-import org.fiware.odrl.persistence.PolicyEntity;
-import org.fiware.odrl.resources.InjectMockServerClient;
-import org.fiware.odrl.resources.InjectOpa;
-import org.fiware.odrl.resources.MockServerTestResource;
-import org.fiware.odrl.resources.OpenPolicyAgentTestResource;
-import org.junit.After;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.keycloak.common.util.KeyUtils;
 import org.keycloak.crypto.AsymmetricSignatureSignerContext;
 import org.keycloak.crypto.KeyUse;
@@ -44,255 +20,128 @@ import org.keycloak.protocol.oid4vc.model.VerifiableCredential;
 import org.keycloak.representations.JsonWebToken;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.JsonBody;
-import org.openapi.quarkus.opa_yaml.api.HealthApiApi;
-import org.openapi.quarkus.opa_yaml.api.PolicyApiApi;
-import org.openapi.quarkus.opa_yaml.api.QueryApiApi;
-import org.testcontainers.containers.GenericContainer;
 
-import java.io.IOException;
+import javax.swing.text.html.Option;
 import java.net.URI;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
-
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
-@Slf4j
-@QuarkusTest
-@QuarkusTestResource(OpenPolicyAgentTestResource.class)
-@QuarkusTestResource(H2DatabaseTestResource.class)
-@QuarkusTestResource(MockServerTestResource.class)
-public class OdrlTest {
+public abstract class OdrlTest {
 
-    @InjectOpa
-    private GenericContainer opaContainer;
-
-    @InjectMockServerClient
-    public MockServerClient mockServerClient;
-
-    @Inject
-    private EntityManager entityManager;
-
-    @Inject
-    private ObjectMapper objectMapper;
-    @Inject
-    private PolicyResource policyResource;
-
-    @Inject
-    private AgroalDataSource dataSource;
-
-    @RestClient
-    public PolicyApiApi opaPolicyApi;
-
-    @RestClient
-    public QueryApiApi queryApi;
-
-    @RestClient
-    public HealthApiApi healthApi;
-
-    @BeforeEach
-    @Transactional
-    public void reset() {
-        opaContainer.stop();
-        log.info(opaContainer.getLogs());
-        opaContainer.start();
-        Awaitility.await()
-                .pollInterval(Duration.ofSeconds(2l))
-                .atMost(Duration.ofSeconds(30l))
-                .until(this::checkOpaHealth);
-    }
-
-    @AfterEach
-    @Transactional
-    public void clean() {
-        PolicyEntity.deleteAll();
-    }
-
-    @ParameterizedTest
-    @MethodSource("odrlPolicyPath")
-    public void testCreationOfValidPolicy(String policyPath) throws IOException {
-        Map<String, Object> theOdrl = getJsonFromResource(policyPath);
-        Response policyResponse = policyResource.createPolicyWithId("test", theOdrl);
-        assertValidPolicy(policyResponse);
-    }
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 
-    @ParameterizedTest
-    @MethodSource("odrlPolicies")
-    public void testCreationOfMultiplePolicies(List<String> policyPaths) throws IOException {
-        createAndAssertPolicies(policyPaths);
-    }
+    public void mockEntity(MockServerClient mockServerClient, MockEntity mockEntity) {
 
-    private void createAndAssertPolicies(List<String> policyPaths) throws IOException {
-        List<String> policyIds = new ArrayList<>();
-        for (String policyPath : policyPaths) {
-            Map<String, Object> theOdrl = getJsonFromResource(policyPath);
-            Response policyResponse = policyResource.createPolicy(theOdrl);
-            policyIds.add(assertValidPolicy(policyResponse));
-        }
-        assertMainPolicy(policyIds);
-    }
 
-    private void assertMainPolicy(List<String> expectedPolicies) {
-        Awaitility.await()
-                .pollInterval(Duration.ofSeconds(1l))
-                .atMost(Duration.ofSeconds(30L))
-                .until(() -> {
-                    try {
-                        Response r = opaPolicyApi.getPolicyModule("policies/policy/main.rego", true);
-                        if (r.getStatus() != 200) {
-                            return false;
-                        }
-                        String mainPolicy = r.readEntity(String.class);
-                        boolean mainIsReady = expectedPolicies.stream().filter(pid -> !mainPolicy.contains(pid)).findAny().isEmpty();
-                        if (mainIsReady) {
-                            log.info("Current main policy: {}", mainPolicy);
-                        }
-                        return mainIsReady;
-                    } catch (RuntimeException e) {
-                        return false;
-                    }
-                });
-    }
-
-    @ParameterizedTest
-    @MethodSource("validCombinations")
-    public void testSuccessfullRequest(List<String> policyPaths, OpaInput theRequest) throws IOException, InterruptedException {
-        createAndAssertPolicies(policyPaths);
-        Map<String, Object> opaInputRequest = objectMapper.convertValue(theRequest, new TypeReference<Map<String, Object>>() {
-        });
-        log.info("Query");
-        Map<String, Object> theOffering = Map.of("id", "urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6", "relatedParty",
-                List.of(Map.of("id", "urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2", "role", "Owner")));
+        Map<String, Object> theOffering = Map.of("id", mockEntity.id(), "relatedParty",
+                mockEntity.relatedParty());
         mockServerClient
                 .when(
                         request()
-                                .withPath("/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .withPath(String.format("/productOffering/%s", mockEntity.id()))
                                 .withMethod("GET"))
-                .respond(httpRequest -> {
-                            log.info("{}", httpRequest);
-                            return response().withStatusCode(200)
-                                    .withHeader("Content-Type", "application/json")
-                                    .withBody(JsonBody.json(theOffering));
-                        }
+                .respond(httpRequest ->
+                        response().withStatusCode(200)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody(JsonBody.json(theOffering))
+
                 );
-        Response response = queryApi.postSimpleQuery(opaInputRequest, true);
-        assertEquals(200, response.getStatus(), "The query should have been successfully evaluated.");
-        assertTrue(response.readEntity(Boolean.class), "The request should have succeeded.");
     }
 
     public static Stream<Arguments> validCombinations() {
         return Stream.of(
                 Arguments.of(
                         List.of("/examples/dome/1000/_1000.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "GET")),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+                                "GET"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1000/_1000.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "PUT")),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+                                "PUT"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1000/_1000.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "PATCH")),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+                                "PATCH"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1001/_1001.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "GET")),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+                                "GET"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1001/_1001.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "PUT")),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+                                "PUT"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1001/_1001.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "PATCH")),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+                                "PATCH"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1002/_1002.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "GET")),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+                                "GET"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1003/_1003.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
                                 "/urn:ngsi-ld:button:onboard",
-                                "GET")),
+                                "GET"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1003/_1003.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/urn:ngsi-ld:button:onboard",
-                                "GET",
-                                List.of("onboarder"))),
-                Arguments.of(
-                        List.of("/examples/dome/1003/_1003.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
                                 "/urn:ngsi-ld:button:onboard",
                                 "GET",
-                                List.of("onboarder"))),
+                                List.of("onboarder"), Optional.empty()),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
+                Arguments.of(
+                        List.of("/examples/dome/1003/_1003.json"),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/urn:ngsi-ld:button:onboard",
+                                "GET",
+                                List.of("onboarder"), Optional.empty()),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1005/_1005.json"),
-                        getOpaInput("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productCatalogManagement/v4/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6?q=something",
-                                "PATCH"))
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6?q=something",
+                                "PATCH"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2"))))
         );
-    }
-
-    public String assertValidPolicy(Response policyResponse) {
-        Assertions.assertEquals(200, policyResponse.getStatus());
-        MultivaluedMap<String, Object> headers = policyResponse.getHeaders();
-        Assertions.assertNotNull(headers.get("Location"), "The location header should have been set.");
-        Object headerObject = policyResponse.getHeaders().get("Location").get(0);
-        if (headerObject instanceof String locationString) {
-            String theRego = policyResponse.readEntity(String.class);
-            Assertions.assertNotNull(theRego, "The policy should have been returned as rego.");
-            log.info("The rego: {}", theRego);
-            Awaitility.await()
-                    .pollInterval(Duration.ofSeconds(1l))
-                    .atMost(Duration.ofSeconds(30L))
-                    .until(() -> {
-                        try {
-                            Response r = opaPolicyApi.getPolicyModule(String.format("policies/policy/%s.rego", locationString), true);
-                            return r.getStatus() == 200;
-                        } catch (RuntimeException e) {
-                            return false;
-                        }
-                    });
-            return locationString;
-        } else {
-            fail("No valid location header was set.");
-            return null;
-        }
-    }
-
-    private boolean checkOpaHealth() throws JsonProcessingException {
-        try {
-            Response response = healthApi.getHealth(true, false, List.of());
-            return response.getStatus() == 200;
-        } catch (RuntimeException e) {
-            if (e instanceof WebApplicationException wae) {
-                log.warn("{}", wae.getResponse().readEntity(String.class));
-            }
-            return false;
-        }
     }
 
     public static Stream<Arguments> odrlPolicies() {
@@ -321,31 +170,29 @@ public class OdrlTest {
         );
     }
 
-
-    public Map<String, Object> getJsonFromResource(String path) throws IOException {
-        return objectMapper.readValue(this.getClass().getResourceAsStream(path), new TypeReference<Map<String, Object>>() {
-        });
+    public static HttpRequest getRequest(String issuer, String path, String method, String jwt) {
+        return getRequest(issuer, path, method, List.of(), Optional.of(jwt));
     }
 
-    public static OpaInput getOpaInput(String issuer, String path, String method) {
-        return getOpaInput(issuer, path, method, List.of("reader", "onboarder"));
+    public static HttpRequest getRequest(String issuer, String path, String method) {
+        return getRequest(issuer, path, method, List.of("reader", "onboarder"), Optional.empty());
     }
 
-    public static OpaInput getOpaInput(String issuer, String path, String method, List<String> roles) {
+    public static HttpRequest getRequest(String issuer, String path, String method, List<String> roles, Optional<String> jwt) {
         Headers headers = new Headers();
-        headers.setAuthorization(String.format("Bearer %s", getTestJwt(issuer, roles)));
-        Http http = new Http();
+        if (jwt.isPresent()) {
+            headers.setAuthorization(jwt.get());
+        } else {
+            headers.setAuthorization(String.format("Bearer %s", getTestJwt(issuer, roles)));
+        }
+        HttpRequest http = new HttpRequest();
         http.setHeaders(headers);
         http.setId(UUID.randomUUID().toString());
         http.setMethod(method);
         http.setPath(path);
         // we set the host to the current application, in order to allow mocking of responses
         http.setHost("http://localhost:1080");
-        Request request = new Request();
-        request.setHttp(http);
-        OpaInput opaInput = new OpaInput();
-        opaInput.setRequest(request);
-        return opaInput;
+        return http;
     }
 
     public static String getTestJwt(String organization, List<String> roles) {
@@ -383,5 +230,6 @@ public class OdrlTest {
             throw new RuntimeException(e);
         }
     }
-}
 
+
+}

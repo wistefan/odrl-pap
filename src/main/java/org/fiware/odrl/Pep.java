@@ -1,26 +1,20 @@
-package org.fiware.odrl.mapping;
+package org.fiware.odrl;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Getter;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @RegisterForReflection
-public enum OdrlAttribute {
+public enum Pep {
 
-    LEFT_OPERAND("leftOperand"),
-    RIGHT_OPERAND("rightOperand"),
-    OPERATOR("operator"),
-    ASSIGNEE("assignee"),
-    ACTION("action"),
-    OPERAND("operand"),
-    TARGET("target");
+    APISIX("apisix"),
+    KONG("kong");
 
     private final String value;
 
-    OdrlAttribute(String value) {
+    Pep(String value) {
         this.value = value;
     }
 

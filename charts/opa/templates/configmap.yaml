@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "opa.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "opa.labels" . | nindent 4 }}
+data:
+  opa.yaml: |-
+    services:
+      - name: bundle-server
+        url: {{ .Values.deployment.opa.pap.url }}
+    bundles:
+      policies:
+          service: bundle-server
+          resource: {{ .Values.deployment.opa.pap.policies.resource }}
+          polling:
+            min_delay_seconds: {{ .Values.deployment.opa.pap.policies.minDelay }}
+            max_delay_seconds: {{ .Values.deployment.opa.pap.policies.maxDelay }}
+      methods:
+          service: bundle-server
+          resource: {{ .Values.deployment.opa.pap.methods.resource }}
+          polling:
+            min_delay_seconds: {{ .Values.deployment.opa.pap.methods.minDelay }}
+            max_delay_seconds: {{ .Values.deployment.opa.pap.methods.maxDelay }}
+      data:
+          service: bundle-server
+          resource: {{ .Values.deployment.opa.pap.data.resource }}
+          polling:
+            min_delay_seconds: {{ .Values.deployment.opa.pap.data.minDelay }}
+            max_delay_seconds: {{ .Values.deployment.opa.pap.data.maxDelay }}
+
+    default_decision: /policy/main/allow

@@ -11,4 +11,6 @@ import io.smallrye.config.ConfigMapping;
 public interface GeneralConfig {
 
     String organizationDid();
+
+    Pep pep();
 }

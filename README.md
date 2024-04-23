@@ -9,14 +9,14 @@ It uses the following architecture:
 ![architecture](./doc/odrl-pap.jpg)
 
 The odrl-pap offers two bundles:
-* the `methods`-bundle: It contains the rego-equivalent to certain odrl-classes. The [rego.methods-folder](src/main/resources/rego/methods) contains the initial set of methods. It can be overwritten by providing methods in a folder at `paths.rego`
+* the `methods`-bundle: It contains the rego-equivalent to certain odrl-classes. The [rego.methods-folder](src/main/resources/regomethods/methods) contains the initial set of methods. It can be overwritten by providing methods in a folder at `paths.rego`
 * the `policies`-bundle: It contains the actual policies and the `main`-policy, combining all configured policies. All request have to be evaluated against the `main` policy.
 
 ## Translation
 
-The translation between ODRL and Rego is based on the [mapping-file](mapping.json). It contains the mapping between evaluatable 
+The translation between ODRL and Rego is based on the [mapping-file](src/main/resources/mapping.json). It contains the mapping between evaluatable 
 ODRL-classes(see [OdrlAttribute.java](./src/main/java/org/fiware/odrl/mapping/OdrlAttribute.java) for all options) and a matching rego-method.
-Classes are mapped depending on their namespace and method. It allows to create domain-specific instances of odrl-classes(see [dome rego-methods](src/main/resources/rego/methods) as example)
+Classes are mapped depending on their namespace and method. It allows to create domain-specific instances of odrl-classes(see [dome rego-methods](src/main/resources/regomethods/methods) as example)
 and map them to a method.
 
 ## Getting familiar with policies
@@ -131,7 +131,7 @@ You can create a native executable using:
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
 ```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+./mvnw package -Dnative -Dquarkus.native.container-build=true -Dquarkus.container-image.build=true
 ```
 
 You can then execute your native executable with: `./target/odrl-poc-1.0.0-SNAPSHOT-runner`

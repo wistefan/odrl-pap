@@ -1,0 +1,11 @@
+apiVersion: v2
+name: apisix
+description: Dependency chart
+type: application
+version: 3.0.2
+appVersion: 3.8.0
+
+dependencies:
+  - name: apisix
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 3.0.2

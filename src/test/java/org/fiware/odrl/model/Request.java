@@ -11,5 +11,5 @@ import lombok.Data;
 public class Request {
 
     private String time;
-    private Http http;
+    private HttpRequest http;
 }
