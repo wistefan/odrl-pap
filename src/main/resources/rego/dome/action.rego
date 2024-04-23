@@ -2,10 +2,12 @@ package dome.action
 
 import rego.v1
 
-## action dome-op:create
+## dome-op:create
+# Check if the given request is a creation
 is_creation(request) if request.method == "POST"
 
-## action dome-op:set_published
+## dome-op:set_published
+# check if the entity is set to published in the request.
 is_set_published(request) if {
  # check if create or modify
  # check status field

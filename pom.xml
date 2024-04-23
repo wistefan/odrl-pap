@@ -390,6 +390,91 @@
         </profile>
         <profile>
             <id>dev</id>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-charts</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/charts</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/charts</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- render the charts -->
+            <plugin>
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
+                <version>${version.io.kokuwa.helm-maven-plugin}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>init</goal>
+                            <goal>dependency-build</goal>
+                            <goal>template</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <templateGenerateName>false</templateGenerateName>
+                            <releaseName>it</releaseName>
+                            <chartDirectory>${project.build.directory}/charts/</chartDirectory>
+                            <skipTemplate>false</skipTemplate>
+                            <additionalArguments>--output-dir ${project.build.directory}/k3s/ --name-template=it</additionalArguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>k3s-maven-plugin</artifactId>
+                <version>${version.io.kokuwa.maven.k3s-plugin}</version>
+                <configuration>
+                    <failIfExists>false</failIfExists>
+                    <manifests>${project.build.directory}/k3s/</manifests>
+                    <dockerImages>
+                        <dockerImage>
+                            ${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}
+                        </dockerImage>
+                    </dockerImages>
+                    <portBindings>
+                        <portBinding>8080:8080</portBinding>
+                        <portBinding>8081:8081</portBinding>
+                        <portBinding>80:9000</portBinding>
+                        <portBinding>8082:8082</portBinding>
+                        <portBinding>8181:8181</portBinding>
+                        <portBinding>1080:1080</portBinding>
+                    </portBindings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>prepare-test-cluster</id>
+                        <goals>
+                            <goal>run</goal>
+                            <goal>image</goal>
+                            <goal>apply</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </profile>
+        <profile>
+            <id>k8s-it</id>
             <build>
                 <plugins>
                     <plugin>
@@ -397,6 +482,15 @@
                         <version>${surefire-plugin.version}</version>
                         <configuration>
                             <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${surefire-plugin.version}</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*IT.java</include>
+                            </includes>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -446,6 +540,23 @@
                         <groupId>io.kokuwa.maven</groupId>
                         <artifactId>k3s-maven-plugin</artifactId>
                         <version>${version.io.kokuwa.maven.k3s-plugin}</version>
+                        <configuration>
+                            <failIfExists>false</failIfExists>
+                            <manifests>${project.build.directory}/k3s/</manifests>
+                            <dockerImages>
+                                <dockerImage>
+                                    ${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}
+                                </dockerImage>
+                            </dockerImages>
+                            <portBindings>
+                                <portBinding>8080:8080</portBinding>
+                                <portBinding>8081:8081</portBinding>
+                                <portBinding>80:9000</portBinding>
+                                <portBinding>8082:8082</portBinding>
+                                <portBinding>8181:8181</portBinding>
+                                <portBinding>1080:1080</portBinding>
+                            </portBindings>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>prepare-test-cluster</id>
@@ -453,24 +564,8 @@
                                     <goal>run</goal>
                                     <goal>image</goal>
                                     <goal>apply</goal>
+                                    <goal>rm</goal>
                                 </goals>
-                                <configuration>
-                                    <failIfExists>false</failIfExists>
-                                    <manifests>${project.build.directory}/k3s/</manifests>
-                                    <dockerImages>
-                                        <dockerImage>
-                                            ${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}
-                                        </dockerImage>
-                                    </dockerImages>
-                                    <portBindings>
-                                        <portBinding>8080:8080</portBinding>
-                                        <portBinding>8081:8081</portBinding>
-                                        <portBinding>80:9000</portBinding>
-                                        <portBinding>8082:8082</portBinding>
-                                        <portBinding>8181:8181</portBinding>
-                                        <portBinding>1080:1080</portBinding>
-                                    </portBindings>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

@@ -4,4 +4,5 @@ import rego.v1
 
 
 ## odrl:policyUsage
-policy_usage := time.now_ns()
+# return the current time in ms, e.g. the time that the policy is used
+policy_usage := time.now_ns() / 1000000

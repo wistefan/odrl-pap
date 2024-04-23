@@ -2,16 +2,20 @@ package odrl.action
 
 import rego.v1
 
-## action odrl:modify
+## odrl:modify
+# checks if the given request is a modification
 is_modification(request) if request.method == "PATCH"
 
-## action odrl:delete
+## odrl:delete
+# checks if the given request is a deletion
 is_deletion(request) if request.method == "DELETE"
 
-## action odrl:read
+## odrl:read
+# checks if the given request is a read operation
 is_read(request) if request.method == "GET"
 
-## action odrl:use
+## odrl:use
+# checks if the given request is a usage
 is_use(request) if {
     methods := ["DELETE", "GET", "POST", "PUT", "PATCH"]
     request.method in methods

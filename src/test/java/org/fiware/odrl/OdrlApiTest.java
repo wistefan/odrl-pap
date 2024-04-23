@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agroal.api.AgroalDataSource;
+import io.quarkus.test.TestReactiveTransaction;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -28,6 +29,7 @@ import org.fiware.odrl.resources.OpenPolicyAgentTestResource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockserver.client.MockServerClient;
@@ -154,6 +156,11 @@ public class OdrlApiTest extends OdrlTest {
     public Map<String, Object> getJsonFromResource(ObjectMapper objectMapper, String path) throws IOException {
         return objectMapper.readValue(this.getClass().getResourceAsStream(path), new TypeReference<Map<String, Object>>() {
         });
+    }
+
+    @Test
+    public void test(){
+        getTestJwt("Test Organisation Inc.", List.of("Owner"));
     }
 
     @ParameterizedTest
