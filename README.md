@@ -1,6 +1,6 @@
 # ODRL-PAP
 
-The ODRL-PAP allows to configure policies written in [ODRL](https://www.w3.org/TR/odrl-model/) to be consumed by the by translating the  [Open Policy Agent(OPA)](https://www.openpolicyagent.org).
+The ODRL-PAP allows to configure policies written in [ODRL](https://www.w3.org/TR/odrl-model/) to be consumed by the [Open Policy Agent(OPA)](https://www.openpolicyagent.org).
 Therefor it translates the ODRL in to [rego](https://www.openpolicyagent.org/docs/latest/policy-language/) equivalents and offers them via the [bundles-endpoint](https://www.openpolicyagent.org/docs/latest/management-bundles/).
 It uses the following architecture:
 ![architecture](./doc/odrl-pap.jpg)
