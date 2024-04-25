@@ -74,7 +74,7 @@ To create an invocation, the input-parameters need to be taken into account. As 
 - ```target```  requires one parameter
 - all other require none
 
-The parameters need to be defined with the ```%s``` placeholder. The methods can user other methods as input(f.e. from
+The parameters need to be defined with the ```%s``` placeholder. The methods can use other methods as input(f.e. from
 the ```helper```) but no additional parameter replacement.
 
 The mapping.json can be extended via a mapping file, configured at ```paths.mapping```. If provided, all contents will
