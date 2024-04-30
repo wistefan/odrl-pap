@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "odrl-pap.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{ include "odrl-pap.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{ include "odrl-pap.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{ include "odrl-pap.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: {{ .Chart.Name }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.deployment.odrlPap.port }}
+              protocol: TCP
+          env:
+            - name: GENERAL_ORGANIZATION_DID
+              value: {{ .Values.deployment.odrlPap.organizationId | quote }}
+            - name: QUARKUS_DATASOURCE_DB_KIND
+              value: {{ .Values.deployment.db.kind | quote }}
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: {{ .Values.deployment.db.url | quote }}
+            - name: QUARKUS_DATASOURCE_USERNAME
+              value: {{ .Values.deployment.db.username | quote }}
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              value: {{ .Values.deployment.db.password | quote }}

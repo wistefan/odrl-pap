@@ -1,0 +1,194 @@
+{
+  "action": {
+    "odrl": {
+      "modify": {
+        "regoPackage": "odrl.action as odrl_action",
+        "regoMethod": "odrl_action.is_modification(helper.http_part)"
+      },
+      "delete": {
+        "regoPackage": "odrl.action as odrl_action",
+        "regoMethod": "odrl_action.is_deletion(helper.http_part)"
+      },
+      "read": {
+        "regoPackage": "odrl.action as odrl_action",
+        "regoMethod": "odrl_action.is_read(helper.http_part)"
+      },
+      "use": {
+        "regoPackage": "odrl.action as odrl_action",
+        "regoMethod": "odrl_action.is_use(helper.http_part)"
+      }
+    },
+    "dome-op": {
+      "modify": {
+        "regoPackage": "odrl.action as odrl_action",
+        "regoMethod": "odrl_action.is_modification(helper.http_part)"
+      },
+      "write": {
+        "regoPackage": "odrl.action as odrl_action",
+        "regoMethod": "odrl_action.is_modification(helper.http_part)"
+      },
+      "read": {
+        "regoPackage": "odrl.action as odrl_action",
+        "regoMethod": "odrl_action.is_read(helper.http_part)"
+      },
+      "create": {
+        "regoPackage": "dome.action as dome_action",
+        "regoMethod": "dome_action.is_creation(helper.http_part)"
+      },
+      "set_published": {
+        "regoPackage": "dome.action as dome_action",
+        "regoMethod": "dome_action.is_set_published(helper.http_part)"
+      }
+    }
+  },
+  "operator": {
+    "odrl": {
+      "eq": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.eq_operator(%s,%s)"
+      },
+      "hasPart": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.has_part_operator(%s,%s)"
+      },
+      "gt": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.gt_operator(%s,%s)"
+      },
+      "gteq": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.gt_eq_operator(%s,%s)"
+      },
+      "isAllOf": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.is_all_of_operator(%s,%s)"
+      },
+      "isAnyOf": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.is_any_of_operator(%s,%s)"
+      },
+      "isNoneOf": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.is_none_of_operator(%s,%s)"
+      },
+      "isPartOf": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.is_part_of_operator(%s,%s)"
+      },
+      "lt": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.lt_operator(%s,%s)"
+      },
+      "lteq": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.lt_eq_operator(%s,%s)"
+      },
+      "neq": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.n_eq_operator(%s,%s)"
+      }
+    }
+  },
+  "operand": {
+    "odrl": {
+      "and": {
+        "regoPackage": "odrl.operand as odrl_operand",
+        "regoMethod": "odrl_operand.and_operand(%s)"
+      },
+      "andSequence": {
+        "regoPackage": "odrl.operand as odrl_operand",
+        "regoMethod": "odrl_operand.and_sequence_operand(%s)"
+      },
+      "or": {
+        "regoPackage": "odrl.operand as odrl_operand",
+        "regoMethod": "odrl_operand.or_operand(%s)"
+      },
+      "xone": {
+        "regoPackage": "odrl.operand as odrl_operand",
+        "regoMethod": "odrl_operand.only_one_operand(%s)"
+      }
+    }
+  },
+  "rightOperand": {
+    "odrl":{
+      "policyUsage": {
+        "regoPackage": "odrl.rightOperand as odrl_ro",
+        "regoMethod": "odrl_ro.policy_usage"
+      }
+    },
+    "dome-op": {
+      "currentParty": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.current_party(helper.verifiable_credential)"
+      }
+    }
+  },
+  "leftOperand": {
+    "odrl": {
+      "dateTime": {
+        "regoPackage": "odrl.leftOperand as odrl_lo",
+        "regoMethod": "odrl_lo.current_time"
+      }
+    },
+    "dome-op": {
+      "role": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.role(helper.verifiable_credential, helper.organization_did)"
+      },
+      "currentParty": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.current_party(helper.verifiable_credential)"
+      },
+      "relatedParty": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.related_party(helper.http_part)"
+      },
+      "owner": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.owner(dome_lo.related_party(helper.http_part))"
+      },
+      "relatedParty_role": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.related_party_role(helper.entity)"
+      },
+      "validFor_startDateTime": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.valid_for_start_date_time(helper.entity)"
+      },
+      "validFor_endDateTime": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.valid_for_end_date_time(helper.entity)"
+      }
+    },
+    "TMF-PCMA": {
+      "lifecycleStatus": {
+        "regoPackage": "dome.leftOperand as dome_lo",
+        "regoMethod": "dome_lo.life_cycle_status(helper.entity)"
+      }
+    }
+  },
+  "assignee": {
+    "odrl": {
+      "uid": {
+        "regoPackage": "odrl.assignee as odrl_assignee",
+        "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
+      },
+      "assignee": {
+        "regoPackage": "odrl.assignee as odrl_assignee",
+        "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
+      }
+    }
+  },
+  "target": {
+    "odrl": {
+      "uid": {
+        "regoPackage": "odrl.target as odrl_target",
+        "regoMethod": "odrl_target.is_target(helper.target,%s)"
+      },
+      "target": {
+        "regoPackage": "odrl.target as odrl_target",
+        "regoMethod": "odrl_target.is_target(helper.target,%s)"
+      }
+    }
+  }
+}

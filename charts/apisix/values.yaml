@@ -1,0 +1,45 @@
+apisix:
+  controlPlane:
+    enabled: true
+  ingressController:
+    enabled: false
+  etcd:
+    enabled: true
+    persistence:
+      enabled: false
+  dataPlane:
+    service:
+      ports:
+        http: 8082
+        https: 8443
+    extraEnvVars: []
+    extraConfig:
+      deployment:
+        role_data_plane:
+          config_provider: yaml
+    extraVolumes:
+      - name: routes
+        configMap:
+          name: apisix-routes
+    extraVolumeMounts:
+      - name: routes
+        mountPath: /usr/local/apisix/conf/apisix.yaml
+        subPath: apisix.yaml
+  extraDeploy:
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: apisix-routes
+      data:
+        apisix.yaml: |-
+          routes:
+            - uri: /*
+              upstream:
+                  nodes:
+                      "mockserver:1080": 1
+                  type: roundrobin
+              plugins:
+                opa:
+                  host: "http://it-opa:8181"
+                  policy: policy/main
+          #END

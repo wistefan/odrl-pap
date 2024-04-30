@@ -1,0 +1,15 @@
+postgresql:
+  primary:
+    persistence:
+      enabled: false
+    initdb:
+      scripts:
+        enable.sh: |
+          psql postgresql://postgres:${POSTGRES_PASSWORD}@localhost:5432 -c "CREATE DATABASE pap;"
+  readReplicas:
+    persistence:
+      enabled: false
+  global:
+    postgresql:
+      auth:
+        postgresPassword: postgres

@@ -1,0 +1,30 @@
+deployment:
+  image:
+    repository: openpolicyagent/opa
+    # -- tag of the image to be used
+    tag: 0.63.0
+    # -- specification of the image pull policy
+    pullPolicy: IfNotPresent
+  logLevel: DEBUG
+  opa:
+    port: 8181
+    logLevel: debug
+    pap:
+      url: http://it-odrl-pap:8080/bundles/service/v1
+      policies:
+        resource: policies.tar.gz
+        minDelay: 2
+        maxDelay: 4
+      methods:
+        resource: methods.tar.gz
+        minDelay: 1
+        maxDelay: 3
+      data:
+        resource: data.tar.gz
+        minDelay: 1
+        maxDelay: 15
+service:
+  port: 8181
+  type: LoadBalancer
+
+fullnameOverride:

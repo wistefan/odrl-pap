@@ -1,0 +1,6 @@
+mockserver:
+  service:
+    # we need it accessible from the tests
+    type: LoadBalancer
+    port: 1080
+  releasenameOverride: mockserver

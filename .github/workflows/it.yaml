@@ -1,0 +1,24 @@
+name: IT
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+          java-package: jdk
+
+
+      - name: Run integration tests
+        run: |
+          mvn clean package -DskipTests -Dnative -Dquarkus.container-image.build=true
+          mvn clean install -Pk8s-it

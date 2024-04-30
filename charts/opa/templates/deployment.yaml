@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "opa.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{ include "opa.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{ include "opa.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{ include "opa.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: {{ .Chart.Name }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.deployment.opa.port }}
+              protocol: TCP
+          args:
+            - "run"
+            - "--ignore=.*"  # exclude hidden dirs created by Kubernetes
+            - "--server"
+            - "-l"
+            - {{ .Values.deployment.opa.logLevel | quote }}
+            - "-c"
+            - "/config/opa.yaml"
+            - "--addr"
+            - "0.0.0.0:{{ .Values.deployment.opa.port }}"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config/
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "opa.fullname" . }}
+            items:
+              - key: opa.yaml
+                path: opa.yaml

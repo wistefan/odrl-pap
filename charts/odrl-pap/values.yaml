@@ -1,0 +1,20 @@
+deployment:
+  image:
+    repository: quay.io/wi_stefan/odrl-pap
+    # -- tag of the image to be used
+    tag: 1.0.0-SNAPSHOT
+    # -- specification of the image pull policy
+    pullPolicy: IfNotPresent
+  logLevel: DEBUG
+  odrlPap:
+    organizationId: did:web:test-org
+    port: 8080
+  db:
+    kind: postgresql
+    url: jdbc:postgresql://it-postgresql:5432/pap
+    username: postgres
+    password: postgres
+
+service:
+  port: 8080
+  type: LoadBalancer

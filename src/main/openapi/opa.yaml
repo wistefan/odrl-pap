@@ -424,7 +424,7 @@ paths:
         description: The test of the query (in JSON format)
         required: true
         content:
-          application/yaml:
+          application/json:
             schema:
               $ref: '#/components/schemas/qSchema'
       tags:
