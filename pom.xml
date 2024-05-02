@@ -19,7 +19,7 @@
         <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
         <quarkus.container-image.tag>${project.version}</quarkus.container-image.tag>
         <quarkus.platform.version>3.8.2</quarkus.platform.version>
-        <quarkus.native.additional-build-args>--initialize-at-run-time=org.hibernate.type.format.jakartajson.JakartaJsonIntegration,org.fiware.odrl.rego.PolicyRepository
+        <quarkus.native.additional-build-args>--initialize-at-run-time=org.hibernate.type.format.jakartajson.JakartaJsonIntegration\,org.fiware.odrl.rego.PolicyRepository
         </quarkus.native.additional-build-args>
 
         <skipITs>true</skipITs>
