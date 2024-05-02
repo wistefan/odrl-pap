@@ -481,6 +481,7 @@
                                 <portBinding>8181:8181</portBinding>
                                 <portBinding>1080:1080</portBinding>
                             </portBindings>
+                            <timeout>600s</timeout>
                         </configuration>
                         <executions>
                             <execution>

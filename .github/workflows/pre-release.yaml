@@ -61,7 +61,7 @@ jobs:
       - name: Build&Push image
         run: |
           mvn versions:set -DnewVersion=${{ needs.generate-version.outputs.version }}
-          mvn clean package verify deploy -DskipTests -Pk8s-it -Dquarkus.package.type=native -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
+          mvn clean install deploy -DskipTests -Pk8s-it -Dquarkus.package.type=native -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
 
   git-release:
     needs: ["generate-version","build-and-push"]
