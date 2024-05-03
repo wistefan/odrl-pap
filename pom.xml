@@ -30,6 +30,7 @@
         <version.org.testcontainers>1.19.6</version.org.testcontainers>
         <version.org.jboss.resteasy>6.2.8.Final</version.org.jboss.resteasy>
         <version.org.openapitools.maven-generator-plugin>7.4.0</version.org.openapitools.maven-generator-plugin>
+        <version.org.eclipse.jkube.kubernetes-maven-plugin>1.10.1</version.org.eclipse.jkube.kubernetes-maven-plugin>
     </properties>
     <dependencyManagement>
         <dependencies>
