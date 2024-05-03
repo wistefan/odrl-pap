@@ -561,6 +561,31 @@
                         </executions>
                     </plugin>
                     <plugin>
+                        <groupId>org.eclipse.jkube</groupId>
+                        <artifactId>kubernetes-maven-plugin</artifactId>
+                        <version>${version.org.eclipse.jkube.kubernetes-maven-plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>test-prep</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <images>
+                                <!-- just to re-tag for the test setup -->
+                                <image>
+                                    <name>quay.io/wi_stefan/odrl-pap:test</name>
+                                    <build>
+                                        <from>${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}</from>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>io.kokuwa.maven</groupId>
                         <artifactId>k3s-maven-plugin</artifactId>
                         <version>${version.io.kokuwa.maven.k3s-plugin}</version>
@@ -569,7 +594,7 @@
                             <manifests>${project.build.directory}/k3s/</manifests>
                             <dockerImages>
                                 <dockerImage>
-                                    ${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}
+                                    quay.io/wi_stefan/odrl-pap:test
                                 </dockerImage>
                             </dockerImages>
                             <portBindings>
