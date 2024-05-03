@@ -19,7 +19,7 @@
         <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
         <quarkus.container-image.tag>${project.version}</quarkus.container-image.tag>
         <quarkus.platform.version>3.8.2</quarkus.platform.version>
-        <quarkus.native.additional-build-args>--initialize-at-run-time=org.hibernate.type.format.jakartajson.JakartaJsonIntegration
+        <quarkus.native.additional-build-args>--initialize-at-run-time=org.hibernate.type.format.jakartajson.JakartaJsonIntegration\,org.fiware.odrl.rego.PolicyRepository
         </quarkus.native.additional-build-args>
 
         <skipITs>true</skipITs>
@@ -30,6 +30,7 @@
         <version.org.testcontainers>1.19.6</version.org.testcontainers>
         <version.org.jboss.resteasy>6.2.8.Final</version.org.jboss.resteasy>
         <version.org.openapitools.maven-generator-plugin>7.4.0</version.org.openapitools.maven-generator-plugin>
+        <version.org.eclipse.jkube.kubernetes-maven-plugin>1.10.1</version.org.eclipse.jkube.kubernetes-maven-plugin>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -481,6 +482,7 @@
                                 <portBinding>8181:8181</portBinding>
                                 <portBinding>1080:1080</portBinding>
                             </portBindings>
+                            <timeout>600</timeout>
                         </configuration>
                         <executions>
                             <execution>
@@ -554,10 +556,35 @@
                                     <releaseName>it</releaseName>
                                     <chartDirectory>${project.build.directory}/charts/</chartDirectory>
                                     <skipTemplate>false</skipTemplate>
-                                    <additionalArguments>--output-dir ${project.build.directory}/k3s/ --name-template=it</additionalArguments>
+                                    <additionalArguments>--output-dir ${project.build.directory}/k3s/ --skip-tests --name-template=it</additionalArguments>
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.eclipse.jkube</groupId>
+                        <artifactId>kubernetes-maven-plugin</artifactId>
+                        <version>${version.org.eclipse.jkube.kubernetes-maven-plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>test-prep</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <images>
+                                <!-- just to re-tag for the test setup -->
+                                <image>
+                                    <name>quay.io/wi_stefan/odrl-pap:test</name>
+                                    <build>
+                                        <from>${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}</from>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>io.kokuwa.maven</groupId>
@@ -568,7 +595,7 @@
                             <manifests>${project.build.directory}/k3s/</manifests>
                             <dockerImages>
                                 <dockerImage>
-                                    ${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}
+                                    quay.io/wi_stefan/odrl-pap:test
                                 </dockerImage>
                             </dockerImages>
                             <portBindings>
@@ -579,6 +606,7 @@
                                 <portBinding>8181:8181</portBinding>
                                 <portBinding>1080:1080</portBinding>
                             </portBindings>
+                            <timeout>600</timeout>
                         </configuration>
                         <executions>
                             <execution>
