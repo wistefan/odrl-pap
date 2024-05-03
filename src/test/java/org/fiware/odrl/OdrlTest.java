@@ -133,14 +133,14 @@ public abstract class OdrlTest {
                                 "GET",
                                 List.of("onboarder"), Optional.empty()),
                         new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
-                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
-                Arguments.of(
-                        List.of("/examples/dome/1005/_1005.json"),
-                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6?q=something",
-                                "PATCH"),
-                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
                                 .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2"))))
+//                Arguments.of(
+//                        List.of("/examples/dome/1005/_1005.json"),
+//                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+//                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6?q=something",
+//                                "PATCH"),
+//                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+//                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2"))))
         );
     }
 

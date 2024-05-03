@@ -58,10 +58,19 @@ jobs:
       - name: Log into quay.io
         run: docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" ${{ env.REGISTRY }}
 
-      - name: Build&Push image
+      - name: Build image
         run: |
           mvn versions:set -DnewVersion=${{ needs.generate-version.outputs.version }}
-          mvn clean package verify deploy -DskipTests -Pk8s-it -Dquarkus.package.type=native -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
+          mvn clean package -Dquarkus.package.type=native -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
+
+      - name: Test image
+        run: | 
+          mvn integration-test -Pk8s-it  -DskipTests -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}" 
+
+      - name: Push
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}
+
 
   git-release:
     needs: ["generate-version","build-and-push"]
