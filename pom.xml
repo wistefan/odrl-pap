@@ -555,7 +555,7 @@
                                     <releaseName>it</releaseName>
                                     <chartDirectory>${project.build.directory}/charts/</chartDirectory>
                                     <skipTemplate>false</skipTemplate>
-                                    <additionalArguments>--output-dir ${project.build.directory}/k3s/ --name-template=it</additionalArguments>
+                                    <additionalArguments>--output-dir ${project.build.directory}/k3s/ --skip-tests --name-template=it</additionalArguments>
                                 </configuration>
                             </execution>
                         </executions>
