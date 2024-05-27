@@ -62,6 +62,13 @@
 | helper | ## | entity | the entity provided as http-body |
 | helper | ## | target | the target of the request, found as the last part of the path |
 
+## vc
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| leftOperand | vc:role | role(verifiable_credential,organization_id) | retrieves the roles from the credential, that target the current organization |
+| leftOperand | vc:currentParty | current_party(credential) | the current (organization)party, |
+
 ## ngsild
 
 | ODRL Class | ODRL Key | Rego-Method | Description |

@@ -124,10 +124,20 @@
     }
   },
   "leftOperand": {
+    "vc": {
+      "role": {
+        "regoPackage": "vc.leftOperand as vc_lo",
+        "regoMethod": "vc_lo.role(helper.verifiable_credential, helper.organization_did)"
+      },
+      "currentParty": {
+        "regoPackage": "vc.leftOperand as vc_lo",
+        "regoMethod": "vc_lo.current_party(helper.verifiable_credential)"
+      }
+    },
     "ngsi-ld": {
       "entityType": {
         "regoPackage": "ngsild.leftOperand as ngsild_lo",
-        "regoMethod": "odrl_lo.entity_type(helper.http_part)"
+        "regoMethod": "ngsild_lo.entity_type(helper.http_part)"
       }
     },
     "odrl": {
