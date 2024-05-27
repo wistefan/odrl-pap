@@ -124,6 +124,12 @@
     }
   },
   "leftOperand": {
+    "ngsi-ld": {
+      "entityType": {
+        "regoPackage": "ngsild.leftOperand as ngsild_lo",
+        "regoMethod": "odrl_lo.entity_type(helper.http_part)"
+      }
+    },
     "odrl": {
       "dateTime": {
         "regoPackage": "odrl.leftOperand as odrl_lo",
