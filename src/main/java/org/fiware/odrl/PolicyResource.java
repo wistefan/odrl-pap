@@ -43,11 +43,6 @@ public class PolicyResource implements PolicyApi {
         if (id.equals("main")) {
             return Response.status(HttpStatus.SC_CONFLICT).entity("Policy `main` cannot be manually modified.").build();
         }
-        try {
-            log.warn("The config: {}", new ObjectMapper().writer().writeValueAsString(mappingConfiguration));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         OdrlMapper odrlMapper = new OdrlMapper(objectMapper, mappingConfiguration);
         MappingResult mappingResult = odrlMapper.mapOdrl(policy);
         if (mappingResult.isFailed()) {
