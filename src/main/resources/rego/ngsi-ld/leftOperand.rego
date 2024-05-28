@@ -7,7 +7,7 @@ type_from_path(path) := type if {
 	path_without_query := split(path, "?")[0]
 	path_elements := split(path_without_query, "/")
 	id_elements := split(path_elements[count(path_elements) - 1], ":")
-    type = id_elements[2]
+    type = id_elements[2]; trace(id_elements)
 }
 
 # helper to retrieve the type from the body
@@ -16,9 +16,9 @@ type_from_body(body) := body.type
 ## ngsi-ld:entityType
 # retrieves the type from an entity, either from the request path or from the body
 entity_type(http_part) := tfp if {
-	tfp = type_from_path(http_part.path)
+	tfp = type_from_path(http_part.path); trace(tfp)
 } else := tfb if {
-	tfb = type_from_body(http_part.body)
+	tfb = type_from_body(http_part.body); trace(tfb)
 }
 
 ## ngsi-ld:<property>
