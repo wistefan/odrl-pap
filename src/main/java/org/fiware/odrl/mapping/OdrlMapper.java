@@ -151,20 +151,9 @@ public class OdrlMapper {
         }
     }
 
-
     private void mapAssignee(Object theAssignee) throws MappingException {
-        NamespacedValue assignee = getNamespaced(ASSIGNEE_KEY);
-
-        try {
-            String assigneeString = getStringOrByKey(theAssignee, ID_KEY);
-            if(isNamespaced(assigneeString)) {
-                assignee = getNamespaced(assigneeString);
-            }
-
-            mapStringAssignee(assignee, assigneeString);
+        if (mapStringAssignee(theAssignee)) {
             return;
-        } catch (MappingException e) {
-            // no-op, its a map
         }
 
         Map<String, Object> assigneeMap = convertToMap(theAssignee);
@@ -397,10 +386,40 @@ public class OdrlMapper {
         throw new MappingException(String.format("Was not able to extract a valid %s.", theKey));
     }
 
-    private void mapStringAssignee(NamespacedValue assignee, String assigneeId) throws MappingException {
-        RegoMethod regoMethod = getFromConfig(OdrlAttribute.ASSIGNEE, assignee);
-        mappingResult.addImport(regoMethod.regoPackage());
-        mappingResult.addRule(String.format(regoMethod.regoMethod(), String.format(STRING_ESCAPE_TEMPLATE, assigneeId)));
+    private boolean mapStringAssignee(Object theAssignee) throws MappingException {
+        boolean result = false;
+        var assigneeString = "";
+
+        if (theAssignee instanceof String theString) {
+            assigneeString = theString;
+            result = true;
+        } else {
+            Map<String, Object> assigneeMap = convertToMap(theAssignee);
+            if (assigneeMap.containsKey(VALUE_KEY) && assigneeMap.get(VALUE_KEY) instanceof String theString) {
+                assigneeString = theString;
+                result = true;
+            } else if (assigneeMap.containsKey(ID_KEY) && assigneeMap.get(ID_KEY) instanceof String theString) {
+                assigneeString = theString;
+                result = true;
+            }
+        }
+
+        if (result) {
+            NamespacedValue namespacedAssignee = null;
+            var assigneeId = "";
+            try {
+                getFromConfig(OdrlAttribute.ASSIGNEE, getNamespaced(assigneeString));
+                namespacedAssignee = getNamespaced(assigneeString);
+            } catch (MappingException mappingException) {
+                namespacedAssignee = getNamespaced(ASSIGNEE_KEY);
+                assigneeId = assigneeString;
+            }
+            RegoMethod regoMethod = getFromConfig(OdrlAttribute.ASSIGNEE, namespacedAssignee);
+            mappingResult.addImport(regoMethod.regoPackage());
+            mappingResult.addRule(String.format(regoMethod.regoMethod(), String.format(STRING_ESCAPE_TEMPLATE, assigneeId)));
+        }
+
+        return result;
     }
 
     private void mapStringTarget(NamespacedValue target, String targetId) throws MappingException {
@@ -413,7 +432,7 @@ public class OdrlMapper {
     private void mapAssigneeParty(Map<String, Object> theParty) throws MappingException {
         Optional<Object> optionalUid = Optional.ofNullable(theParty.get(UID_KEY));
         if (optionalUid.isPresent() && optionalUid.get() instanceof String uid) {
-            mapStringAssignee(getNamespaced(ASSIGNEE_KEY), uid);
+            mapStringAssignee(uid);
         } else {
             mappingResult.addFailure("The party does not contain a valid uid.");
         }
