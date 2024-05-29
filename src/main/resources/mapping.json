@@ -192,6 +192,10 @@
       "assignee": {
         "regoPackage": "odrl.assignee as odrl_assignee",
         "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
+      },
+      "any": {
+        "regoPackage": "odrl.assignee as odrl_assignee",
+        "regoMethod": "odrl_assignee.is_any"
       }
     }
   },

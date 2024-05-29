@@ -156,7 +156,12 @@ public class OdrlMapper {
         NamespacedValue assignee = getNamespaced(ASSIGNEE_KEY);
 
         try {
-            mapStringAssignee(assignee, getStringOrByKey(theAssignee, ID_KEY));
+            String assigneeString = getStringOrByKey(theAssignee, ID_KEY);
+            if(isNamespaced(assigneeString)) {
+                assignee = getNamespaced(assigneeString);
+            }
+
+            mapStringAssignee(assignee, assigneeString);
             return;
         } catch (MappingException e) {
             // no-op, its a map
