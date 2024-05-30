@@ -13,7 +13,7 @@ type_from_path(path) := tfe if {
     query := split(path, "?")[1]
     query_parts := split(query, "&")
     type_query := [query_part | some query_part in query_parts; contains(query_part, "type=")]
-    tfq = split(type_query, "=")[1]
+    tfq = split(type_query[0], "=")[1]
 }
 
 # helper to retrieve the type from the body
