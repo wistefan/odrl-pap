@@ -36,7 +36,11 @@ decoded_token_payload := decoded_authorization[1]
 
 ##
 # the verifiable credential received as part of the token
-verifiable_credential := decoded_token_payload.verifiableCredential
+verifiable_credential := verfiableCredential if{
+   verfiableCredential = decoded_token_payload.verifiableCredential
+} else := vc if {
+    vc = decoded_token_payload.vc
+}
 
 ##
 # the issuer of the credential

@@ -61,3 +61,20 @@
 | helper | ## | token | the unprefixed bearer token |
 | helper | ## | entity | the entity provided as http-body |
 | helper | ## | target | the target of the request, found as the last part of the path |
+
+## vc
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| leftOperand | vc:role | role(verifiable_credential,organization_id) | retrieves the roles from the credential, that target the current organization |
+| leftOperand | vc:currentParty | current_party(credential) | the current (organization)party, |
+
+## ngsild
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| leftOperand | ngsi-ld:entityType | entity_type(http_part) | retrieves the type from an entity, either from the request path or from the body |
+| leftOperand | ngsi-ld:<property> | # | retrieves the value of the property, only applies to properties of type "Property". The method should be concretized in the mapping.json, to match a concrete property. |
+| leftOperand | ngsi-ld:<property>_observedAt | # | retrieves the observedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
+| leftOperand | ngsi-ld:<property>_modifiedAt | # | retrieves the modifiedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
+| leftOperand | ngsi-ld:<relationship> | # | retrieves the object of the relationship, only applies to properties of type "Relationship". The method should be concretized in the mapping.json, to match a concrete property. |
