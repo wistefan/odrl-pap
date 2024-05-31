@@ -44,7 +44,6 @@ public abstract class OdrlTest {
 
     public void mockEntity(MockServerClient mockServerClient, MockEntity mockEntity) {
 
-
         Map<String, Object> theOffering = Map.of("id", mockEntity.id(), "relatedParty",
                 mockEntity.relatedParty());
         mockServerClient
@@ -62,6 +61,12 @@ public abstract class OdrlTest {
 
     public static Stream<Arguments> validCombinations() {
         return Stream.of(
+                Arguments.of(
+                        List.of("/examples/ngsi-ld/types/types.json"),
+                        getRequest("urn:ngsi-ld:participant:1",
+                                "/ngsi-ld/v1/entities/urn:ngsi-ld:Marketplace:test",
+                                "GET"),
+                        new MockEntity().id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2").relatedParty(List.of(new RelatedParty()))),
                 Arguments.of(
                         List.of("/examples/dome/1000/_1000.json"),
                         getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
@@ -155,6 +160,7 @@ public abstract class OdrlTest {
 
     public static Stream<Arguments> odrlPolicyPath() {
         return Stream.of(
+                Arguments.of("/examples/ngsi-ld/types/types.json"),
                 Arguments.of("/examples/dome/1000/_1000.json"),
                 Arguments.of("/examples/dome/1001/_1001.json"),
                 Arguments.of("/examples/dome/1001-2/_1001-2.json"),
