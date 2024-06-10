@@ -34,10 +34,6 @@ owner(related_party) := o_id if {
 # return the role from the related party of an entity
 related_party_role(entity) := related_party(entity).role
 
-## TMF-PCMA:lifecycleStatus
-# return the lifeCycleStatus of a given entity
-life_cycle_status(entity) := entity.lifeCycleStatus
-
 ## dome-op:validFor_endDateTime
 # return the end of the validity of an entity
 valid_for_end_date_time(entity) := time.parse_rfc3339_ns(entity.validFor.endDataTime)
