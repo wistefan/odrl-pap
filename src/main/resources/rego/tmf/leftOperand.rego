@@ -14,7 +14,7 @@ resource_type(http_part) := resource if {
     # reverse the path to get the potential id element first
     reversed := array.reverse(path_elements)
     # remove the (potential) id element from the path array
-    non_id_parts := [non_id_part | some path_element in reversed; not contains(path_element, "ngsi-ld")]
+    non_id_parts := [path_element | some path_element in reversed; not contains(path_element, "ngsi-ld")]
     # after removal of the id, the resource is the first one to be retrieved
     resource = non_id_parts[0]
 }
