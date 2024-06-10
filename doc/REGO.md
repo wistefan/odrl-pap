@@ -10,7 +10,6 @@
 | leftOperand | dome-op:relatedParty | related_party(http_part) | get the entity from tm-forum and extract related party |
 | leftOperand | dome-op:owner | owner(related_party) | filter the given list of related_party(ies) for one with role "Owner" |
 | leftOperand | dome-op:relatedParty_role | related_party_role(entity) | return the role from the related party of an entity |
-| leftOperand | TMF-PCMA:lifecycleStatus | life_cycle_status(entity) | return the lifeCycleStatus of a given entity |
 | leftOperand | dome-op:validFor_endDateTime | valid_for_end_date_time(entity) | return the end of the validity of an entity |
 | leftOperand | dome-op:validFor_startDateTime | valid_for_start_date_time(entity) | return the start of the validity of an entity |
 | action | dome-op:create | is_creation(request) | Check if the given request is a creation |
@@ -68,6 +67,7 @@
 | --- | --- | --- | --- |
 | leftOperand | vc:role | role(verifiable_credential,organization_id) | retrieves the roles from the credential, that target the current organization |
 | leftOperand | vc:currentParty | current_party(credential) | the current (organization)party, |
+| assignee | odrl:any | is_any | allows for any user |
 
 ## ngsild
 
@@ -78,3 +78,10 @@
 | leftOperand | ngsi-ld:<property>_observedAt | # | retrieves the observedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<property>_modifiedAt | # | retrieves the modifiedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<relationship> | # | retrieves the object of the relationship, only applies to properties of type "Relationship". The method should be concretized in the mapping.json, to match a concrete property. |
+
+## tmf
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| leftOperand | tmf:lifecycleStatus | life_cycle_status(entity) | return the lifeCycleStatus of a given entity |
+| leftOperand | tmf:resource | resource_type(http_part) | retrieves the type of the resource from the path |

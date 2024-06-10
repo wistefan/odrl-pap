@@ -30,7 +30,7 @@
       ]
     },
     "odrl:assignee": {
-      "@id": "odrl:any"
+      "@id": "vc:any"
     },
     "odrl:action": {
       "@id": "dome-op:read"
