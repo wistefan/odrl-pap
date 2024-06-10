@@ -9,7 +9,7 @@ life_cycle_status(entity) := entity.lifeCycleStatus
 ## tmf:resource
 # retrieves the type of the resource from the path
 resource_type(http_part) := resource if {
-    path_without_query := split(path, "?")[0]
+    path_without_query := split(http_part.path, "?")[0]
     path_elements := split(path_without_query, "/")
     # reverse the path to get the potential id element first
     reversed := array.reverse(path_elements)
