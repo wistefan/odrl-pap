@@ -176,10 +176,14 @@
         "regoMethod": "dome_lo.valid_for_end_date_time(helper.entity)"
       }
     },
-    "TMF-PCMA": {
+    "tmf": {
       "lifecycleStatus": {
-        "regoPackage": "dome.leftOperand as dome_lo",
-        "regoMethod": "dome_lo.life_cycle_status(helper.entity)"
+        "regoPackage": "tmf.leftOperand as tmf_lo",
+        "regoMethod": "tmf_lo.life_cycle_status(helper.entity)"
+      },
+      "resource": {
+        "regoPackage": "tmf.leftOperand as tmf_lo",
+        "regoMethod": "tmf_lo.resource_type(helper.http_part)"
       }
     }
   },
@@ -192,10 +196,12 @@
       "assignee": {
         "regoPackage": "odrl.assignee as odrl_assignee",
         "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
-      },
+      }
+    },
+    "vc": {
       "any": {
-        "regoPackage": "odrl.assignee as odrl_assignee",
-        "regoMethod": "odrl_assignee.is_any"
+        "regoPackage": "vc.assignee as vc_assignee",
+        "regoMethod": "vc_assignee.is_any"
       }
     }
   },
