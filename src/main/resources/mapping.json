@@ -138,6 +138,10 @@
       "currentParty": {
         "regoPackage": "vc.leftOperand as vc_lo",
         "regoMethod": "vc_lo.current_party(helper.verifiable_credential)"
+      },
+      "type": {
+        "regoPackage": "vc.leftOperand as vc_lo",
+        "regoMethod": "vc_lo.type(helper.verifiable_credential)"
       }
     },
     "ngsi-ld": {
