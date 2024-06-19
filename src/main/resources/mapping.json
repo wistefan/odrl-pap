@@ -39,6 +39,12 @@
         "regoPackage": "dome.action as dome_action",
         "regoMethod": "dome_action.is_set_published(helper.http_part)"
       }
+    },
+    "tmf": {
+      "create": {
+        "regoPackage": "tmf.action as tmf_action",
+        "regoMethod": "tmf_action.is_creation(helper.http_part)"
+      }
     }
   },
   "operator": {
