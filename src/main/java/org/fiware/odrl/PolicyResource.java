@@ -82,7 +82,7 @@ public class PolicyResource implements PolicyApi {
                         .odrl(policyEntry.getValue().odrl().policy())
                         .rego(policyEntry.getValue().rego().policy())).toList();
         try {
-            log.warn(new ObjectMapper().writeValueAsString(policyList));
+            log.warn(objectMapper.writeValueAsString(policyList));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
