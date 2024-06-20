@@ -26,6 +26,21 @@ paths:
               schema:
                 type: string
               description: location of the created policy
+    get:
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      operationId: getPolicies
+      summary: Get the policies in the ODRL-Format
+      responses:
+        '200':
+          description: Successfully retrieved the policis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyList'
+        '404':
+          description: No such policy exists
   /policy/{id}:
     put:
       parameters:
@@ -86,6 +101,20 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Uid'
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 0
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 25
   schemas:
     Policy:
       type: object
@@ -96,6 +125,10 @@ components:
           type: string
         rego:
           type: string
+    PolicyList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Policy'
     Uid:
       type: string
       format: https://datatracker.ietf.org/doc/html/rfc3987
