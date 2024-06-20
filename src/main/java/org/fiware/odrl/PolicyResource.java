@@ -79,6 +79,7 @@ public class PolicyResource implements PolicyApi {
                 .getPolicies(Optional.ofNullable(page).orElse(0), Optional.ofNullable(pageSize).orElse(25))
                 .entrySet()
                 .stream()
+                .peek(e -> log.warn(e.getKey()))
                 .map(policyEntry -> new Policy()
                         .id(policyEntry.getKey())
                         .odrl(policyEntry.getValue().odrl().policy())
