@@ -3,6 +3,7 @@ package org.fiware.odrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -36,11 +37,13 @@ public class PolicyResource implements PolicyApi {
     @Inject
     private PolicyRepository policyRepository;
 
+    @Transactional
     @Override
     public Response createPolicy(Map<String, Object> requestBody) {
         return createPolicyWithId(policyRepository.generatePolicyId(), requestBody);
     }
 
+    @Transactional
     @Override
     public Response createPolicyWithId(String id, Map<String, Object> policy) {
         if (id.equals("main")) {
@@ -68,12 +71,15 @@ public class PolicyResource implements PolicyApi {
         return Response.noContent().build();
     }
 
+
+    @Transactional
     @Override
     public Response getPolicies(Integer page, Integer pageSize) {
         List<Policy> policyList = policyRepository
                 .getPolicies(Optional.ofNullable(page).orElse(0), Optional.ofNullable(pageSize).orElse(25))
                 .entrySet()
                 .stream()
+                .peek(e ->)
                 .map(policyEntry -> new Policy()
                         .id(policyEntry.getKey())
                         .odrl(policyEntry.getValue().odrl().policy())
@@ -81,6 +87,8 @@ public class PolicyResource implements PolicyApi {
         return Response.ok(policyList).build();
     }
 
+
+    @Transactional
     @Override
     public Response getPolicyById(String id) {
         return policyRepository
