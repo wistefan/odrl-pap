@@ -141,7 +141,7 @@
       },
       "type": {
         "regoPackage": "vc.leftOperand as vc_lo",
-        "regoMethod": "vc_lo.type(helper.verifiable_credential)"
+        "regoMethod": "vc_lo.types(helper.verifiable_credential)"
       }
     },
     "ngsi-ld": {
