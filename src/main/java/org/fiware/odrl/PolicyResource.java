@@ -37,13 +37,11 @@ public class PolicyResource implements PolicyApi {
     @Inject
     private PolicyRepository policyRepository;
 
-    @Transactional
     @Override
     public Response createPolicy(Map<String, Object> requestBody) {
         return createPolicyWithId(policyRepository.generatePolicyId(), requestBody);
     }
 
-    @Transactional
     @Override
     public Response createPolicyWithId(String id, Map<String, Object> policy) {
         if (id.equals("main")) {
