@@ -1,5 +1,7 @@
 package org.fiware.odrl.rego;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
@@ -57,22 +59,28 @@ public class PersistentPolicyRepository implements PolicyRepository {
         return generatedId;
     }
 
-    @Transactional
     public Map<String, PolicyWrapper> getPolicies() {
         Map<String, PolicyWrapper> policies = new HashMap<>();
 
         List<PolicyEntity> policyEntityList = PolicyEntity.listAll();
         policyEntityList.forEach(e -> policies.put(e.getPolicyId(), entityMapper.map(e)));
-
+        try {
+            log.warn(new ObjectMapper().writeValueAsString(policyEntityList));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return ImmutableMap.copyOf(policies);
     }
 
-    @Transactional
     public Map<String, PolicyWrapper> getPolicies(int page, int pageSize) {
         PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.findAll();
         List<PolicyEntity> policyEntityList = policyEntities.page(Page.of(page, pageSize)).list();
-
-        return policyEntityList.stream().collect(Collectors.toMap(e -> e.getPolicyId(), e -> entityMapper.map(e), (e1, e2) -> e1));
+        try {
+            log.warn(new ObjectMapper().writeValueAsString(policyEntityList));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return policyEntityList.stream().collect(Collectors.toMap(PolicyEntity::getPolicyId, e -> entityMapper.map(e), (e1, e2) -> e1));
     }
 
     @Override
