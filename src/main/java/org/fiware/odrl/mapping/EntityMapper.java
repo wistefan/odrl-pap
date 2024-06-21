@@ -21,8 +21,8 @@ public class EntityMapper {
     public PolicyEntity map(String id, PolicyWrapper policyWrapper) {
         PolicyEntity policy = new PolicyEntity();
         policy.setPolicyId(id);
-        policy.setRego(policyWrapper.rego().policy());
-        policy.setOdrl(policyWrapper.odrl().policy());
+        policy.setRego(policyWrapper.rego());
+        policy.setOdrl(policyWrapper.odrl());
         return policy;
     }
 
