@@ -1,10 +1,13 @@
-package org.fiware.odrl.rego;
+package org.fiware.odrl.persistence;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.Data;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @RegisterForReflection
-public record RegoPolicy(String policy) {
+@Data
+public class Policy {
+    private String policy;
 }

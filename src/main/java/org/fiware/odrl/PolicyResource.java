@@ -78,8 +78,8 @@ public class PolicyResource implements PolicyApi {
                 .stream()
                 .map(policyEntry -> new Policy()
                         .id(policyEntry.getKey())
-                        .odrl(policyEntry.getValue().odrl().getPolicy())
-                        .rego(policyEntry.getValue().rego().getPolicy())).toList();
+                        .odrl(policyEntry.getValue().odrl().policy())
+                        .rego(policyEntry.getValue().rego().policy())).toList();
 
         return Response.ok(policyList).build();
     }
@@ -91,8 +91,8 @@ public class PolicyResource implements PolicyApi {
                 .getPolicy(id)
                 .map(pw -> new Policy()
                         .id(id)
-                        .odrl(pw.odrl().getPolicy())
-                        .rego(pw.rego().getPolicy()))
+                        .odrl(pw.odrl().policy())
+                        .rego(pw.rego().policy()))
                 .map(Response::ok)
                 .map(Response.ResponseBuilder::build)
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());

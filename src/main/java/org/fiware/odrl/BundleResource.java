@@ -87,7 +87,7 @@ public class BundleResource implements BundlesApi {
         String mainPolicy = getMainPolicy(policies);
 
         var toZip = policies.entrySet().stream()
-                .collect(Collectors.toMap(e -> String.format("policy.%s", e.getKey()), e -> e.getValue().rego().getPolicy(), (e1, e2) -> e1));
+                .collect(Collectors.toMap(e -> String.format("policy.%s", e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
         toZip.put("policy.main", mainPolicy);
         try {
             return Response.ok(zipMap(toZip, "rego", objectMapper.writeValueAsString(getManifest(toZip)))).build();
