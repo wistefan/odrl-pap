@@ -3,6 +3,7 @@ package org.fiware.odrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -16,7 +17,10 @@ import org.fiware.odrl.rego.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
 import org.fiware.odrl.rego.RegoPolicy;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
@@ -64,6 +68,22 @@ public class PolicyResource implements PolicyApi {
         policyRepository.deletePolicy(id);
         return Response.noContent().build();
     }
+
+
+    @Override
+    public Response getPolicies(Integer page, Integer pageSize) {
+        List<Policy> policyList = policyRepository
+                .getPolicies(Optional.ofNullable(page).orElse(0), Optional.ofNullable(pageSize).orElse(25))
+                .entrySet()
+                .stream()
+                .map(policyEntry -> new Policy()
+                        .id(policyEntry.getKey())
+                        .odrl(policyEntry.getValue().odrl().policy())
+                        .rego(policyEntry.getValue().rego().policy())).toList();
+
+        return Response.ok(policyList).build();
+    }
+
 
     @Override
     public Response getPolicyById(String id) {
