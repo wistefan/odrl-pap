@@ -1,5 +1,7 @@
 package org.fiware.odrl.rego;
 
+import jakarta.transaction.Transactional;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -27,7 +29,10 @@ public interface PolicyRepository {
 
     Optional<PolicyWrapper> getPolicy(String id);
 
+    @Transactional
     Map<String, PolicyWrapper> getPolicies();
+
+    @Transactional
     Map<String, PolicyWrapper> getPolicies(int page, int pageSize);
 
     void deletePolicy(String id);

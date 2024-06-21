@@ -19,12 +19,11 @@ public class PolicyEntity extends PanacheEntity {
     public static final String TABLE_NAME = "policy_entity";
 
     private String policyId;
+
     @Lob
-    @Basic(fetch = FetchType.EAGER)
     private String odrl;
 
     @Lob
-    @Basic(fetch = FetchType.EAGER)
     private String rego;
 
 
