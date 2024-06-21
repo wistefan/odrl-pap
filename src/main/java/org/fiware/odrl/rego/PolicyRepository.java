@@ -29,10 +29,8 @@ public interface PolicyRepository {
 
     Optional<PolicyWrapper> getPolicy(String id);
 
-    @Transactional
     Map<String, PolicyWrapper> getPolicies();
 
-    @Transactional
     Map<String, PolicyWrapper> getPolicies(int page, int pageSize);
 
     void deletePolicy(String id);
