@@ -23,10 +23,10 @@ public class PolicyEntity extends PanacheEntity {
     private String policyId;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private String odrl;
+    private Object odrl;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private String rego;
+    private Object rego;
 
     public static Optional<PolicyEntity> findByPolicyId(String policyId) {
         return Optional.ofNullable(find("policyId", policyId).firstResult());
