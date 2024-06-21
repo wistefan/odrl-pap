@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Lob;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.Optional;
 
@@ -20,12 +22,11 @@ public class PolicyEntity extends PanacheEntity {
 
     private String policyId;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.JSON)
     private String odrl;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.JSON)
     private String rego;
-
 
     public static Optional<PolicyEntity> findByPolicyId(String policyId) {
         return Optional.ofNullable(find("policyId", policyId).firstResult());
