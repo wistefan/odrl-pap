@@ -64,22 +64,14 @@ public class PersistentPolicyRepository implements PolicyRepository {
 
         List<PolicyEntity> policyEntityList = PolicyEntity.listAll();
         policyEntityList.forEach(e -> policies.put(e.getPolicyId(), entityMapper.map(e)));
-        try {
-            log.warn(new ObjectMapper().writeValueAsString(policyEntityList));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+
         return ImmutableMap.copyOf(policies);
     }
 
     public Map<String, PolicyWrapper> getPolicies(int page, int pageSize) {
         PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.findAll();
         List<PolicyEntity> policyEntityList = policyEntities.page(Page.of(page, pageSize)).list();
-        try {
-            log.warn(new ObjectMapper().writeValueAsString(policyEntityList));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+
         return policyEntityList.stream().collect(Collectors.toMap(PolicyEntity::getPolicyId, e -> entityMapper.map(e), (e1, e2) -> e1));
     }
 

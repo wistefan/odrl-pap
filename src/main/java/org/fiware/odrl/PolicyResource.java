@@ -70,7 +70,6 @@ public class PolicyResource implements PolicyApi {
     }
 
 
-    @Transactional
     @Override
     public Response getPolicies(Integer page, Integer pageSize) {
         List<Policy> policyList = policyRepository
@@ -86,7 +85,6 @@ public class PolicyResource implements PolicyApi {
     }
 
 
-    @Transactional
     @Override
     public Response getPolicyById(String id) {
         return policyRepository

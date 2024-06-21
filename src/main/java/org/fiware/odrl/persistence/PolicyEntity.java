@@ -1,7 +1,9 @@
 package org.fiware.odrl.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Lob;
 import lombok.Data;
 
@@ -18,8 +20,11 @@ public class PolicyEntity extends PanacheEntity {
 
     private String policyId;
     @Lob
+    @Basic(fetch = FetchType.EAGER)
     private String odrl;
+
     @Lob
+    @Basic(fetch = FetchType.EAGER)
     private String rego;
 
 
