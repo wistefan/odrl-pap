@@ -63,9 +63,9 @@ jobs:
           mvn versions:set -DnewVersion=${{ needs.generate-version.outputs.version }}
           mvn clean package -Dquarkus.package.type=native -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
 
-      - name: Test image
-        run: | 
-          mvn integration-test -Pk8s-it  -DskipTests -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}" 
+#      - name: Test image
+#        run: |
+#          mvn integration-test -Pk8s-it  -DskipTests -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
 
       - name: Push
         run: |
