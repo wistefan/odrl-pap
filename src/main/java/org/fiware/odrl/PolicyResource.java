@@ -76,6 +76,13 @@ public class PolicyResource implements PolicyApi {
                 .getPolicies(Optional.ofNullable(page).orElse(0), Optional.ofNullable(pageSize).orElse(25))
                 .entrySet()
                 .stream()
+                .peek(e -> {
+                    try {
+                        log.warn("The mapped entity {}", objectMapper.writeValueAsString(e));
+                    } catch (JsonProcessingException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
                 .map(policyEntry -> new Policy()
                         .id(policyEntry.getKey())
                         .odrl(policyEntry.getValue().odrl().policy())
