@@ -3,7 +3,6 @@ package org.fiware.odrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -20,7 +19,6 @@ import org.fiware.odrl.rego.RegoPolicy;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
@@ -86,7 +84,15 @@ public class PolicyResource implements PolicyApi {
                 .map(policyEntry -> new Policy()
                         .id(policyEntry.getKey())
                         .odrl(policyEntry.getValue().odrl().policy())
-                        .rego(policyEntry.getValue().rego().policy())).toList();
+                        .rego(policyEntry.getValue().rego().policy()))
+                .peek(pe -> {
+                    try {
+                        log.warn("The p entity {}", objectMapper.writeValueAsString(pe));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .toList();
 
         return Response.ok(policyList).build();
     }
