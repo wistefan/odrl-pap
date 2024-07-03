@@ -79,16 +79,17 @@ public class PolicyResource implements PolicyApi {
                     var id = policyEntry.getKey();
                     var odrl = policyEntry.getValue().odrl().policy();
                     var rego = policyEntry.getValue().rego().policy();
-                    try {
-                        log.warn("{}:{}:{} - entry {}", id, odrl, rego, objectMapper.writeValueAsString(policyEntry));
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return new Policy()
+                    log.warn("Org: {}:{}:{}", id, odrl, rego);
+                    var policy = new Policy()
                             .id(id)
                             .odrl(odrl)
                             .rego(rego);
-
+                    try {
+                        log.warn("The policy {}", objectMapper.writeValueAsString(policy));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return policy;
                 })
                 .toList();
 
