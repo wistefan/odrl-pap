@@ -76,6 +76,8 @@ public class PersistentPolicyRepository implements PolicyRepository {
     @Override
     @Transactional
     public void deletePolicy(String id) {
+        log.warn("Try to delete {}", id);
+
         PolicyEntity.findByPolicyId(id)
                 .map(policyEntity -> policyEntity.id)
                 .map(PolicyEntity::deleteById)
