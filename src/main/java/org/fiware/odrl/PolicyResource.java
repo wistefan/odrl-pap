@@ -74,23 +74,21 @@ public class PolicyResource implements PolicyApi {
                 .getPolicies(Optional.ofNullable(page).orElse(0), Optional.ofNullable(pageSize).orElse(25))
                 .entrySet()
                 .stream()
-                .peek(e -> {
+
+                .map(policyEntry -> {
+                    var id = policyEntry.getKey();
+                    var odrl = policyEntry.getValue().odrl().policy();
+                    var rego = policyEntry.getValue().rego().policy();
                     try {
-                        log.warn("The mapped entity {}", objectMapper.writeValueAsString(e));
-                    } catch (JsonProcessingException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                })
-                .map(policyEntry -> new Policy()
-                        .id(policyEntry.getKey())
-                        .odrl(policyEntry.getValue().odrl().policy())
-                        .rego(policyEntry.getValue().rego().policy()))
-                .peek(pe -> {
-                    try {
-                        log.warn("The p entity {}", objectMapper.writeValueAsString(pe));
+                        log.warn("{}:{}:{} - entry {}", id, odrl, rego, objectMapper.writeValueAsString(policyEntry));
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
+                    return new Policy()
+                            .id(id)
+                            .odrl(odrl)
+                            .rego(rego);
+
                 })
                 .toList();
 
