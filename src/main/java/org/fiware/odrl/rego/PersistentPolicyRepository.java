@@ -74,11 +74,13 @@ public class PersistentPolicyRepository implements PolicyRepository {
     }
 
     @Override
+    @Transactional
     public void deletePolicy(String id) {
         PolicyEntity.findByPolicyId(id)
                 .map(policyEntity -> policyEntity.id)
                 .map(PolicyEntity::deleteById)
                 .ifPresent(success -> {
+                    log.warn("Deleted {} - {}.", id, success);
                     if (Boolean.FALSE.equals(success)) {
                         throw new RuntimeException(String.format("Was not able to delete entity %s", id));
                     }
