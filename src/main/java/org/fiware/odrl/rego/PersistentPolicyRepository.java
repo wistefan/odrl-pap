@@ -75,6 +75,13 @@ public class PersistentPolicyRepository implements PolicyRepository {
 
     @Override
     public void deletePolicy(String id) {
-        PolicyEntity.findByPolicyId(id).map(policyEntity -> policyEntity.id).ifPresent(PolicyEntity::deleteById);
+        PolicyEntity.findByPolicyId(id)
+                .map(policyEntity -> policyEntity.id)
+                .map(PolicyEntity::deleteById)
+                .ifPresent(success -> {
+                    if (Boolean.FALSE.equals(success)) {
+                        throw new RuntimeException(String.format("Was not able to delete entity %s", id));
+                    }
+                });
     }
 }
