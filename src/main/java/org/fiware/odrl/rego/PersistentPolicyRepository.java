@@ -1,6 +1,7 @@
 package org.fiware.odrl.rego;
 
 import com.google.common.collect.ImmutableMap;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -77,15 +78,7 @@ public class PersistentPolicyRepository implements PolicyRepository {
     @Transactional
     public void deletePolicy(String id) {
         log.warn("Try to delete {}", id);
-
         PolicyEntity.findByPolicyId(id)
-                .map(policyEntity -> policyEntity.id)
-                .map(PolicyEntity::deleteById)
-                .ifPresent(success -> {
-                    log.warn("Deleted {} - {}.", id, success);
-                    if (Boolean.FALSE.equals(success)) {
-                        throw new RuntimeException(String.format("Was not able to delete entity %s", id));
-                    }
-                });
+                .ifPresent(PanacheEntityBase::delete);
     }
 }
