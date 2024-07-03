@@ -85,7 +85,7 @@ public class PolicyResource implements PolicyApi {
                             .odrl(odrl)
                             .rego(rego);
                     try {
-                        log.warn("The policy {}", objectMapper.writeValueAsString(policy));
+                        log.warn("The policy {} : {}", policy.getId(), objectMapper.writeValueAsString(policy));
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
