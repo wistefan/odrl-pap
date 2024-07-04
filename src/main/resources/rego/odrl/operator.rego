@@ -4,7 +4,11 @@ import rego.v1
 
 ## odrl:eq
 # check that both operands are equal
-eq_operator(leftOperand, rightOperand) if leftOperand == rightOperand
+eq_operator(leftOperand, rightOperand) if {
+    print(leftOperand)
+    print(rightOperand)
+    leftOperand == rightOperand
+}
 
 ## odrl:hasPart
 # check that the rightOperand is in the leftOperand
