@@ -7,10 +7,7 @@ import rego.v1
 role(verifiable_credential,organization_id) := r if {
     roles := verifiable_credential.credentialSubject.roles
     role := [rad | some rad in roles; rad.target = organization_id ]
-    print(roles)
-    rn := role[_].names
-    print(rn)
-    r = rn; trace(organization_id)
+    r = role[_].names; trace(organization_id)
 }
 
 ## vc:currentParty

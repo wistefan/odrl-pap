@@ -4,15 +4,15 @@ import rego.v1
 
 ## odrl:eq
 # check that both operands are equal
-eq_operator(leftOperand, rightOperand) if {
-    print(leftOperand)
-    print(rightOperand)
-    leftOperand == rightOperand
-}
+eq_operator(leftOperand, rightOperand) if leftOperand == rightOperand
 
 ## odrl:hasPart
 # check that the rightOperand is in the leftOperand
-has_part_operator(leftOperand, rightOperand) if rightOperand in leftOperand
+has_part_operator(leftOperand, rightOperand) if {
+    print(leftOperand)
+    print(rightOperand)
+    rightOperand in leftOperand
+}
 
 ## odrl:gt
 # check that the leftOperand is greater than the rightOperand
