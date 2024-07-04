@@ -4,10 +4,10 @@ import rego.v1
 
 ## odrl:eq
 # check that both operands are equal
-eq_operator(leftOperand, rightOperand) := eq if {
+eq_operator(leftOperand, rightOperand) if {
     print(leftOperand)
     print(rightOperand)
-    eq = leftOperand == rightOperand
+    leftOperand == rightOperand
 }
 
 ## odrl:hasPart
