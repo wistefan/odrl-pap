@@ -9,12 +9,16 @@ type_from_path(path) := tfe if {
     path_without_query := split(path, "?")[0]
 	path_elements := split(path_without_query, "/")
 	id_elements := split(path_elements[count(path_elements) - 1], ":")
-    tfe = id_elements[2]
+	te := id_elements[2]
+	print(te)
+    tfe = te
 } else := tfq if {
     query := split(path, "?")[1]
     query_parts := split(query, "&")
     type_query := [query_part | some query_part in query_parts; contains(query_part, "type=")]
-    tfq = split(type_query[0], "=")[1]
+    tf := split(type_query[0], "=")[1]
+    print(tf)
+    tfq = tf
 }
 
 # helper to retrieve the type from the body
