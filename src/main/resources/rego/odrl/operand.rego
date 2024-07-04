@@ -5,13 +5,15 @@ import rego.v1
 ## odrl:and
 # checks if all given constraints are true
 and_operand(constraints) if {
-	some constraint in constraints
+	true_constraints := [constraint | some constraint in constraints; constraint == true]
+	print(true_constraints)
+	count(true_constraints) == count(constraints)
 }
 
 ## odrl:andSequence
 # checks if all given constraints are true
 and_sequence_operand(constraints) if {
-	some constraint in constraints
+	and_operand(constraints)
 }
 
 ## odrl:or
