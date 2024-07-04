@@ -7,7 +7,7 @@ import rego.v1
 role(verifiable_credential,organization_id) := r if {
     roles := verifiable_credential.credentialSubject.roles
     role := [rad | some rad in roles; rad.target = organization_id ]
-    print(role[_].names)
+    print(roles)
     r = role[_].names; trace(organization_id)
 }
 
@@ -18,6 +18,6 @@ current_party(credential) := credential.issuer
 ## vc:type
 # the type(s) of the current credential
 types(verifiable_credential) := t if {
-    print(verifiable_credential.type)
+    print(verifiable_credential)
     t = verifiable_credential.type
 }
