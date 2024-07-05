@@ -45,6 +45,12 @@
         "regoPackage": "tmf.action as tmf_action",
         "regoMethod": "tmf_action.is_creation(helper.http_part)"
       }
+    },
+    "ngsild": {
+      "create": {
+        "regoPackage": "ngsild.action as ngsild_action",
+        "regoMethod": "ngsild_action.is_creation(helper.http_part)"
+      }
     }
   },
   "operator": {

@@ -16,7 +16,4 @@ current_party(credential) := credential.issuer
 
 ## vc:type
 # the type(s) of the current credential
-types(verifiable_credential) := t if {
-    print(verifiable_credential)
-    t = verifiable_credential.type
-}
+types(verifiable_credential) := verifiable_credential.type

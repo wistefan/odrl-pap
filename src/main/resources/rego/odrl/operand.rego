@@ -5,9 +5,7 @@ import rego.v1
 ## odrl:and
 # checks if all given constraints are true
 and_operand(constraints) if {
-    print(constraints)
 	true_constraints := [constraint | some constraint in constraints; constraint == true]
-	print(true_constraints)
 	count(true_constraints) == count(constraints)
 }
 
