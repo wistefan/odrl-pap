@@ -22,9 +22,9 @@ type_from_body(body) := body.type
 ## ngsi-ld:entityType
 # retrieves the type from an entity, either from the request path or from the body
 entity_type(http_part) := tfp if {
-	tfp = type_from_path(http_part.path)
+    tfp = type_from_path(http_part.path)
 } else := tfb if {
-	tfb = type_from_body(http_part.body)
+    tfb = type_from_body(http_part.body)
 }
 
 ## ngsi-ld:<property>
