@@ -13,3 +13,7 @@ role(verifiable_credential,organization_id) := r if {
 ## vc:currentParty
 # the current (organization)party,
 current_party(credential) := credential.issuer
+
+## vc:type
+# the type(s) of the current credential
+types(verifiable_credential) := verifiable_credential.type

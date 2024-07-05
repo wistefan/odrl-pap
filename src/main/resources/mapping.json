@@ -39,6 +39,18 @@
         "regoPackage": "dome.action as dome_action",
         "regoMethod": "dome_action.is_set_published(helper.http_part)"
       }
+    },
+    "tmf": {
+      "create": {
+        "regoPackage": "tmf.action as tmf_action",
+        "regoMethod": "tmf_action.is_creation(helper.http_part)"
+      }
+    },
+    "ngsild": {
+      "create": {
+        "regoPackage": "ngsild.action as ngsild_action",
+        "regoMethod": "ngsild_action.is_creation(helper.http_part)"
+      }
     }
   },
   "operator": {
@@ -132,6 +144,10 @@
       "currentParty": {
         "regoPackage": "vc.leftOperand as vc_lo",
         "regoMethod": "vc_lo.current_party(helper.verifiable_credential)"
+      },
+      "type": {
+        "regoPackage": "vc.leftOperand as vc_lo",
+        "regoMethod": "vc_lo.types(helper.verifiable_credential)"
       }
     },
     "ngsi-ld": {

@@ -67,6 +67,7 @@
 | --- | --- | --- | --- |
 | leftOperand | vc:role | role(verifiable_credential,organization_id) | retrieves the roles from the credential, that target the current organization |
 | leftOperand | vc:currentParty | current_party(credential) | the current (organization)party, |
+| leftOperand | vc:type | types(verifiable_credential) | the type(s) of the current credential |
 | assignee | odrl:any | is_any | allows for any user |
 
 ## ngsild
@@ -78,6 +79,7 @@
 | leftOperand | ngsi-ld:<property>_observedAt | # | retrieves the observedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<property>_modifiedAt | # | retrieves the modifiedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<relationship> | # | retrieves the object of the relationship, only applies to properties of type "Relationship". The method should be concretized in the mapping.json, to match a concrete property. |
+| action | ngsild:create | is_creation(request) | Check if the given request is a creation |
 
 ## tmf
 
@@ -85,3 +87,4 @@
 | --- | --- | --- | --- |
 | leftOperand | tmf:lifecycleStatus | life_cycle_status(entity) | return the lifeCycleStatus of a given entity |
 | leftOperand | tmf:resource | resource_type(http_part) | retrieves the type of the resource from the path |
+| action | tmf:create | is_creation(request) | Check if the given request is a creation |
