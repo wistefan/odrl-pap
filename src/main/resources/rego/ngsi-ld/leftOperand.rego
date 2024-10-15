@@ -2,18 +2,14 @@ package ngsild.leftOperand
 
 import rego.v1
 
-
 # helper method to retrieve the type from the path
-type_from_path(path) := tfe if {
-    path_without_query := split(path, "?")[0]
+type_from_path(http_part) := tfe if {
+    path_without_query := split(http_part.path, "?")[0]
 	path_elements := split(path_without_query, "/")
 	id_elements := split(path_elements[count(path_elements) - 1], ":")
     tfe = id_elements[2]
 } else := tfq if {
-    query := split(path, "?")[1]
-    query_parts := split(query, "&")
-    type_query := [query_part | some query_part in query_parts; contains(query_part, "type=")]
-    tfq = split(type_query[0], "=")[1]
+    tfq = http_part.query.type
 }
 
 # helper to retrieve the type from the body
@@ -22,7 +18,7 @@ type_from_body(body) := body.type
 ## ngsi-ld:entityType
 # retrieves the type from an entity, either from the request path or from the body
 entity_type(http_part) := tfp if {
-    tfp = type_from_path(http_part.path)
+    tfp = type_from_path(http_part)
 } else := tfb if {
     tfb = type_from_body(http_part.body)
 }
