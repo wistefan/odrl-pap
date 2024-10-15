@@ -1,7 +1,6 @@
 package ngsild.leftOperand
 
 import rego.v1
-import future.keywords.in
 
 # helper method to retrieve the type from the path
 type_from_path(path, query) := tfe if {
