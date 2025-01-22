@@ -21,7 +21,7 @@ public class OpenPolicyAgentTestResource implements QuarkusTestResourceLifecycle
 
     @Override
     public Map<String, String> start() {
-        opaContainer = new GenericContainer("openpolicyagent/opa:0.63.0")
+        opaContainer = new GenericContainer("openpolicyagent/opa:0.64.1")
                 .withReuse(false)
                 .withCopyToContainer(MountableFile.forClasspathResource("opa.yaml"), "/opa.yaml")
                 .withCommand("run", "--server", "-l", "debug", "-c", "/opa.yaml", "--addr", "localhost:8181")
