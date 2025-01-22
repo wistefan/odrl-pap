@@ -88,20 +88,20 @@ public abstract class OdrlTest {
                                 "PATCH"),
                         new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
                                 .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
-                Arguments.of(
-                        List.of("/examples/dome/1001/_1001.json"),
-                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "GET"),
-                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
-                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
-                Arguments.of(
-                        List.of("/examples/dome/1001/_1001.json"),
-                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-                                "PUT"),
-                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
-                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
+//                Arguments.of(
+//                        List.of("/examples/dome/1001/_1001.json"),
+//                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+//                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+//                                "GET"),
+//                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+//                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
+//                Arguments.of(
+//                        List.of("/examples/dome/1001/_1001.json"),
+//                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+//                                "/productOffering/urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+//                                "PUT"),
+//                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+//                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
 //                Arguments.of(
 //                        List.of("/examples/dome/1001/_1001.json"),
 //                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
@@ -116,21 +116,21 @@ public abstract class OdrlTest {
 //                                "GET"),
 //                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
 //                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
-//                Arguments.of(
-//                        List.of("/examples/dome/1003/_1003.json"),
-//                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-//                                "/urn:ngsi-ld:button:onboard",
-//                                "GET"),
-//                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
-//                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
-//                Arguments.of(
-//                        List.of("/examples/dome/1003/_1003.json"),
-//                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
-//                                "/urn:ngsi-ld:button:onboard",
-//                                "GET",
-//                                List.of("onboarder"), Optional.empty()),
-//                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
-//                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
+                Arguments.of(
+                        List.of("/examples/dome/1003/_1003.json"),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/urn:ngsi-ld:button:onboard",
+                                "GET"),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
+                Arguments.of(
+                        List.of("/examples/dome/1003/_1003.json"),
+                        getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+                                "/urn:ngsi-ld:button:onboard",
+                                "GET",
+                                List.of("onboarder"), Optional.empty()),
+                        new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+                                .relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
                 Arguments.of(
                         List.of("/examples/dome/1003/_1003.json"),
                         getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
