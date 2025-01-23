@@ -54,6 +54,12 @@
     }
   },
   "operator": {
+    "http": {
+      "isInPath": {
+        "regoPackage": "http.operator as http_operator",
+        "regoMethod": "http_operator.is_in_path_operator(%s,%s)"
+      }
+    },
     "odrl": {
       "eq": {
         "regoPackage": "odrl.operator as odrl_operator",
@@ -136,6 +142,12 @@
     }
   },
   "leftOperand": {
+    "http": {
+      "path": {
+        "regoPackage": "http.leftOperand as http_lo",
+        "regoMethod": "http_lo.path(helper.http_part)"
+      }
+    },
     "vc": {
       "role": {
         "regoPackage": "vc.leftOperand as vc_lo",
