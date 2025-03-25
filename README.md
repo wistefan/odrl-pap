@@ -93,7 +93,7 @@ docker run -p 8181:8181 --network host -v $(pwd)/src/test/resources/opa.yaml:/op
 and the application via:
 
 ```shell
-./mvn compile quarkus:dev
+mvn compile quarkus:dev
 ```
 
 ## Getting familiar with policies

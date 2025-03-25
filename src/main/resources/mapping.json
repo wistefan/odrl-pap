@@ -85,6 +85,10 @@
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.is_any_of_operator(%s,%s)"
       },
+      "anyOf": {
+        "regoPackage": "odrl.operator as odrl_operator",
+        "regoMethod": "odrl_operator.is_any_of_operator(%s,%s)"
+      },
       "isNoneOf": {
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.is_none_of_operator(%s,%s)"
@@ -213,6 +217,12 @@
         "regoPackage": "tmf.leftOperand as tmf_lo",
         "regoMethod": "tmf_lo.resource_type(helper.http_part)"
       }
+    },
+    "ovc": {
+      "leftOperand": {
+        "regoPackage": "gaia-x.constraint as gaia_x_lo",
+        "regoMethod": "gaia_x_lo.getClaim(%s)"
+      }
     }
   },
   "assignee": {
@@ -242,6 +252,14 @@
       "target": {
         "regoPackage": "odrl.target as odrl_target",
         "regoMethod": "odrl_target.is_target(helper.target,%s)"
+      }
+    }
+  },
+  "constraint": {
+    "ovc": {
+      "constraint": {
+        "regoPackage": "gaia-x.constraint as gaia-x_constraint",
+        "regoMethod": "gaia-x_constraint.evaluate(%s, %s)"
       }
     }
   }

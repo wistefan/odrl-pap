@@ -1,0 +1,33 @@
+{
+  "@context": {
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@id": "https://mp-operation.org/policy/common/type",
+  "@type": "odrl:Policy",
+  "odrl:permission": {
+    "odrl:assigner": {
+      "@id": "https://www.mp-operation.org/"
+    },
+    "odrl:target": "urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+    "odrl:assignee": "urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
+    "odrl:action": {
+      "@id": "odrl:use"
+    },
+    "ovc:constraint": [
+      {
+        "ovc:leftOperand": "$.credentialSubject.gx:legalAddress.gx:countrySubdivisionCode",
+        "odrl:operator": "odrl:anyOf",
+        "odrl:rightOperand": [
+          "FR-HDF",
+          "BE-BRU"
+        ],
+        "ovc:credentialSubjectType": "gx:LegalParticipant"
+      }
+    ]
+  }
+}

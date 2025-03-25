@@ -15,7 +15,8 @@ public enum OdrlAttribute {
     ASSIGNEE("assignee"),
     ACTION("action"),
     OPERAND("operand"),
-    TARGET("target");
+    TARGET("target"),
+    CONSTRAINT("constraint");
 
     private final String value;
 
