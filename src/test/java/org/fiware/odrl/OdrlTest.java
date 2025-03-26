@@ -192,7 +192,7 @@ public abstract class OdrlTest {
 	public static String getGaiaXCredentialJWT(String organization, String credentialType) {
 		CredentialSubject credentialSubject = new CredentialSubject();
 		credentialSubject.setClaims("type", credentialType);
-		GaiaXAddress gaiaXAddress = new GaiaXAddress().countryCode("DE-BER");
+		GaiaXAddress gaiaXAddress = new GaiaXAddress().countryCode("BE-BRU");
 		credentialSubject.setClaims("gx:legalAddress", gaiaXAddress);
 		VerifiableCredential verifiableCredential = new VerifiableCredential();
 		verifiableCredential.setId(URI.create("urn:my-id"));
