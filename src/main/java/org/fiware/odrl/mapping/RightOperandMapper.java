@@ -3,11 +3,17 @@ package org.fiware.odrl.mapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fiware.odrl.rego.RegoMethod;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.fiware.odrl.mapping.OdrlConstants.*;
+
 public class RightOperandMapper extends TypeMapper {
+
 
 	public RightOperandMapper(ObjectMapper objectMapper, Map<String, RegoMethod> mappings) {
 		super(objectMapper, mappings);
@@ -63,7 +69,7 @@ public class RightOperandMapper extends TypeMapper {
 		}
 	}
 
-	public Optional<?> getValue(String type, Object rightOperandObject) {
+	public Optional<?> getValue(String type, Object rightOperandObject) throws MappingException {
 		// case "odrl:rightOperand" : "my:customOperand"
 		// or "my:customOperand": "static-value"
 		if (rightOperandObject instanceof String valueString) {
@@ -81,10 +87,19 @@ public class RightOperandMapper extends TypeMapper {
 		Map<String, Object> theRightOperandMap = convertToMap(rightOperandObject);
 		// case "odrl:leftOperand" : {"@Value": "something"}
 		// or "my:customOperand": {"@Value": "something"}
-		if (theRightOperandMap.containsKey(OdrlConstants.VALUE_KEY)) {
-			return Optional.ofNullable(theRightOperandMap.get(OdrlConstants.VALUE_KEY));
+		if (!theRightOperandMap.containsKey(OdrlConstants.VALUE_KEY)) {
+			return Optional.empty();
 		}
-		return Optional.empty();
+		if (theRightOperandMap.containsKey(OdrlConstants.TYPE_KEY) && theRightOperandMap.get(TYPE_KEY).equals(DATE_TYPE)) {
+			String dateString = (String) theRightOperandMap.get(VALUE_KEY);
+			try {
+				Date parsedDate = DATE_FORMAT.parse(dateString);
+				return Optional.of(parsedDate.getTime());
+			} catch (ParseException e) {
+				throw new MappingException(String.format("The date %s is not valid", dateString), e);
+			}
+		}
+		return Optional.ofNullable(theRightOperandMap.get(OdrlConstants.VALUE_KEY));
 	}
 
 }

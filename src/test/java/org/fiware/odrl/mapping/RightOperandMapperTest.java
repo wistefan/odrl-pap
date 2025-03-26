@@ -65,7 +65,7 @@ public class RightOperandMapperTest {
 	@DisplayName("If the key to a rightOperand is provided, the concrete type should be returned.")
 	@MethodSource("operandsWithValues")
 	@ParameterizedTest
-	public void test_getValue(String rightOperandType, Object theRightOperand, Map<String, RegoMethod> mappings, Optional<Object> theExpectedOptionalValue) {
+	public void test_getValue(String rightOperandType, Object theRightOperand, Map<String, RegoMethod> mappings, Optional<Object> theExpectedOptionalValue) throws MappingException {
 		RightOperandMapper rightOperandMapper = new RightOperandMapper(OBJECT_MAPPER, mappings);
 		Optional<?> optionalRightOperandValue = rightOperandMapper.getValue(rightOperandType, theRightOperand);
 		assertEquals(theExpectedOptionalValue, optionalRightOperandValue, "The value of the rightOperand should be extracted.");

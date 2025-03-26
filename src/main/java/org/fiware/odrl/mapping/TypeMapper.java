@@ -7,12 +7,15 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.fiware.odrl.rego.RegoMethod;
 
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 public abstract class TypeMapper {
 
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	public static final String STRING_ESCAPE_TEMPLATE = "\"%s\"";
 	protected final ObjectMapper objectMapper;
 	protected final Map<String, RegoMethod> mappings;
 

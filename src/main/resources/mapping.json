@@ -132,7 +132,7 @@
     }
   },
   "rightOperand": {
-    "odrl":{
+    "odrl": {
       "policyUsage": {
         "regoPackage": "odrl.rightOperand as odrl_ro",
         "regoMethod": "odrl_ro.policy_usage"
@@ -220,8 +220,8 @@
     },
     "ovc": {
       "leftOperand": {
-        "regoPackage": "gaia-x.constraint as gaia_x_lo",
-        "regoMethod": "gaia_x_lo.getClaim(%s)"
+        "regoPackage": "gaiax.leftOperand as gaia_x_lo",
+        "regoMethod": "gaia_x_lo.getClaim(helper.verifiable_credential,%s)"
       }
     }
   },
@@ -258,8 +258,12 @@
   "constraint": {
     "ovc": {
       "constraint": {
-        "regoPackage": "gaia-x.constraint as gaia-x_constraint",
-        "regoMethod": "gaia-x_constraint.evaluate(%s, %s)"
+        "regoPackage": "gaiax.constraint as gaia_x_constraint",
+        "regoMethod": "gaia_x_constraint.evaluate(%s)"
+      },
+      "credentialSubjectType": {
+        "regoPackage": "gaiax.constraint as gaia_x_constraint",
+        "regoMethod": "gaia_x_constraint.credentialSubjectType(helper.verifiable_credential,%s)"
       }
     }
   }
