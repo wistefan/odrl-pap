@@ -1,30 +1,48 @@
 # ODRL-PAP
 
-The ODRL-PAP allows to configure policies written in [ODRL](https://www.w3.org/TR/odrl-model/) to be consumed by the [Open Policy Agent(OPA)](https://www.openpolicyagent.org).
-Therefor it translates the ODRL in to [rego](https://www.openpolicyagent.org/docs/latest/policy-language/) equivalents and offers them via the [bundles-endpoint](https://www.openpolicyagent.org/docs/latest/management-bundles/).
+The ODRL-PAP allows to configure policies written in [ODRL](https://www.w3.org/TR/odrl-model/) to be consumed by
+the [Open Policy Agent(OPA)](https://www.openpolicyagent.org).
+Therefor it translates the ODRL in to [rego](https://www.openpolicyagent.org/docs/latest/policy-language/) equivalents
+and offers them via the [bundles-endpoint](https://www.openpolicyagent.org/docs/latest/management-bundles/).
 It uses the following architecture:
 ![architecture](./doc/odrl-pap.jpg)
 
-## API 
+- [API](#api)
+- [Enforcement](#enforcement)
+- [Translation](#translation)
+    - [mapping.json](#the-mappingjson)
+- [Running the application](#running-the-application)
+    - [Locally](#locally)
+    - [Getting familiar with policies](#getting-familiar-with-policies)
+    - [Try out some policies](#try-out-some-policies)
+    - [Gaia-X ODRL-Profile](#gaia-x-odrl-profile)
+- [Configuration](#configuration)
+- [Creating a native executable](#creating-a-native-executable)
+
+## API
 
 The ODRL-PAP offers two APIS
 
 * the Policy-API to manage policies in ODRL: [OpenAPI](./api/odrl.yaml)
 * the Bundle-API to offers bundles for OPA: [OpenAPI](./api/bundle.yaml)
-  * the `methods`-bundle: It contains the rego-equivalent to certain odrl-classes.
-    The [rego.methods-folder](src/main/resources/regomethods/methods) contains the initial set of methods. It can be
-    overwritten by providing methods in a folder at `paths.rego`
-  * the `policies`-bundle: It contains the actual policies and the `main`-policy, combining all configured policies. All
-    request have to be evaluated against the `main` policy.
-  * the `data`-bundle: Contains additional data to be taken into account for the evaluation.
+    * the `methods`-bundle: It contains the rego-equivalent to certain odrl-classes.
+      The [rego.methods-folder](src/main/resources/regomethods/methods) contains the initial set of methods. It can be
+      overwritten by providing methods in a folder at `paths.rego`
+    * the `policies`-bundle: It contains the actual policies and the `main`-policy, combining all configured policies.
+      All
+      request have to be evaluated against the `main` policy.
+    * the `data`-bundle: Contains additional data to be taken into account for the evaluation.
 
 ## Enforcement
 
-To actually enforce policies, a Policy-Enforcment-Point is required. This role can in principle be taken by any OPA-compatible component.
-We recommend (and test) the usage of [Apisix](https://apisix.apache.org/) for that. Apisix is an OpenSource API-Gateway, that has a built-in plugin to connect OPA.
+To actually enforce policies, a Policy-Enforcment-Point is required. This role can in principle be taken by any
+OPA-compatible component.
+We recommend (and test) the usage of [Apisix](https://apisix.apache.org/) for that. Apisix is an OpenSource API-Gateway,
+that has a built-in plugin to connect OPA.
 See the [it-test Apisix-Chart](./charts/apisix) for an example configuration.
 
 Alternative options are:
+
 * [Kong](https://konghq.com): provides an OPA-Plugin for payed-usage, format is supported by the ODRL-PAP
 * [Envoy](https://www.envoyproxy.io/): Just a proxy, no API-Gateway functionality, supports OPA integration
 
@@ -87,28 +105,7 @@ be added to the default mapping. Existing keys will be overwritten, e.g. the pro
 To run the application together with OPA, start an instance of OPA via:
 
 ```shell
-docker run -p 8181:8181 --network host -v $(pwd)/src/test/resources/opa.yaml:/opa.yaml  openpolicyagent/opa:0.63.0 run --server -c /opa.yaml
-```
-
-and the application via:
-
-```shell
-./mvn compile quarkus:dev
-```
-
-## Getting familiar with policies
-
-The project aims to take [ODRL Policies](https://www.w3.org/TR/odrl-model/) and execute them using
-the [Open Policy Agent](https://www.openpolicyagent.org).
-
-In order to get familiar with the languages and tools, see [test/examples](src/test/resources/examples).
-
-## Running the application
-
-To test the application together with OPA, run the following:
-
-```shell
-docker run -p 8181:8181 --network host -v $(pwd)/src/test/resources/opa.yaml:/opa.yaml  openpolicyagent/opa:0.62.1 run --server -c /opa.yaml
+docker run -p 8181:8181 --network host -v $(pwd)/src/test/resources/opa.yaml:/opa.yaml  openpolicyagent/opa:1.2.0 run --server -c /opa.yaml
 ```
 
 It will mount the OPA config-file under [src/test/resources/opa.yaml](/src/test/resources/opa.yaml) and start OPA at
@@ -127,6 +124,15 @@ and the application:
 ```shell
 ./mvnw compile quarkus:dev -Dquarkus.http.port=8081
 ```
+
+### Getting familiar with policies
+
+The project aims to take [ODRL Policies](https://www.w3.org/TR/odrl-model/) and execute them using
+the [Open Policy Agent](https://www.openpolicyagent.org).
+
+In order to get familiar with the languages and tools, see [test/examples](src/test/resources/examples).
+
+### Try out some policies
 
 To try it out, create a policy:
 
@@ -161,7 +167,7 @@ curl -X PUT http://localhost:8081/policy/test  -H 'Content-Type: application/jso
 }' 
 ```
 
-The policy allows a the organization "did:web:test.org" to "read"(e.g. GET) the entity "urn:ngsi-ld:product-offering:
+The policy allows an organization "did:web:test.org" to "read"(e.g. GET) the entity "urn:ngsi-ld:product-offering:
 62d4f929-d29d-4070-ae1f-9fe7dd1de5f6".
 
 After the polling period, the policy can be tested as following:
@@ -193,6 +199,77 @@ curl -X POST http://localhost:8181/ -H 'Content-Type: application/json' -d '{
 
 It evaluates to false and is denied.
 
+### Gaia-X ODRL-Profile
+
+As part of [Gaia-X](https://gaia-x.eu/), an [ODRL-Profile](https://gitlab.com/gaia-x/lab/policy-reasoning/odrl-verifiable-credential-ontology-mapping) focusing on Verifiable Credentials was created.
+The ODRL-PAP supports the profile per default, see the [rego-mappings](./src/main/resources/rego/gaia-x). 
+
+An example policy could be created as following:
+```shell
+curl -X PUT http://localhost:8081/policy/test  -H 'Content-Type: application/json' -d '{
+    "@context": {
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dc": "http://purl.org/dc/elements/1.1/",
+        "ovc": "https://w3id.org/gaia-x/ovc/1/",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "dome": "https://www.dome-marketplace.org/"
+    },
+    "@id": "https://dome-marketplace.org/policy/common/_1000",
+    "@type": "odrl:Policy",
+    "odrl:profile": "https://github.com/DOME-Marketplace/dome-odrl-profile/blob/main/dome-op.ttl",
+    "odrl:permission": {
+        "odrl:assigner": {
+            "@id": "https://www.mp-operation.org/"
+        },
+        "odrl:target": "urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+        "odrl:assignee": "did:web:test.org",
+        "odrl:action": {
+            "@id": "odrl:read"
+        },
+        "ovc:constraint": [{
+            "ovc:leftOperand": "$.credentialSubject.gx:legalAddress.gx:countrySubdivisionCode",
+            "odrl:operator": "odrl:anyOf",
+            "odrl:rightOperand": [
+                "FR-HDF",
+                "BE-BRU"
+            ],
+            "ovc:credentialSubjectType": "gx:LegalParticipant"
+        }]
+    }
+}' 
+```
+
+The policy allows an organization "did:web:test.org" to "read"(e.g. GET) the entity "urn:ngsi-ld:product-offering:
+62d4f929-d29d-4070-ae1f-9fe7dd1de5f6" if they are a LegalParticipant located in either "FR-HDF" or "BE-BRU".
+
+After the polling period, the policy can be tested as following:
+
+```shell
+curl -X POST http://localhost:8181/ -H 'Content-Type: application/json' -d '{
+"request": {
+    "method": "GET",
+    "path": "urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+    "headers": {
+        "authorization" : "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJWX25oamp6R01ReHR2c05vdzV2anFoWWowMU9hNExEVTNfNWNQajdhWjdjIn0.eyJqdGkiOiJteVRlc3RUb2tlbiIsImlzcyI6ImRpZDp3ZWI6dGVzdC5vcmciLCJ2ZXJpZmlhYmxlQ3JlZGVudGlhbCI6eyJ0eXBlIjpbXSwiaXNzdWVyIjoiZGlkOndlYjp0ZXN0Lm9yZyIsImlkIjoidXJuOm15LWlkIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiZ3g6bGVnYWxBZGRyZXNzIjp7Imd4OmNvdW50cnlTdWJkaXZpc2lvbkNvZGUiOiJCRS1CUlUifSwidHlwZSI6Imd4OkxlZ2FsUGFydGljaXBhbnQifX19.atRNw6m3-LmH09P52R37JqPjEfNX_jnjkljRrCJZPdCikHQhK6K673SS3tWNLILz9JtzRIf0ZCfonokujRne0z49CIIhrBYiA4MAh3bHDZET9PI2RKiWvx3YgPGdXKvRO1OtEhGHD1P8xQwGplUI4wyth6lY4N7_IyKfXIItidY-K5uhjQk6nyu1dPfxK2OHEQKQfb-4LgMteuOLYbw5eS7Q-Vv1hMUiYnbgk5GsyDA65r9LN1tlfSEP-ql37MmUG2SUeD0oKRK4RgL7i11QMlpGg4tJ9zDVtAP5VbFnktbioMmt9Vjq3-4-r23hUvC2mpXBwvxDveklWuZeRHfirQ"
+    }
+  }
+}'
+```
+
+When requesting with another countryCode(f.e. "DE-BER"), it will be false:
+
+```shell
+curl -X POST http://localhost:8181/ -H 'Content-Type: application/json' -d '{
+"request": {
+    "method": "GET",
+    "path": "urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+    "headers": {
+        "authorization" : "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJJQ05wTDBEZ2RIcmZseFFlb3JmelVtWEtlbHlsdm9HYzVMVHhid1VabndNIn0.eyJqdGkiOiJteVRlc3RUb2tlbiIsImlzcyI6ImRpZDp3ZWI6dGVzdC5vcmciLCJ2ZXJpZmlhYmxlQ3JlZGVudGlhbCI6eyJ0eXBlIjpbXSwiaXNzdWVyIjoiZGlkOndlYjp0ZXN0Lm9yZyIsImlkIjoidXJuOm15LWlkIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiZ3g6bGVnYWxBZGRyZXNzIjp7Imd4OmNvdW50cnlTdWJkaXZpc2lvbkNvZGUiOiJERS1CRVIifSwidHlwZSI6Imd4OkxlZ2FsUGFydGljaXBhbnQifX19.GwcYOc5SMpKmu8BAH_H_K_fkYGMqnF6hJcaDBp0B7lc0qU3GbjfPvqsfckpPt5ZyociMX--v8w3Ai2QdowTVOW2mIpG9C25cgl1pQjo3-2-wyjuLHYaUoSt3PjQJyR2cjvEk1sdw-Ocanng1XLOEyK9hbduskB0RoWLUMqRW-4tzxuaz8nbDjFmh8O6M4KC3qryIjvXoLMcMYV5oRYE5hjBo7j4ahJ7c7z4uqWMRw-gGau3M81kOgIfIiZHfbuAxG50wMypIgzImAGD9Bq6naq1PVCI8kq8IADIiqI0QsZkec_NdISss2ZF-UntSGM41JPT0_ohpYNkLkATBUVpzsw"
+    }
+  }
+}'
+```
+
 ## Configuration
 
 Since the [Quarkus Framework](https://quarkus.io) is used, its standard configuration methods can be used.
@@ -209,7 +286,7 @@ The most important parameters are listed in the table below:
 | quarkus.datasource.jdbc.url | QUARKUS_DATASOURCE_JDBC_URL | Connection string to the DB, only postgres is supported at the moment.                                                                                          | jdbc:postgresql://localhost:5432/pap |
 | paths.mapping               | PATHS_MAPPING               | Path to an additional mapping.json                                                                                                                              | null                                 |
 | paths.rego                  | PATHS_REGO                  | Path to additional rego packages.                                                                                                                               | null                                 | 
- 
+
 ## Test
 
 API Tests can be executed via:
@@ -262,17 +339,3 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 You can then execute your native executable with: `./target/odrl-poc-1.0.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): A Jakarta REST implementation utilizing
-  build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the
-  extensions that depend on it.
-
-## Provided Code
-
-### RESTEasy Reactive
-
-Easily start your Reactive RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
