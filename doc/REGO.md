@@ -43,6 +43,14 @@
 | assignee | odrl:uid,odrl:assignee | is_user(user,uid) | is the given user id the same as the given uid |
 | leftOperand | odrl:currentTime | current_time | returns the current time in ms |
 
+## gaiax
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| constraint | ovc:constraints | evaluate(constraints) | evaluates all provided constraints |
+| constraint | ovc:credentialSubjectType | credentialSubjectType(verifiable_credential, | compares the credentials' subject-type with the provided one |
+| leftOperand | ovc:leftOperand | getClaim(verifiable_credential, | retrieves the claim from the credential, using the json-path of the claim |
+
 ## utils
 
 | ODRL Class | ODRL Key | Rego-Method | Description |
