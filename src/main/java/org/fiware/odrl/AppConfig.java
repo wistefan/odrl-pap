@@ -50,42 +50,28 @@ public class AppConfig {
 	}
 
 
-	private Map<String, RegoMethod> getMappings(MappingConfiguration mappingConfiguration, OdrlAttribute key) {
-		if (!mappingConfiguration.containsKey(key)) {
-			return Map.of();
-		}
-		return mappingConfiguration.get(key)
-				.entrySet()
-				.stream()
-				.flatMap(entry -> entry
-						.getValue()
-						.entrySet()
-						.stream()
-						.map(e -> Map.entry(String.format("%s:%s", entry.getKey(), ((Map.Entry<?, ?>) e).getKey()), e.getValue()))
-				).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-	}
 
 	@Produces
 	@ApplicationScoped
 	public ConstraintMapper constraintMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
-		return new ConstraintMapper(objectMapper, getMappings(mappingConfiguration, OdrlAttribute.CONSTRAINT));
+		return new ConstraintMapper(objectMapper, mappingConfiguration);
 	}
 
 	@Produces
 	@ApplicationScoped
 	public LeftOperandMapper leftOperandMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
-		return new LeftOperandMapper(objectMapper, getMappings(mappingConfiguration, OdrlAttribute.LEFT_OPERAND));
+		return new LeftOperandMapper(objectMapper, mappingConfiguration);
 	}
 
 	@Produces
 	@ApplicationScoped
 	public OperatorMapper operatorMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
-		return new OperatorMapper(objectMapper, getMappings(mappingConfiguration, OdrlAttribute.OPERATOR));
+		return new OperatorMapper(objectMapper, mappingConfiguration);
 	}
 
 	@Produces
 	@ApplicationScoped
 	public RightOperandMapper rightOperandMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
-		return new RightOperandMapper(objectMapper, getMappings(mappingConfiguration, OdrlAttribute.RIGHT_OPERAND));
+		return new RightOperandMapper(objectMapper, mappingConfiguration);
 	}
 }

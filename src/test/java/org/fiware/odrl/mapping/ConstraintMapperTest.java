@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.N;
 
 import java.util.Map;
 import java.util.Optional;
@@ -22,16 +23,16 @@ public class ConstraintMapperTest {
 	@DisplayName("A valid constraint type should be identified as such.")
 	@MethodSource("validConstraints")
 	@ParameterizedTest
-	public void test_isConstraint_true(String keyToTest, Map<String, RegoMethod> mappings) {
-		ConstraintMapper constraintMapper = new ConstraintMapper(OBJECT_MAPPER, mappings);
+	public void test_isConstraint_true(String keyToTest, MappingConfiguration mappingConfiguration) {
+		ConstraintMapper constraintMapper = new ConstraintMapper(OBJECT_MAPPER, mappingConfiguration);
 		assertTrue(constraintMapper.isConstraint(keyToTest), "The requested key should be identified as a constraint");
 	}
 
 	@DisplayName("A type that is not a default or mapped constraint should not be identified as such.")
 	@MethodSource("invalidConstraints")
 	@ParameterizedTest
-	public void test_isConstraint_false(String keyToTest, Map<String, RegoMethod> mappings) {
-		ConstraintMapper constraintMapper = new ConstraintMapper(OBJECT_MAPPER, mappings);
+	public void test_isConstraint_false(String keyToTest, MappingConfiguration mappingConfiguration) {
+		ConstraintMapper constraintMapper = new ConstraintMapper(OBJECT_MAPPER, mappingConfiguration);
 		assertFalse(constraintMapper.isConstraint(keyToTest), "The requested key should not be identified as a constraint");
 	}
 
@@ -39,7 +40,7 @@ public class ConstraintMapperTest {
 	@MethodSource("constraintsWithValues")
 	@ParameterizedTest
 	public void test_getValue_success(String type, Object theConstraint, Optional<Object> theExpectedOptionalValue) {
-		ConstraintMapper constraintMapper = new ConstraintMapper(OBJECT_MAPPER, Map.of());
+		ConstraintMapper constraintMapper = new ConstraintMapper(OBJECT_MAPPER, new MappingConfiguration());
 		Optional<?> optionalConstraintValue = constraintMapper.getValue(type, theConstraint);
 		assertEquals(theExpectedOptionalValue, optionalConstraintValue, "The value of the constraint should be extracted.");
 
@@ -68,30 +69,40 @@ public class ConstraintMapperTest {
 
 	public static Stream<Arguments> validConstraints() {
 		return Stream.of(
-				Arguments.of("odrl:constraint", Map.of()),
-				Arguments.of("odrl:Constraint", Map.of()),
-				Arguments.of("odrl:logicalConstraint", Map.of()),
-				Arguments.of("odrl:logicalconstraint", Map.of()),
-				Arguments.of("odrl:LogicalConstraint", Map.of()),
-				Arguments.of("my:constraint", Map.of("my:constraint", new RegoMethod("my", "constraint"))),
+				Arguments.of("odrl:constraint", new MappingConfiguration()),
+				Arguments.of("odrl:Constraint", new MappingConfiguration()),
+				Arguments.of("odrl:logicalConstraint", new MappingConfiguration()),
+				Arguments.of("odrl:logicalconstraint", new MappingConfiguration()),
+				Arguments.of("odrl:LogicalConstraint", new MappingConfiguration()),
+				Arguments.of("my:constraint", getMappingConfiguration(OdrlAttribute.CONSTRAINT, "my", Map.of("constraint", new RegoMethod("my", "constraint")))),
 				Arguments.of("my:constraint",
-						Map.of("my:constraint-1", new RegoMethod("my", "constraint"),
-								"my:constraint-2", new RegoMethod("my", "constraint"),
-								"my:constraint", new RegoMethod("my", "constraint")))
-		);
+						getMappingConfiguration(OdrlAttribute.CONSTRAINT, "my",
+								Map.of("constraint", new RegoMethod("my", "constraint"),
+										"constraint-2", new RegoMethod("my", "constraint"),
+										"constraint-3", new RegoMethod("my", "constraint")))));
+	}
+
+	public static MappingConfiguration getMappingConfiguration(OdrlAttribute theAttribute, String namespace, Map<String, RegoMethod> methodMap) {
+		MappingConfiguration mappingConfiguration = new MappingConfiguration();
+		NamespacedMap namespacedMap = new NamespacedMap();
+		RegoMap regoMap = new RegoMap();
+		regoMap.putAll(methodMap);
+		namespacedMap.put(namespace, regoMap);
+		mappingConfiguration.put(theAttribute, namespacedMap);
+		return mappingConfiguration;
 	}
 
 	public static Stream<Arguments> invalidConstraints() {
 		return Stream.of(
-				Arguments.of("odrl:no-constraint", Map.of()),
-				Arguments.of("odrl:no-logicalConstraint", Map.of()),
-				Arguments.of("my:constraint", Map.of()),
-				Arguments.of("my:constraint", Map.of("my:constraint-1", new RegoMethod("my", "constraint"))),
-				Arguments.of("my:constraint",
-						Map.of("my:constraint-1", new RegoMethod("my", "constraint"),
-								"my:constraint-2", new RegoMethod("my", "constraint"),
-								"my:constraint-3", new RegoMethod("my", "constraint")))
-		);
+				Arguments.of("odrl:no-constraint", new MappingConfiguration(),
+						Arguments.of("odrl:no-logicalConstraint", new MappingConfiguration()),
+						Arguments.of("my:constraint", new MappingConfiguration()),
+						Arguments.of("my:constraint", getMappingConfiguration(OdrlAttribute.CONSTRAINT, "my", Map.of("constraint", new RegoMethod("my", "constraint")))),
+						Arguments.of("my:constraint",
+								getMappingConfiguration(OdrlAttribute.CONSTRAINT, "my",
+										Map.of("constraint-1", new RegoMethod("my", "constraint"),
+												"constraint-2", new RegoMethod("my", "constraint"),
+												"constraint-3", new RegoMethod("my", "constraint"))))));
 	}
 
 }

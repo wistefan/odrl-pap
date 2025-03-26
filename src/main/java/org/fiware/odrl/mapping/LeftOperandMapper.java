@@ -7,11 +7,14 @@ import org.fiware.odrl.rego.RegoMethod;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Provides capabilities for mapping odrl:leftOperand
+ */
 @RegisterForReflection
 public class LeftOperandMapper extends TypeMapper {
 
-	public LeftOperandMapper(ObjectMapper objectMapper, Map<String, RegoMethod> mappings) {
-		super(objectMapper, mappings);
+	public LeftOperandMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
+		super(objectMapper, getMappings(mappingConfiguration, OdrlAttribute.LEFT_OPERAND));
 	}
 
 	// package private, since it's only to fulfill cdi requirements
@@ -19,6 +22,9 @@ public class LeftOperandMapper extends TypeMapper {
 		super(null, null);
 	}
 
+	/**
+	 * Is the given key a sub-class of odrl:leftOperand?
+	 */
 	public boolean isLeftOperand(String key) {
 		if (key.equalsIgnoreCase(OdrlConstants.LEFT_OPERAND_KEY)) {
 			return true;
@@ -26,15 +32,24 @@ public class LeftOperandMapper extends TypeMapper {
 		return mappings.containsKey(key);
 	}
 
+	/**
+	 * is the given type just the base-type, e.g. odrl:leftOperand?
+	 */
 	public boolean isBaseType(String type) {
 		return type.equalsIgnoreCase(OdrlConstants.LEFT_OPERAND_KEY);
 	}
 
+	/**
+	 * Retrieves the key of the leftOperand from the given constraint. Throws an exception if none is found
+	 */
 	public String getLeftOperandKey(Map<String, Object> theConstraint) throws MappingException {
 		return theConstraint.keySet().stream().filter(this::isLeftOperand).findFirst()
 				.orElseThrow(() -> new MappingException("The provided constraint does not contain a left operand."));
 	}
 
+	/**
+	 * Get the type of the leftOperand at the given key in the provided object.
+	 */
 	public String getType(String key, Object leftOperandObject) {
 		// case "my:customOperand": {}
 		if (!key.equalsIgnoreCase(OdrlConstants.LEFT_OPERAND_KEY)) {
@@ -63,6 +78,9 @@ public class LeftOperandMapper extends TypeMapper {
 		}
 	}
 
+	/**
+	 * Get the value of the leftOperand with the given type and object.
+	 */
 	public Optional<?> getValue(String type, Object leftOperandObject) {
 		// case "odrl:leftOperand" : "my:customOperand"
 		// or "my:customOperand": "static-value"

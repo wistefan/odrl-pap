@@ -12,11 +12,13 @@ import java.util.Optional;
 
 import static org.fiware.odrl.mapping.OdrlConstants.*;
 
+/**
+ * Provides capabilities for mapping odrl:rightOperand
+ */
 public class RightOperandMapper extends TypeMapper {
 
-
-	public RightOperandMapper(ObjectMapper objectMapper, Map<String, RegoMethod> mappings) {
-		super(objectMapper, mappings);
+	public RightOperandMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
+		super(objectMapper, getMappings(mappingConfiguration, OdrlAttribute.RIGHT_OPERAND));
 	}
 
 	// package private, since it's only to fulfill cdi requirements
@@ -24,6 +26,9 @@ public class RightOperandMapper extends TypeMapper {
 		super(null, null);
 	}
 
+	/**
+	 * Is the given key a sub-class of odrl:rightOperand?
+	 */
 	public boolean isRightOperand(String key) {
 		if (key.equalsIgnoreCase(OdrlConstants.RIGHT_OPERAND_KEY)) {
 			return true;
@@ -31,11 +36,17 @@ public class RightOperandMapper extends TypeMapper {
 		return mappings.containsKey(key);
 	}
 
+	/**
+	 * Retrieves the key of the rightOperand from the given constraint. Throws an exception if none is found
+	 */
 	public String getRightOperandKey(Map<String, Object> theConstraint) throws MappingException {
 		return theConstraint.keySet().stream().filter(this::isRightOperand).findFirst()
 				.orElseThrow(() -> new MappingException("The provided constraint does not contain a right operand."));
 	}
 
+	/**
+	 * Get the type of the rightOperand at the given key in the provided object.
+	 */
 	public String getType(String key, Object rightOperandObject) {
 		// case "my:customOperand": {}
 		if (!key.equalsIgnoreCase(OdrlConstants.RIGHT_OPERAND_KEY)) {
@@ -69,6 +80,9 @@ public class RightOperandMapper extends TypeMapper {
 		}
 	}
 
+	/**
+	 * Get the value of the rightOperand with the given type and object.
+	 */
 	public Optional<?> getValue(String type, Object rightOperandObject) throws MappingException {
 		// case "odrl:rightOperand" : "my:customOperand"
 		// or "my:customOperand": "static-value"

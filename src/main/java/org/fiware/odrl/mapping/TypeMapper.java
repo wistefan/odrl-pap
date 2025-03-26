@@ -9,6 +9,7 @@ import org.fiware.odrl.rego.RegoMethod;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,4 +29,20 @@ public abstract class TypeMapper {
 		log.warn(String.format("Get %s from %s", type, mappings));
 		return mappings.get(type);
 	}
+
+	protected static Map<String, RegoMethod> getMappings(MappingConfiguration mappingConfiguration, OdrlAttribute key) {
+		if (!mappingConfiguration.containsKey(key)) {
+			return Map.of();
+		}
+		return mappingConfiguration.get(key)
+				.entrySet()
+				.stream()
+				.flatMap(entry -> entry
+						.getValue()
+						.entrySet()
+						.stream()
+						.map(e -> Map.entry(String.format("%s:%s", entry.getKey(), ((Map.Entry<?, ?>) e).getKey()), e.getValue()))
+				).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
 }

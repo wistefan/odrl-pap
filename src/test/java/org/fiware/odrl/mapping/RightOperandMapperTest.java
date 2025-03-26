@@ -24,7 +24,7 @@ public class RightOperandMapperTest {
 	@DisplayName("A valid rightOperand type should be identified as such.")
 	@MethodSource("validRightOperands")
 	@ParameterizedTest
-	public void test_isRightOperand_true(String keyToTest, Map<String, RegoMethod> mappings) {
+	public void test_isRightOperand_true(String keyToTest, MappingConfiguration mappings) {
 		RightOperandMapper rightOperandMapper = new RightOperandMapper(OBJECT_MAPPER, mappings);
 		assertTrue(rightOperandMapper.isRightOperand(keyToTest), "The requested key should be identified as a rightOperand.");
 	}
@@ -32,7 +32,7 @@ public class RightOperandMapperTest {
 	@DisplayName("A type that is not a default or mapped rightOperand should not be identified as such.")
 	@MethodSource("invalidRightOperands")
 	@ParameterizedTest
-	public void test_isRightOperand_false(String keyToTest, Map<String, RegoMethod> mappings) {
+	public void test_isRightOperand_false(String keyToTest, MappingConfiguration mappings) {
 		RightOperandMapper rightOperandMapper = new RightOperandMapper(OBJECT_MAPPER, mappings);
 		assertFalse(rightOperandMapper.isRightOperand(keyToTest), "The requested key should not be identified as a rightOperand.");
 	}
@@ -41,7 +41,7 @@ public class RightOperandMapperTest {
 	@DisplayName("The correct key identifying the rightOperand should be returned.")
 	@MethodSource("validRightOperandKeys")
 	@ParameterizedTest
-	public void test_getLeftOperandKey_success(Map<String, Object> theConstraint, Map<String, RegoMethod> mappings, String expectedKey) throws MappingException {
+	public void test_getLeftOperandKey_success(Map<String, Object> theConstraint, MappingConfiguration mappings, String expectedKey) throws MappingException {
 		RightOperandMapper rightOperandMapper = new RightOperandMapper(OBJECT_MAPPER, mappings);
 		assertEquals(expectedKey, rightOperandMapper.getRightOperandKey(theConstraint), "The correct rightOperand key should be extracted.");
 	}
@@ -49,7 +49,7 @@ public class RightOperandMapperTest {
 	@DisplayName("If no rightOperand is contained, an expection need to be thrown.")
 	@MethodSource("invalidRightOperandKeys")
 	@ParameterizedTest
-	public void test_getLeftOperandKey_failure(Map<String, Object> theConstraint, Map<String, RegoMethod> mappings) {
+	public void test_getLeftOperandKey_failure(Map<String, Object> theConstraint, MappingConfiguration mappings) {
 		RightOperandMapper rightOperandMapper = new RightOperandMapper(OBJECT_MAPPER, mappings);
 		assertThrows(MappingException.class, () -> rightOperandMapper.getRightOperandKey(theConstraint), "A mapping exception should be thrown if no rightOperand is contained.");
 	}
@@ -57,7 +57,7 @@ public class RightOperandMapperTest {
 	@DisplayName("If the key to a rightOperand is provided, the concrete type should be returned.")
 	@MethodSource("validTypes")
 	@ParameterizedTest
-	public void test_getType(String rightOperandKey, Object theRightOperand, Map<String, RegoMethod> mappings, String expectedType) {
+	public void test_getType(String rightOperandKey, Object theRightOperand, MappingConfiguration mappings, String expectedType) {
 		RightOperandMapper rightOperandMapper = new RightOperandMapper(OBJECT_MAPPER, mappings);
 		assertEquals(expectedType, rightOperandMapper.getType(rightOperandKey, theRightOperand), "The type of the rightOperand should be returned");
 	}
@@ -65,7 +65,7 @@ public class RightOperandMapperTest {
 	@DisplayName("If the key to a rightOperand is provided, the concrete type should be returned.")
 	@MethodSource("operandsWithValues")
 	@ParameterizedTest
-	public void test_getValue(String rightOperandType, Object theRightOperand, Map<String, RegoMethod> mappings, Optional<Object> theExpectedOptionalValue) throws MappingException {
+	public void test_getValue(String rightOperandType, Object theRightOperand, MappingConfiguration mappings, Optional<Object> theExpectedOptionalValue) throws MappingException {
 		RightOperandMapper rightOperandMapper = new RightOperandMapper(OBJECT_MAPPER, mappings);
 		Optional<?> optionalRightOperandValue = rightOperandMapper.getValue(rightOperandType, theRightOperand);
 		assertEquals(theExpectedOptionalValue, optionalRightOperandValue, "The value of the rightOperand should be extracted.");
@@ -73,92 +73,94 @@ public class RightOperandMapperTest {
 
 	public static Stream<Arguments> operandsWithValues() {
 		return Stream.of(
-				Arguments.of("odrl:rightOperand", "theValue", Map.of(), Optional.of("theValue")),
-				Arguments.of("odrl:rightoperand", "theValue", Map.of(), Optional.of("theValue")),
-				Arguments.of("odrl:RightOperand", "theValue", Map.of(), Optional.of("theValue")),
-				Arguments.of("my:operand", "my:operand", Map.of("my:operand", new RegoMethod("my", "operand")), Optional.empty()),
-				Arguments.of("odrl:rightOperand", new OperandObject("theValue", null), Map.of(), Optional.of("theValue")),
-				Arguments.of("odrl:rightOperand", new OperandObject(null, "my:operand"), Map.of(), Optional.empty()),
+				Arguments.of("odrl:rightOperand", "theValue", new MappingConfiguration(), Optional.of("theValue")),
+				Arguments.of("odrl:rightoperand", "theValue", new MappingConfiguration(), Optional.of("theValue")),
+				Arguments.of("odrl:RightOperand", "theValue", new MappingConfiguration(), Optional.of("theValue")),
+				Arguments.of("my:operand", "my:operand", ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("operand", new RegoMethod("my", "operand"))), Optional.empty()),
+				Arguments.of("odrl:rightOperand", new OperandObject("theValue", null), new MappingConfiguration(), Optional.of("theValue")),
+				Arguments.of("odrl:rightOperand", new OperandObject(null, "my:operand"), new MappingConfiguration(), Optional.empty()),
 				Arguments.of("odrl:rightOperand", new OperandObject("theValue", "my:operand"),
-						Map.of("my:operand", new RegoMethod("my", "operand")), Optional.of("theValue")),
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("operand", new RegoMethod("my", "operand"))), Optional.of("theValue")),
 				Arguments.of("my:operand", "theValue",
-						Map.of("my:operand", new RegoMethod("my", "operand")), Optional.of("theValue")),
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("operand", new RegoMethod("my", "operand"))), Optional.of("theValue")),
 				Arguments.of("my:operand", new OperandObject("theValue", null),
-						Map.of("my:operand", new RegoMethod("my", "operand")), Optional.of("theValue")),
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("operand", new RegoMethod("my", "operand"))), Optional.of("theValue")),
 				Arguments.of("my:operand", new OperandObject(new TestContent("test", true), null),
-						Map.of("my:operand", new RegoMethod("my", "operand")), Optional.of(Map.of("testString", "test", "test", true)))
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("operand", new RegoMethod("my", "operand"))), Optional.of(Map.of("testString", "test", "test", true)))
 		);
 	}
 
 	public static Stream<Arguments> validTypes() {
 		return Stream.of(
-				Arguments.of("odrl:rightOperand", "something", Map.of(), "odrl:rightOperand"),
-				Arguments.of("odrl:rightoperand", "something", Map.of(), "odrl:rightOperand"),
-				Arguments.of("odrl:RightOperand", "something", Map.of(), "odrl:rightOperand"),
-				Arguments.of("odrl:RightOperand", List.of("a", "b"), Map.of(), "odrl:rightOperand"),
-				Arguments.of("my:rightOperand", List.of("a", "b"), Map.of(), "my:rightOperand"),
-				Arguments.of("odrl:rightOperand", new OperandObject("myValue", null), Map.of(), "odrl:rightOperand"),
-				Arguments.of("my:rightOperand", new OperandObject("myValue", null), Map.of("my:rightOperand", new RegoMethod("my", "rightOperand")), "my:rightOperand"),
-				Arguments.of("my:rightOperand", "myValue", Map.of("my:rightOperand", new RegoMethod("my", "rightOperand")), "my:rightOperand"),
-				Arguments.of("odrl:rightOperand", new OperandObject("myValue", "my:rightOperand"), Map.of("my:rightOperand", new RegoMethod("my", "rightOperand")), "my:rightOperand"),
-				Arguments.of("odrl:rightOperand", new OperandObject(null, "my:rightOperand"), Map.of("my:rightOperand", new RegoMethod("my", "rightOperand")), "my:rightOperand"));
+				Arguments.of("odrl:rightOperand", "something", new MappingConfiguration(), "odrl:rightOperand"),
+				Arguments.of("odrl:rightoperand", "something", new MappingConfiguration(), "odrl:rightOperand"),
+				Arguments.of("odrl:RightOperand", "something", new MappingConfiguration(), "odrl:rightOperand"),
+				Arguments.of("odrl:RightOperand", List.of("a", "b"), new MappingConfiguration(), "odrl:rightOperand"),
+				Arguments.of("my:rightOperand", List.of("a", "b"), new MappingConfiguration(), "my:rightOperand"),
+				Arguments.of("odrl:rightOperand", new OperandObject("myValue", null), new MappingConfiguration(), "odrl:rightOperand"),
+				Arguments.of("my:rightOperand", new OperandObject("myValue", null), ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("rightOperand", new RegoMethod("my", "rightOperand"))), "my:rightOperand"),
+				Arguments.of("my:rightOperand", "myValue", ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("rightOperand", new RegoMethod("my", "rightOperand"))), "my:rightOperand"),
+				Arguments.of("odrl:rightOperand", new OperandObject("myValue", "my:rightOperand"), ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("rightOperand", new RegoMethod("my", "rightOperand"))), "my:rightOperand"),
+				Arguments.of("odrl:rightOperand", new OperandObject(null, "my:rightOperand"), ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("rightOperand", new RegoMethod("my", "rightOperand"))), "my:rightOperand"));
 	}
 
 	public static Stream<Arguments> invalidRightOperandKeys() {
 		return Stream.of(
 				Arguments.of(
 						Map.of("odrl:operator", "odrl:eq", "odrl:leftOperand", "something"),
-						Map.of()),
+						new MappingConfiguration()),
 				Arguments.of(
 						Map.of("my:customRightOperand", "custom", "odrl:operator", "odrl:eq", "odrl:leftOperand", "something"),
-						Map.of()),
+						new MappingConfiguration()),
 				Arguments.of(
 						Map.of("my:customRightOperand", "custom", "odrl:operator", "odrl:eq", "odrl:leftOperand", "something"),
-						Map.of("my:rightOperand", new RegoMethod("my", "rightOperand"))));
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("rightOperand", new RegoMethod("my", "rightOperand")))));
 	}
 
 	public static Stream<Arguments> validRightOperandKeys() {
 		return Stream.of(
 				Arguments.of(
 						Map.of("odrl:rightOperand", "something", "odrl:operator", "odrl:eq", "odrl:leftOperand", "something"),
-						Map.of(),
+						new MappingConfiguration(),
 						"odrl:rightOperand"),
 				Arguments.of(
 						Map.of("odrl:rightoperand", "something", "odrl:operator", "odrl:eq", "odrl:leftOperand", "something"),
-						Map.of(),
+						new MappingConfiguration(),
 						"odrl:rightoperand"),
 				Arguments.of(
 						Map.of("odrl:RightOperand", "something", "odrl:operator", "odrl:eq", "odrl:leftOperand", "something"),
-						Map.of(),
+						new MappingConfiguration(),
 						"odrl:RightOperand"),
 				Arguments.of(
 						Map.of("my:customOperand", "something", "odrl:operator", "odrl:eq", "odrl:leftOperand", "something"),
-						Map.of("my:customOperand", new RegoMethod("my", "rightOperand")),
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("customOperand", new RegoMethod("my", "rightOperand"))),
 						"my:customOperand"));
 	}
 
 	public static Stream<Arguments> validRightOperands() {
 		return Stream.of(
-				Arguments.of("odrl:rightOperand", Map.of()),
-				Arguments.of("odrl:rightoperand", Map.of()),
-				Arguments.of("odrl:RightOperand", Map.of()),
-				Arguments.of("my:rightOperand", Map.of("my:rightOperand", new RegoMethod("my", "rightOperand"))),
+				Arguments.of("odrl:rightOperand", new MappingConfiguration()),
+				Arguments.of("odrl:rightoperand", new MappingConfiguration()),
+				Arguments.of("odrl:RightOperand", new MappingConfiguration()),
+				Arguments.of("my:rightOperand", ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("rightOperand", new RegoMethod("my", "rightOperand")))),
 				Arguments.of("my:rightOperand",
-						Map.of("my:rightOperand-1", new RegoMethod("my", "rightOperand"),
-								"my:rightOperand-2", new RegoMethod("my", "rightOperand"),
-								"my:rightOperand", new RegoMethod("my", "rightOperand")))
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my",
+								Map.of("rightOperand-1", new RegoMethod("my", "operand"),
+										"rightOperand-2", new RegoMethod("my", "operand"),
+										"rightOperand", new RegoMethod("my", "operand"))))
 		);
 	}
 
 	public static Stream<Arguments> invalidRightOperands() {
 		return Stream.of(
-				Arguments.of("odrl:no-rightOperand", Map.of()),
-				Arguments.of("my:rightOperand", Map.of()),
-				Arguments.of("my:rightOperand", Map.of("my:rightOperand-1", new RegoMethod("my", "rightOperand"))),
+				Arguments.of("odrl:no-rightOperand", new MappingConfiguration()),
+				Arguments.of("my:rightOperand", new MappingConfiguration()),
+				Arguments.of("my:rightOperand", ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my", Map.of("rightOperand-1", new RegoMethod("my", "rightOperand")))),
 				Arguments.of("my:rightOperand",
-						Map.of("my:rightOperand-1", new RegoMethod("my", "rightOperand"),
-								"my:rightOperand-2", new RegoMethod("my", "rightOperand"),
-								"my:rightOperand-3", new RegoMethod("my", "rightOperand")))
+						ConstraintMapperTest.getMappingConfiguration(OdrlAttribute.RIGHT_OPERAND, "my",
+								Map.of("rightOperand-1", new RegoMethod("my", "operand"),
+										"rightOperand-2", new RegoMethod("my", "operand"),
+										"rightOperand-3", new RegoMethod("my", "operand"))))
 		);
 	}
 }

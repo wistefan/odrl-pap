@@ -13,12 +13,15 @@ import java.util.Optional;
 
 import static org.fiware.odrl.mapping.RightOperandMapper.DATE_FORMAT;
 
+/**
+ * Provides capabilites for mapping odrl:constraint
+ */
 @Slf4j
 @RegisterForReflection
 public class ConstraintMapper extends TypeMapper {
 
-	public ConstraintMapper(ObjectMapper objectMapper, Map<String, RegoMethod> mappings) {
-		super(objectMapper, mappings);
+	public ConstraintMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
+		super(objectMapper, getMappings(mappingConfiguration, OdrlAttribute.CONSTRAINT));
 	}
 
 	// package private, since it's only to fulfill cdi requirements
@@ -26,6 +29,9 @@ public class ConstraintMapper extends TypeMapper {
 		super(null, null);
 	}
 
+	/**
+	 * Is the given key a sub-class of odrl:constraint?
+	 */
 	public boolean isConstraint(String key) {
 		if (key == null) {
 			return false;
@@ -36,6 +42,9 @@ public class ConstraintMapper extends TypeMapper {
 		return mappings.containsKey(key);
 	}
 
+	/**
+	 * Retrieves the concrete type from the constraint. If nothing is specified, odrl:constraint is returend
+	 */
 	public String getTypeFromConstraint(Map<String, Object> theConstraint) {
 		if (theConstraint.containsKey(OdrlConstants.TYPE_KEY)) {
 			return (String) theConstraint.get(OdrlConstants.TYPE_KEY);
@@ -43,6 +52,9 @@ public class ConstraintMapper extends TypeMapper {
 		return OdrlConstants.TYPE_CONSTRAINT;
 	}
 
+	/**
+	 * Get the type of the constraint at the given key in the provided object.
+	 */
 	public String getType(String key, Object theObject) {
 		// case "my:customConstraint": {}
 		if (!key.equalsIgnoreCase(OdrlConstants.CONSTRAINT_KEY) && !key.equalsIgnoreCase(OdrlConstants.TYPE_LOGICAL_CONSTRAINT) && !key.equalsIgnoreCase(OdrlConstants.REFINEMENT_KEY)) {
@@ -59,7 +71,10 @@ public class ConstraintMapper extends TypeMapper {
 		}
 	}
 
-	// only constraints are supported, no custom logical constraints
+	/**
+	 * Get the value of the constraint with the given type and object.
+	 * Only constraints are supported, no custom logical constraints.
+ 	 */
 	public Optional<?> getValue(String type, Object constraintObject) {
 		// case "odrl:constraint" : "my:customConstraint"
 		// or "my:customConstraint": "static-value"
