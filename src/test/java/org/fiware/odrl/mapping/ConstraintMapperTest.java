@@ -48,19 +48,19 @@ public class ConstraintMapperTest {
 	public static Stream<Arguments> constraintsWithValues() {
 		return Stream.of(
 				Arguments.of("my:customConstraint", "my:customConstraint", Optional.empty()),
-				Arguments.of("my:customConstraint", "something-static", Optional.of("something-static")),
+				Arguments.of("my:customConstraint", "something-static", Optional.of("\"something-static\"")),
 				Arguments.of("my:customConstraint", Map.of("@value", "something-static"),
-						Optional.of("something-static")),
+						Optional.of("\"something-static\"")),
 				Arguments.of("my:customConstraint", new ValueObject("something-static"),
-						Optional.of("something-static")),
+						Optional.of("\"something-static\"")),
 				Arguments.of("my:customConstraint", new ValueObject(new TestContent("test", true)),
 						Optional.of(Map.of("testString", "test", "test", true))),
 				Arguments.of("my:customConstraint", new TestContent("test", true),
 						Optional.empty()),
 				Arguments.of("odrl:constraint", Map.of("@value", "something-static"),
-						Optional.of("something-static")),
+						Optional.of("\"something-static\"")),
 				Arguments.of("odrl:constraint", new ValueObject("something-static"),
-						Optional.of("something-static")),
+						Optional.of("\"something-static\"")),
 				Arguments.of("odrl:constraint", new ValueObject(new TestContent("test", true)),
 						Optional.of(Map.of("testString", "test", "test", true)))
 		);
