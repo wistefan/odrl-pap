@@ -1,6 +1,5 @@
 package org.fiware.odrl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fiware.odrl.model.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.keycloak.common.util.KeyUtils;
@@ -14,9 +13,7 @@ import org.keycloak.protocol.oid4vc.model.VerifiableCredential;
 import org.keycloak.representations.JsonWebToken;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.JsonBody;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.C;
 
-import javax.swing.text.html.Option;
 import java.net.URI;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -33,9 +30,6 @@ import static org.mockserver.model.HttpResponse.response;
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 public abstract class OdrlTest {
-
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
 
 	public void mockEntity(MockServerClient mockServerClient, MockEntity mockEntity) {
 
@@ -198,7 +192,7 @@ public abstract class OdrlTest {
 	public static String getGaiaXCredentialJWT(String organization, String credentialType) {
 		CredentialSubject credentialSubject = new CredentialSubject();
 		credentialSubject.setClaims("type", credentialType);
-		GaiaXAddress gaiaXAddress = new GaiaXAddress().countryCode("BE-BRU");
+		GaiaXAddress gaiaXAddress = new GaiaXAddress().countryCode("DE-BER");
 		credentialSubject.setClaims("gx:legalAddress", gaiaXAddress);
 		VerifiableCredential verifiableCredential = new VerifiableCredential();
 		verifiableCredential.setId(URI.create("urn:my-id"));
