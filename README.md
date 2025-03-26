@@ -218,26 +218,24 @@ curl -X PUT http://localhost:8081/policy/test  -H 'Content-Type: application/jso
     "@type": "odrl:Policy",
     "odrl:profile": "https://github.com/DOME-Marketplace/dome-odrl-profile/blob/main/dome-op.ttl",
     "odrl:permission": {
-    "odrl:assigner": {
-      "@id": "https://www.mp-operation.org/"
-    },
-    "odrl:target": "urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
-    "odrl:assignee": "did:web:test.org",
-    "odrl:action": {
-      "@id": "odrl:read"
-    },
-    "ovc:constraint": [
-      {
-        "ovc:leftOperand": "$.credentialSubject.gx:legalAddress.gx:countrySubdivisionCode",
-        "odrl:operator": "odrl:anyOf",
-        "odrl:rightOperand": [
-          "FR-HDF",
-          "BE-BRU"
-        ],
-        "ovc:credentialSubjectType": "gx:LegalParticipant"
-      }
-    ]
-  }
+        "odrl:assigner": {
+            "@id": "https://www.mp-operation.org/"
+        },
+        "odrl:target": "urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6",
+        "odrl:assignee": "did:web:test.org",
+        "odrl:action": {
+            "@id": "odrl:read"
+        },
+        "ovc:constraint": [{
+            "ovc:leftOperand": "$.credentialSubject.gx:legalAddress.gx:countrySubdivisionCode",
+            "odrl:operator": "odrl:anyOf",
+            "odrl:rightOperand": [
+                "FR-HDF",
+                "BE-BRU"
+            ],
+            "ovc:credentialSubjectType": "gx:LegalParticipant"
+        }]
+    }
 }' 
 ```
 
