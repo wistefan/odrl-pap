@@ -17,6 +17,9 @@ jobs:
           java-version: '17'
           java-package: jdk
 
+      - name: Ensure br_netfilter is enabled.
+        run: |
+          sudo modprobe br_netfilter
 
       - name: Run integration tests
         run: |
