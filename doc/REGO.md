@@ -1,47 +1,14 @@
 # REGO Methods
 
 
-## dome
+## vc
 
 | ODRL Class | ODRL Key | Rego-Method | Description |
 | --- | --- | --- | --- |
-| action | dome-op:create | is_creation(request) | Check if the given request is a creation |
-| action | dome-op:set_published | is_set_published(request) | check if the entity is set to published in the request. |
-| leftOperand | dome-op:role | role(verifiable_credential,organization_id) | retrieves the roles from the (lear) credential, that target the current organization |
-| leftOperand | dome-op:currentParty | current_party(credential) | the current (organization)party, |
-| leftOperand | dome-op:relatedParty | related_party(http_part) | get the entity from tm-forum and extract related party |
-| leftOperand | dome-op:owner | owner(related_party) | filter the given list of related_party(ies) for one with role "Owner" |
-| leftOperand | dome-op:relatedParty_role | related_party_role(entity) | return the role from the related party of an entity |
-| leftOperand | dome-op:validFor_endDateTime | valid_for_end_date_time(entity) | return the end of the validity of an entity |
-| leftOperand | dome-op:validFor_startDateTime | valid_for_start_date_time(entity) | return the start of the validity of an entity |
-
-## odrl
-
-| ODRL Class | ODRL Key | Rego-Method | Description |
-| --- | --- | --- | --- |
-| rightOperand | odrl:policyUsage | policy_usage | return the current time in ms, e.g. the time that the policy is used |
-| operand | odrl:and | and_operand(constraints) | checks if all given constraints are true |
-| operand | odrl:andSequence | and_sequence_operand(constraints) | checks if all given constraints are true |
-| operand | odrl:or | or_operand(constraints) | check that at least one of the constraints is true |
-| operand | odrl:xone | only_one_operand(constraints) | check that exactly one of the constraints is true |
-| operator | odrl:eq | eq_operator(leftOperand, | check that both operands are equal |
-| operator | odrl:hasPart | has_part_operator(leftOperand, | check that the rightOperand is in the leftOperand |
-| operator | odrl:gt | gt_operator(leftOperand, | check that the leftOperand is greater than the rightOperand |
-| operator | odrl:gteq | gt_eq_operator(leftOperand, | check that the leftOperand is greater or equal to the rightOperand |
-| operator | odrl:isAllOf | is_all_of_operator(leftOperand, | check that the given sets are equal |
-| operator | odrl:isAnyOf | is_any_of_operator(leftOperand, | check that the leftOperand is contained in the rightOperand set |
-| operator | odrl:isNoneOf | is_none_of_operator(leftOperand, | check that the leftOperand is not contained in the rightOperand set |
-| operator | odrl:isPartOf | is_part_of_operator(leftOperand, | check that the rightOperand is contained in the leftOperand set |
-| operator | odrl:lt | lt_operator(leftOperand, | check that the leftOperand is less than the rightOperand |
-| operator | odrl:lteq | lt_eq_operator(leftOperand, | check that the leftOperand is less or equal to the rightOperand |
-| operator | odrl:neq | n_eq_operator(leftOperand, | check that the operands are unequal |
-| action | odrl:modify | is_modification(request) | checks if the given request is a modification |
-| action | odrl:delete | is_deletion(request) | checks if the given request is a deletion |
-| action | odrl:read | is_read(request) | checks if the given request is a read operation |
-| action | odrl:use | is_use(request) | checks if the given request is a usage |
-| target | odrl:target,odrl:uid | is_target(target, | check that the uid of the target is equal to the given uid |
-| assignee | odrl:uid,odrl:assignee | is_user(user,uid) | is the given user id the same as the given uid |
-| leftOperand | odrl:currentTime | current_time | returns the current time in ms |
+| assignee | odrl:any | is_any | allows for any user |
+| leftOperand | vc:role | role(verifiable_credential,organization_id) | retrieves the roles from the credential, that target the current organization |
+| leftOperand | vc:currentParty | current_party(credential) | the current (organization)party, |
+| leftOperand | vc:type | types(verifiable_credential) | the type(s) of the current credential |
 
 ## gaiax
 
@@ -50,6 +17,20 @@
 | constraint | ovc:constraints | evaluate(constraints) | evaluates all provided constraints |
 | constraint | ovc:credentialSubjectType | credentialSubjectType(verifiable_credential, | compares the credentials' subject-type with the provided one |
 | leftOperand | ovc:leftOperand | getClaim(verifiable_credential, | retrieves the claim from the credential, using the json-path of the claim |
+
+## dome
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| leftOperand | dome-op:role | role(verifiable_credential,organization_id) | retrieves the roles from the (lear) credential, that target the current organization |
+| leftOperand | dome-op:currentParty | current_party(credential) | the current (organization)party, |
+| leftOperand | dome-op:relatedParty | related_party(http_part) | get the entity from tm-forum and extract related party |
+| leftOperand | dome-op:owner | owner(related_party) | filter the given list of related_party(ies) for one with role "Owner" |
+| leftOperand | dome-op:relatedParty_role | related_party_role(entity) | return the role from the related party of an entity |
+| leftOperand | dome-op:validFor_endDateTime | valid_for_end_date_time(entity) | return the end of the validity of an entity |
+| leftOperand | dome-op:validFor_startDateTime | valid_for_start_date_time(entity) | return the start of the validity of an entity |
+| action | dome-op:create | is_creation(request) | Check if the given request is a creation |
+| action | dome-op:set_published | is_set_published(request) | check if the entity is set to published in the request. |
 
 ## utils
 
@@ -73,33 +54,54 @@
 
 | ODRL Class | ODRL Key | Rego-Method | Description |
 | --- | --- | --- | --- |
-| action | ngsild:create | is_creation(request) | Check if the given request is a creation |
 | leftOperand | ngsi-ld:entityType | entity_type(http_part) | retrieves the type from an entity, either from the request path or from the body |
 | leftOperand | ngsi-ld:<property> | # | retrieves the value of the property, only applies to properties of type "Property". The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<property>_observedAt | # | retrieves the observedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<property>_modifiedAt | # | retrieves the modifiedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<relationship> | # | retrieves the object of the relationship, only applies to properties of type "Relationship". The method should be concretized in the mapping.json, to match a concrete property. |
-
-## tmf
-
-| ODRL Class | ODRL Key | Rego-Method | Description |
-| --- | --- | --- | --- |
-| action | tmf:create | is_creation(request) | Check if the given request is a creation |
-| leftOperand | tmf:lifecycleStatus | life_cycle_status(entity) | return the lifeCycleStatus of a given entity |
-| leftOperand | tmf:resource | resource_type(http_part) | retrieves the type of the resource from the path |
-
-## vc
-
-| ODRL Class | ODRL Key | Rego-Method | Description |
-| --- | --- | --- | --- |
-| assignee | odrl:any | is_any | allows for any user |
-| leftOperand | vc:role | role(verifiable_credential,organization_id) | retrieves the roles from the credential, that target the current organization |
-| leftOperand | vc:currentParty | current_party(credential) | the current (organization)party, |
-| leftOperand | vc:type | types(verifiable_credential) | the type(s) of the current credential |
+| action | ngsild:create | is_creation(request) | Check if the given request is a creation |
 
 ## http
 
 | ODRL Class | ODRL Key | Rego-Method | Description |
 | --- | --- | --- | --- |
-| operator | http:isInPath | is_in_path_operator(leftOperand, | check that left operand is in the path of the right operand |
 | leftOperand | http:path | path(http_part) | returns the currently requested path |
+| operator | http:isInPath | is_in_path_operator(leftOperand, | check that left operand is in the path of the right operand |
+
+## tmf
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| leftOperand | tmf:lifecycleStatus | life_cycle_status(entity) | return the lifeCycleStatus of a given entity |
+| leftOperand | tmf:resource | resource_type(http_part) | retrieves the type of the resource from the path |
+| action | tmf:create | is_creation(request) | Check if the given request is a creation |
+
+## odrl
+
+| ODRL Class | ODRL Key | Rego-Method | Description |
+| --- | --- | --- | --- |
+| assignee | odrl:uid,odrl:assignee | is_user(user,uid) | is the given user id the same as the given uid |
+| leftOperand | odrl:currentTime | current_time | returns the current time in ms |
+| leftOperand | odrl:dayOfWeek | day_of_week(ts) | Day of week from timestamp (0=Mon, 6=Sun) |
+| leftOperand | odrl:hourOfDay | hour_of_day(ts) | Hour of day (UTC) from timestamp (0–23) |
+| operand | odrl:and | and_operand(constraints) | checks if all given constraints are true |
+| operand | odrl:andSequence | and_sequence_operand(constraints) | checks if all given constraints are true |
+| operand | odrl:or | or_operand(constraints) | check that at least one of the constraints is true |
+| operand | odrl:xone | only_one_operand(constraints) | check that exactly one of the constraints is true |
+| rightOperand | odrl:policyUsage | policy_usage | return the current time in ms, e.g. the time that the policy is used |
+| operator | odrl:eq | eq_operator(leftOperand, | check that both operands are equal |
+| operator | odrl:hasPart | has_part_operator(leftOperand, | check that the rightOperand is in the leftOperand |
+| operator | odrl:gt | gt_operator(leftOperand, | check that the leftOperand is greater than the rightOperand |
+| operator | odrl:gteq | gt_eq_operator(leftOperand, | check that the leftOperand is greater or equal to the rightOperand |
+| operator | odrl:isAllOf | is_all_of_operator(leftOperand, | check that the given sets are equal |
+| operator | odrl:isAnyOf | is_any_of_operator(leftOperand, | check that the leftOperand is contained in the rightOperand set |
+| operator | odrl:isNoneOf | is_none_of_operator(leftOperand, | check that the leftOperand is not contained in the rightOperand set |
+| operator | odrl:isPartOf | is_part_of_operator(leftOperand, | check that the rightOperand is contained in the leftOperand set |
+| operator | odrl:lt | lt_operator(leftOperand, | check that the leftOperand is less than the rightOperand |
+| operator | odrl:lteq | lt_eq_operator(leftOperand, | check that the leftOperand is less or equal to the rightOperand |
+| operator | odrl:neq | n_eq_operator(leftOperand, | check that the operands are unequal |
+| target | odrl:target,odrl:uid | is_target(target, | check that the uid of the target is equal to the given uid |
+| action | odrl:modify | is_modification(request) | checks if the given request is a modification |
+| action | odrl:delete | is_deletion(request) | checks if the given request is a deletion |
+| action | odrl:read | is_read(request) | checks if the given request is a read operation |
+| action | odrl:use | is_use(request) | checks if the given request is a usage |

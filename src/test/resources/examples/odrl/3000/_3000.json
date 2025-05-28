@@ -1,0 +1,66 @@
+{
+  "@context": {
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "ngsi-ld": "https://uri.etsi.org/ngsi-ld/"
+  },
+  "@type": "odrl:Policy",
+  "odrl:permission": {
+    "odrl:assigner": {
+      "@id": "https://www.mp-operation.org/"
+    },
+    "odrl:assignee": {
+      "@id": "vc:any"
+    },
+    "odrl:action": {
+      "@id": "odrl:read"
+    },
+    "odrl:target": {
+      "@type": "odrl:AssetCollection",
+      "odrl:source": "urn:asset",
+      "odrl:refinement": [
+        {
+          "@type": "odrl:Constraint",
+          "odrl:leftOperand": "ngsi-ld:entityType",
+          "odrl:operator": {
+            "@id": "odrl:eq"
+          },
+          "odrl:rightOperand": "Test_Car"
+        }
+      ]
+    },
+    "odrl:constraint": [
+      {
+        "odrl:leftOperand": "odrl:dayOfWeek",
+        "odrl:operator": "odrl:gteq",
+        "odrl:rightOperand": {
+          "@value": 0,
+          "@type": "xsd:integer"
+        }
+      },
+      {
+        "odrl:leftOperand": "odrl:dayOfWeek",
+        "odrl:operator": "odrl:lteq",
+        "odrl:rightOperand": {
+          "@value": 4,
+          "@type": "xsd:integer"
+        }
+      },
+      {
+        "odrl:leftOperand": "odrl:hourOfDay",
+        "odrl:operator": "odrl:gteq",
+        "odrl:rightOperand": {
+          "@value": 8,
+          "@type": "xsd:integer"
+        }
+      },
+      {
+        "odrl:leftOperand": "odrl:hourOfDay",
+        "odrl:operator": "odrl:lteq",
+        "odrl:rightOperand": {
+          "@value": 23,
+          "@type": "xsd:integer"
+        }
+      }
+    ]
+  }
+}

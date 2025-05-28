@@ -176,6 +176,14 @@
       "dateTime": {
         "regoPackage": "odrl.leftOperand as odrl_lo",
         "regoMethod": "odrl_lo.current_time"
+      },
+      "dayOfWeek": {
+        "regoPackage": "odrl.leftOperand as odrl_lo",
+        "regoMethod": "odrl_lo.day_of_week(odrl_lo.current_time)"
+      },
+      "hourOfDay": {
+        "regoPackage": "odrl.leftOperand as odrl_lo",
+        "regoMethod": "odrl_lo.hour_of_day(odrl_lo.current_time)"
       }
     },
     "dome-op": {
