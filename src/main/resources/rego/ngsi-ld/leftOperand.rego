@@ -43,3 +43,6 @@ property_observed_at(property_name,body) := body[property_name].modifiedAt
 # F.e.: ngsi-ld:owningCompany = relationship_object("owningCompany", http_part.body)
 relationship_object(relationship_name, body):= body[relationship_name].object
 
+## ngsi-ld:entityTypeGroup
+# returns the entity type - let the operator do the comparison
+entity_type_group(http_part) := entity_type(http_part)
