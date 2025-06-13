@@ -46,6 +46,7 @@ public class AppConfig {
 				log.warn("Was not able to load the additional mappings.", e);
 			}
 		}
+		log.warn("The mapping is: {}", mappingConfiguration);
 		return mappingConfiguration;
 	}
 
