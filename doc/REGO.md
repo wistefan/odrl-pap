@@ -59,6 +59,7 @@
 | leftOperand | ngsi-ld:<property>_observedAt | # | retrieves the observedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<property>_modifiedAt | # | retrieves the modifiedAt of the property The method should be concretized in the mapping.json, to match a concrete property. |
 | leftOperand | ngsi-ld:<relationship> | # | retrieves the object of the relationship, only applies to properties of type "Relationship". The method should be concretized in the mapping.json, to match a concrete property. |
+| leftOperand | ngsi-ld:entityTypeGroup | entity_type_group(http_part) | returns the entity type - let the operator do the comparison |
 | action | ngsild:create | is_creation(request) | Check if the given request is a creation |
 
 ## http

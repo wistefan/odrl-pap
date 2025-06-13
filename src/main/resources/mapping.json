@@ -170,6 +170,10 @@
       "entityType": {
         "regoPackage": "ngsild.leftOperand as ngsild_lo",
         "regoMethod": "ngsild_lo.entity_type(helper.http_part)"
+      },
+      "entityTypeGroup": {
+        "regoPackage": "ngsild.leftOperand as ngsild_lo",
+        "regoMethod": "ngsild_lo.entity_type_group(helper.http_part)"
       }
     },
     "odrl": {
