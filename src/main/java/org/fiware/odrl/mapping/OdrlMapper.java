@@ -251,11 +251,12 @@ public class OdrlMapper {
 				.map(this::convertToMap).toList();
 		List<String> packagesToImport = new ArrayList<>();
 		for (Map<String, Object> constraintMap : constraintMaps) {
+			String concreteType = type;
 			// if it's not a specific logical constraint, we need to check the concrete type of the sub elements
 			if (type.equalsIgnoreCase(TYPE_LOGICAL_CONSTRAINT)) {
-				type = constraintMapper.getTypeFromConstraint(constraintMap);
+				concreteType = constraintMapper.getTypeFromConstraint(constraintMap);
 			}
-			var constraint = getConstraint(type, constraintMap);
+			var constraint = getConstraint(concreteType, constraintMap);
 			packagesToImport.addAll(constraint.packagesToImport());
 			constraintListStringJoiner.add(constraint.constraint());
 		}
