@@ -2,6 +2,7 @@ package org.fiware.odrl.mapping;
 
 import io.quarkus.qute.ImmutableList;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +24,10 @@ public class MappingResult {
 
     // set default allow := false
     private final Set<String> rules = new HashSet<>();
+
+    @Getter
+    @Setter
+    private String uid;
 
     public MappingResult() {
         imports.add("import rego.v1");

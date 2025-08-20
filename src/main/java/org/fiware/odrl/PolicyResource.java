@@ -77,8 +77,8 @@ public class PolicyResource implements PolicyApi {
 		String packagedId = String.format("policy.%s", id);
 		String regoPolicy = mappingResult.getRego(packagedId);
 		try {
-			PolicyWrapper thePolicy = new PolicyWrapper(new OdrlPolicy(objectMapper.writeValueAsString(policy)), new RegoPolicy(regoPolicy));
-			policyRepository.createPolicy(id, thePolicy);
+			PolicyWrapper thePolicy = new PolicyWrapper(id, mappingResult.getUid(), new OdrlPolicy(objectMapper.writeValueAsString(policy)), new RegoPolicy(regoPolicy));
+			policyRepository.createPolicy(id, mappingResult.getUid(), thePolicy);
 		} catch (JsonProcessingException e) {
 			throw new IllegalArgumentException("Was not able to persist the odrl representation.", e);
 		}
@@ -91,6 +91,12 @@ public class PolicyResource implements PolicyApi {
 		return Response.noContent().build();
 	}
 
+	@Override
+	public Response deletePolicyByUid(String uid) {
+		policyRepository.deletePolicyByUid(uid);
+		return Response.noContent().build();
+	}
+
 
 	@Override
 	public Response getPolicies(Integer page, Integer pageSize) {
@@ -100,6 +106,7 @@ public class PolicyResource implements PolicyApi {
 				.stream()
 				.map(policyEntry -> new Policy()
 						.id(policyEntry.getKey())
+						.odrlColonUid(policyEntry.getValue().odrlUid())
 						.odrl(policyEntry.getValue().odrl().policy())
 						.rego(policyEntry.getValue().rego().policy()))
 				.toList();
@@ -110,14 +117,27 @@ public class PolicyResource implements PolicyApi {
 
 	@Override
 	public Response getPolicyById(String id) {
-		return policyRepository
-				.getPolicy(id)
+		return policyWrapperToResponse(policyRepository
+				.getPolicy(id));
+	}
+
+	@Override
+	public Response getPolicyByUid(String id) {
+		return policyWrapperToResponse(policyRepository
+				.getPolicyByUid(id));
+
+	}
+
+	private Response policyWrapperToResponse(Optional<PolicyWrapper> optionalPolicyWrapper) {
+		return optionalPolicyWrapper
 				.map(pw -> new Policy()
-						.id(id)
+						.id(pw.regoId())
+						.odrlColonUid(pw.odrlUid())
 						.odrl(pw.odrl().policy())
 						.rego(pw.rego().policy()))
 				.map(Response::ok)
 				.map(Response.ResponseBuilder::build)
 				.orElse(Response.status(Response.Status.NOT_FOUND).build());
 	}
+
 }

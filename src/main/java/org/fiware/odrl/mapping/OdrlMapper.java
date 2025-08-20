@@ -3,15 +3,11 @@ package org.fiware.odrl.mapping;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.fiware.odrl.GeneralConfig;
 import org.fiware.odrl.rego.RegoMethod;
 import org.fiware.odrl.verification.TypeVerifier;
 import org.fiware.odrl.verification.VerificationException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.fiware.odrl.mapping.OdrlConstants.*;
 
@@ -68,6 +64,12 @@ public class OdrlMapper {
 	}
 
 	private void mapPolicy(Map<String, Object> thePolicy) throws MappingException {
+		if (thePolicy.containsKey(ODRL_UID_KEY) && thePolicy.get(ODRL_UID_KEY) instanceof String uidString) {
+			mappingResult.setUid(uidString);
+		} else {
+			log.info("The policy {} does not contain a valid uid.", thePolicy);
+			mappingResult.addFailure("The policy does not contain a valid UID.");
+		}
 		if (!thePolicy.containsKey(TYPE_KEY) || !thePolicy.get(TYPE_KEY).equals(TYPE_POLICY)) {
 			mappingResult.addFailure("The object is not of a valid type odrl:Policy.");
 		}
@@ -437,7 +439,7 @@ public class OdrlMapper {
 	private void mapAssigneeParty(Map<String, Object> theParty) throws MappingException {
 		verifyObject(theParty);
 
-		Optional<Object> optionalUid = Optional.ofNullable(theParty.get(UID_KEY));
+		Optional<Object> optionalUid = Optional.ofNullable(theParty.get(ODRL_UID_KEY));
 		if (optionalUid.isPresent() && optionalUid.get() instanceof String uid) {
 			mapStringAssignee(uid);
 		} else {
@@ -447,7 +449,7 @@ public class OdrlMapper {
 
 	private void mapTargetAsset(Map<String, Object> theAsset) throws MappingException {
 		verifyObject(theAsset);
-		Optional<Object> optionalUid = Optional.ofNullable(theAsset.get(UID_KEY));
+		Optional<Object> optionalUid = Optional.ofNullable(theAsset.get(ODRL_UID_KEY));
 		if (optionalUid.isPresent() && optionalUid.get() instanceof String uid) {
 			mapStringTarget(getNamespaced(TARGET_KEY), uid);
 		} else {

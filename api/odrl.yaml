@@ -91,7 +91,31 @@ paths:
           description: Policy was successfully removed.
         '404':
           description: No such policy exists
-
+  /policy/odrl/{id}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary: Return the given policy by its ID.
+      operationId: getPolicyByUid
+      responses:
+        '200':
+          description: Successfully retrieved the policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        '404':
+          description: No such policy exists
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary:  Delete the given policy.
+      operationId: deletePolicyByUid
+      responses:
+        '204':
+          description: Policy was successfully removed.
+        '404':
+          description: No such policy exists
 
 components:
   parameters:
@@ -120,6 +144,8 @@ components:
       type: object
       properties:
         id:
+          type: string
+        "odrl:uid":
           type: string
         odrl:
           type: string
