@@ -4,6 +4,7 @@
     "ngsi-ld": "https://uri.etsi.org/ngsi-ld/"
   },
   "@type": "odrl:Policy",
+  "odrl:uid": "https://mp-operation.org/policy/common/type",
   "odrl:permission": {
     "odrl:assigner": {
       "@id": "https://www.mp-operation.org/"

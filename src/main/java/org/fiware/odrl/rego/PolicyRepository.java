@@ -11,27 +11,29 @@ import java.util.Random;
  */
 public interface PolicyRepository {
 
-    Random RANDOM = new Random();
+	Random RANDOM = new Random();
 
-    default String generatePolicyId() {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        return RANDOM.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
+	default String generatePolicyId() {
+		int leftLimit = 97; // letter 'a'
+		int rightLimit = 122; // letter 'z'
+		int targetStringLength = 10;
+		return RANDOM.ints(leftLimit, rightLimit + 1)
+				.limit(targetStringLength)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+				.toString();
+	}
 
-    String createPolicy(String id, PolicyWrapper policy);
+	String createPolicy(String id, String uid, PolicyWrapper policy);
 
-    String createPolicy(PolicyWrapper policy);
+	Optional<PolicyWrapper> getPolicy(String id);
 
-    Optional<PolicyWrapper> getPolicy(String id);
+	Optional<PolicyWrapper> getPolicyByUid(String uid);
 
-    Map<String, PolicyWrapper> getPolicies();
+	Map<String, PolicyWrapper> getPolicies();
 
-    Map<String, PolicyWrapper> getPolicies(int page, int pageSize);
+	Map<String, PolicyWrapper> getPolicies(int page, int pageSize);
 
-    void deletePolicy(String id);
+	void deletePolicy(String id);
+
+	void deletePolicyByUid(String uid);
 }

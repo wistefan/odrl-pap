@@ -33,7 +33,7 @@ public class OdrlConstants {
     public static final String LEFT_OPERAND_KEY = "odrl:leftOperand";
     public static final String OPERATOR_KEY = "odrl:operator";
     public static final String RIGHT_OPERAND_KEY = "odrl:rightOperand";
-    public static final String UID_KEY = "odrl:uid";
+    public static final String ODRL_UID_KEY = "odrl:uid";
     public static final String TARGET_KEY = "odrl:target";
     public static final String ACTION_KEY = "odrl:action";
     public static final String CONSTRAINT_KEY = "odrl:constraint";
