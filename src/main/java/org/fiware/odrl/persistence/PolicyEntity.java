@@ -18,18 +18,26 @@ import java.util.Optional;
 @Data
 public class PolicyEntity extends PanacheEntity {
 
-    public static final String TABLE_NAME = "policy_entity";
+	public static final String TABLE_NAME = "policy_entity";
 
-    private String policyId;
+	// opa-compatible id of the policy
+	private String policyId;
+	// uid of the policy as defined by odrl
+	private String uid;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Policy odrl;
+	@JdbcTypeCode(SqlTypes.JSON)
+	private Policy odrl;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Policy rego;
+	@JdbcTypeCode(SqlTypes.JSON)
+	private Policy rego;
 
-    public static Optional<PolicyEntity> findByPolicyId(String policyId) {
-        return Optional.ofNullable(find("policyId", policyId).firstResult());
-    }
+	public static Optional<PolicyEntity> findByPolicyId(String policyId) {
+		return Optional.ofNullable(find("policyId", policyId).firstResult());
+	}
+
+	public static Optional<PolicyEntity> findByPolicyUid(String uid) {
+		return Optional.ofNullable(find("uid", uid).firstResult());
+	}
+
 
 }
