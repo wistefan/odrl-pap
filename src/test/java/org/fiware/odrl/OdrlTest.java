@@ -1,5 +1,7 @@
 package org.fiware.odrl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fiware.odrl.model.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.keycloak.common.util.KeyUtils;
@@ -48,8 +50,44 @@ public abstract class OdrlTest {
 				);
 	}
 
-	public static Stream<Arguments> validCombinations() {
+	public static HttpRequest postReq() throws JsonProcessingException {
+		Headers headers = new Headers();
+		headers.setAuthorization(String.format("Bearer %s", getTestJwt("issuer", List.of("test"))));
+
+		HttpRequest http = new HttpRequest();
+		http.setHeaders(headers);
+		http.setId(UUID.randomUUID().toString());
+		http.setMethod("POST");
+		http.setPath("/entities");
+		// we set the host to the current application, in order to allow mocking of responses
+		http.setHost("http://localhost:1080");
+		http.setBody(new ObjectMapper().readValue("{\n" +
+				"      \"id\": \"urn:ngsi-ld:K8SCluster:fancy-marketplace\",\n" +
+				"      \"type\": \"K8SCluster\",\n" +
+				"      \"name\": {\n" +
+				"        \"type\": \"Property\",\n" +
+				"        \"value\": \"Fancy Marketplace Cluster\"\n" +
+				"      },\n" +
+				"      \"numNodes\": {\n" +
+				"        \"type\": \"Property\",\n" +
+				"        \"value\": \"3\"\n" +
+				"      },\n" +
+				"      \"k8sVersion\": {\n" +
+				"        \"type\": \"Property\",\n" +
+				"        \"value\": \"1.26.0\"        \n" +
+				"      }\n" +
+				"    }", Map.class)
+		);
+		return http;
+	}
+
+	public static Stream<Arguments> validCombinations() throws JsonProcessingException {
 		return Stream.of(
+				Arguments.of(
+						List.of("/examples/ngsi-ld/types/properties.json"),
+						postReq(),
+						new MockEntity().id("urn:ngsi-ld:product-offering:62d4f929-d29d-4070-ae1f-9fe7dd1de5f6")
+								.relatedParty(List.of(new RelatedParty().role("Owner").id("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2")))),
 				Arguments.of(
 						List.of("/examples/gaia-x/ovc-constraint.json"),
 						getRequest("urn:ngsi-ld:organization:0b03975e-7ded-4fbd-9c3b-a5d6550df7e2",
@@ -151,6 +189,7 @@ public abstract class OdrlTest {
 		return Stream.of(
 				Arguments.of("/examples/gaia-x/ovc-constraint.json"),
 				Arguments.of("/examples/ngsi-ld/types/types.json"),
+				Arguments.of("/examples/ngsi-ld/types/properties.json"),
 				Arguments.of("/examples/dome/1000/_1000.json"),
 				Arguments.of("/examples/dome/1001/_1001.json"),
 				Arguments.of("/examples/dome/1001-2/_1001-2.json"),

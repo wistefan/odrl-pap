@@ -150,6 +150,10 @@
       "path": {
         "regoPackage": "http.leftOperand as http_lo",
         "regoMethod": "http_lo.path(helper.http_part)"
+      },
+      "bodyValue": {
+        "regoPackage": "http.leftOperand as http_lo",
+        "regoMethod": "http_lo.body_value(helper.http_part.body, %s)"
       }
     },
     "vc": {
