@@ -14,7 +14,7 @@ public class HttpRequest {
     private String host;
     private String path;
     private String protocol;
-    private String body;
+    private Object body;
     private Headers headers;
     private String entityId;
 }

@@ -1,5 +1,7 @@
 package org.fiware.odrl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fiware.odrl.model.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.keycloak.common.util.KeyUtils;
@@ -48,7 +50,7 @@ public abstract class OdrlTest {
 				);
 	}
 
-	public static HttpRequest postReq() {
+	public static HttpRequest postReq() throws JsonProcessingException {
 		Headers headers = new Headers();
 		headers.setAuthorization(String.format("Bearer %s", getTestJwt("issuer", List.of("test"))));
 
@@ -59,7 +61,7 @@ public abstract class OdrlTest {
 		http.setPath("/entities");
 		// we set the host to the current application, in order to allow mocking of responses
 		http.setHost("http://localhost:1080");
-		http.setBody("{\n" +
+		http.setBody(new ObjectMapper().readValue("{\n" +
 				"      \"id\": \"urn:ngsi-ld:K8SCluster:fancy-marketplace\",\n" +
 				"      \"type\": \"K8SCluster\",\n" +
 				"      \"name\": {\n" +
@@ -74,11 +76,12 @@ public abstract class OdrlTest {
 				"        \"type\": \"Property\",\n" +
 				"        \"value\": \"1.26.0\"        \n" +
 				"      }\n" +
-				"    }");
+				"    }", Map.class)
+		);
 		return http;
 	}
 
-	public static Stream<Arguments> validCombinations() {
+	public static Stream<Arguments> validCombinations() throws JsonProcessingException {
 		return Stream.of(
 				Arguments.of(
 						List.of("/examples/ngsi-ld/types/properties.json"),
