@@ -22,4 +22,7 @@ bundles:
         min_delay_seconds: 1
         max_delay_seconds: 15
 
+decision_logs:
+  console: true
+
 default_decision: /policy/main/allow
