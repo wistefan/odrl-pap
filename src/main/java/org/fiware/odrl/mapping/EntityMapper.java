@@ -35,11 +35,6 @@ public class EntityMapper {
 	}
 
 	public PolicyWrapper map(PolicyEntity policyEntity) {
-		try {
-			log.warn("The entity {}", objectMapper.writeValueAsString(policyEntity));
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
 		return new PolicyWrapper(
 				policyEntity.getPolicyId(),
 				policyEntity.getUid(),
