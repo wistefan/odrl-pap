@@ -12,7 +12,7 @@ paths:
         '200':
           description: The tar.gz containing the policies.
           content:
-            application/octect-stream:
+            application/octet-stream:
               schema:
                 type: string
                 format: binary
@@ -24,7 +24,7 @@ paths:
         '200':
           description: The tar.gz containing the methods.
           content:
-            application/octect-stream:
+            application/octet-stream:
               schema:
                 type: string
                 format: binary
@@ -36,7 +36,7 @@ paths:
         '200':
           description: The tar.gz containing the data.
           content:
-            application/octect-stream:
+            application/octet-stream:
               schema:
                 type: string
                 format: binary
