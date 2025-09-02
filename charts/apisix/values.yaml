@@ -1,4 +1,6 @@
 apisix:
+  image:
+    repository: bitnamilegacy/mongodb
   controlPlane:
     enabled: true
   ingressController:
