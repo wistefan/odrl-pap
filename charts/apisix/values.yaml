@@ -1,9 +1,13 @@
 apisix:
+  image:
+    repository: bitnamilegacy/apisix
   controlPlane:
     enabled: true
   ingressController:
     enabled: false
   etcd:
+    image:
+      repository: bitnamilegacy/etcd
     enabled: true
     persistence:
       enabled: false
