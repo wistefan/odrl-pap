@@ -709,7 +709,7 @@
                   <goal>run</goal>
                   <goal>image</goal>
                   <goal>apply</goal>
-                  <goal>rm</goal>
+<!--                  <goal>rm</goal>-->
                 </goals>
               </execution>
             </executions>
