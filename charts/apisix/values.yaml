@@ -1,9 +1,13 @@
 apisix:
+  global:
+    security:
+      # allow the image from the legacy repo
+      allowInsecureImages: true
   image:
     repository: bitnamilegacy/apisix
   controlPlane:
     enabled: true
-    resourcesPreset: micro
+    resourcesPreset: small
   ingressController:
     enabled: false
   dashboard:
