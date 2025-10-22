@@ -1,4 +1,6 @@
 postgresql:
+  image:
+    repository: bitnamilegacy/postgresql
   primary:
     persistence:
       enabled: false

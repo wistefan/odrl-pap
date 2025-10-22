@@ -3,7 +3,7 @@ apisix:
     repository: bitnamilegacy/apisix
   controlPlane:
     enabled: true
-    resourcesPreset: small
+    resourcesPreset: tiny
   ingressController:
     enabled: false
   dashboard:
@@ -15,7 +15,7 @@ apisix:
     persistence:
       enabled: false
   dataPlane:
-    resourcesPreset: small
+    resourcesPreset: tiny
     service:
       ports:
         http: 8082
