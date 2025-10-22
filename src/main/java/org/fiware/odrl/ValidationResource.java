@@ -12,14 +12,15 @@ import org.fiware.odrl.model.ValidationRequest;
 import org.fiware.odrl.model.ValidationResponse;
 import org.fiware.odrl.rego.DataResponse;
 import org.fiware.odrl.rego.PolicyRepository;
-import org.openapi.quarkus.opa_yaml.api.CompileApiApi;
 import org.openapi.quarkus.opa_yaml.api.DataApiApi;
 import org.openapi.quarkus.opa_yaml.api.PolicyApiApi;
-import org.openapi.quarkus.opa_yaml.api.QueryApiApi;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Implementation of the validation api to support testing of policies
+ */
 @Slf4j
 public class ValidationResource implements ValidateApi {
 
@@ -31,9 +32,6 @@ public class ValidationResource implements ValidateApi {
 
     @Inject
     private PolicyRepository policyRepository;
-
-    @Inject
-    private ObjectMapper objectMapper;
 
     @Inject
     private OdrlMapper odrlMapper;

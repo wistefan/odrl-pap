@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Implementation of the mapping api to provide access to the currently supported mappings. Can be used for frontend-integration.
+ */
 @Slf4j
 public class MappingsResource implements MappingsApi {
 

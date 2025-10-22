@@ -1,31 +1,39 @@
 # ODRL PAP Frontend
 
+> :warning: This is currently just an experimental frontend, without any proper tests provided. DO NOT use it in production.
+
 This is a React-based frontend for the ODRL Policy Administration Point (PAP).
 
 ## Local Development
 
 To run the frontend locally for development, follow these steps:
 
-1.  **Configure the Backend**
+1. **Start the environment**
+    From the base dir, run
+    ```bash
+    mvn clean install -Pfrontend
+   ``` 
+
+2.  **Configure the Backend**
     Create a `.env` file in the `frontend` directory by copying the `.env.example` file. Adjust the variables to point to your backend API.
     ```bash
     cp .env.example .env
     ```
 
-2.  **Install Dependencies**
+3.  **Install Dependencies**
     Make sure you have Node.js and npm installed. Then, install the project dependencies:
     ```bash
     npm install
     ```
 
-3.  **Run the Development Server**
+4.  **Run the Development Server**
     This command starts the Vite development server. It will use the `VITE_API_PROXY_TARGET` from your `.env` file to proxy API requests.
     ```bash
     npm run dev
     ```
     The frontend will be available at `http://localhost:5173`.
 
-4.  **Generate API Client**
+5.  **Generate API Client**
     If you make changes to the `api/odrl.yaml` file, you need to regenerate the API client:
     ```bash
     npm run generate-api
