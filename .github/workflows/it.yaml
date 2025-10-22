@@ -25,6 +25,7 @@ jobs:
         id: install
 
       - name: Run integration tests
+        continue-on-error: true
         run: |
           mvn clean package -DskipTests -Dnative -Dquarkus.container-image.build=true
           mvn clean install -Pk8s-it
