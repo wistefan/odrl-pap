@@ -709,7 +709,7 @@
                   <goal>run</goal>
                   <goal>image</goal>
                   <goal>apply</goal>
-<!--                  <goal>rm</goal>-->
+                  <goal>rm</goal>
                 </goals>
               </execution>
             </executions>
@@ -722,7 +722,6 @@
               <portBindings>
                 <portBinding>8080:8080</portBinding>
                 <portBinding>8081:8081</portBinding>
-<!--                <portBinding>80:9000</portBinding>-->
                 <portBinding>8082:8082</portBinding>
                 <portBinding>8181:8181</portBinding>
                 <portBinding>1080:1080</portBinding>
