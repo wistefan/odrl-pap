@@ -1,11 +1,6 @@
 apiVersion: v2
 name: mockserver
-description: Dependency chart
+description: Mock server chart
 type: application
 version: 5.14.0
 appVersion: 5.14.0
-
-dependencies:
-  - name: mockserver
-    repository: https://www.mock-server.com
-    version: 5.15.0

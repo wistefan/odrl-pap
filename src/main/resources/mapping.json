@@ -2,52 +2,58 @@
   "action": {
     "odrl": {
       "modify": {
+        "description": "Checks if the given http-request is a modification(e.g. of type PATCH).",
         "regoPackage": "odrl.action as odrl_action",
         "regoMethod": "odrl_action.is_modification(helper.http_part)"
       },
       "delete": {
+        "description": "Checks if the given http-request is a deletion(e.g. of type DELETE).",
         "regoPackage": "odrl.action as odrl_action",
         "regoMethod": "odrl_action.is_deletion(helper.http_part)"
       },
       "read": {
+        "description": "Checks if the given http-request is a read(e.g. of type GET).",
         "regoPackage": "odrl.action as odrl_action",
         "regoMethod": "odrl_action.is_read(helper.http_part)"
       },
       "use": {
+        "description": "Checks if the given http-request is a general usage(e.g. of type DELETE/GET/POST/PUT/PATCH).",
         "regoPackage": "odrl.action as odrl_action",
         "regoMethod": "odrl_action.is_use(helper.http_part)"
       }
     },
     "dome-op": {
       "modify": {
+        "description": "Checks if the given http-request is a general usage(e.g. of type DELETE/GET/POST/PUT/PATCH).",
         "regoPackage": "odrl.action as odrl_action",
         "regoMethod": "odrl_action.is_modification(helper.http_part)"
       },
       "write": {
+        "description": "Checks if the given http-request is a write request(e.g. of type DELETE/GET/POST/PUT/PATCH).",
         "regoPackage": "odrl.action as odrl_action",
         "regoMethod": "odrl_action.is_modification(helper.http_part)"
       },
       "read": {
+        "description": "Checks if the given http-request is a read(e.g. of type GET).",
         "regoPackage": "odrl.action as odrl_action",
         "regoMethod": "odrl_action.is_read(helper.http_part)"
       },
       "create": {
+        "description": "Checks if the given http-request is a creation(e.g. of type POST).",
         "regoPackage": "dome.action as dome_action",
         "regoMethod": "dome_action.is_creation(helper.http_part)"
-      },
-      "set_published": {
-        "regoPackage": "dome.action as dome_action",
-        "regoMethod": "dome_action.is_set_published(helper.http_part)"
       }
     },
     "tmf": {
       "create": {
+        "description": "Checks if the given http-request is a creation(e.g. of type POST).",
         "regoPackage": "tmf.action as tmf_action",
         "regoMethod": "tmf_action.is_creation(helper.http_part)"
       }
     },
     "ngsild": {
       "create": {
+        "description": "Checks if the given http-request is a creation(e.g. of type POST).",
         "regoPackage": "ngsild.action as ngsild_action",
         "regoMethod": "ngsild_action.is_creation(helper.http_part)"
       }
@@ -56,56 +62,69 @@
   "operator": {
     "http": {
       "isInPath": {
+        "description": "Checks the path of http-requests. Returns true, if the leftOperand is a sub-path(or equal) of the rightOperand",
         "regoPackage": "http.operator as http_operator",
         "regoMethod": "http_operator.is_in_path_operator(%s,%s)"
       }
     },
     "odrl": {
       "eq": {
+        "description": "Checks that both operands are equal.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.eq_operator(%s,%s)"
       },
       "hasPart": {
+        "description": "Checks that the rightOperand is a sub-set of the leftOperand.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.has_part_operator(%s,%s)"
       },
       "gt": {
+        "description": "Checks that the leftOperand is greater than the rightOperand.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.gt_operator(%s,%s)"
       },
       "gteq": {
+        "description": "Checks that the leftOperand is greater or equal than the rightOperand.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.gt_eq_operator(%s,%s)"
       },
       "isAllOf": {
+        "description": "Checks that both sets are equal.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.is_all_of_operator(%s,%s)"
       },
       "isAnyOf": {
+        "description": "Checks that leftOperand is contained in the rightOperand's set.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.is_any_of_operator(%s,%s)"
       },
       "anyOf": {
+        "description": "Checks that leftOperand is contained in the rightOperand's set.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.is_any_of_operator(%s,%s)"
       },
       "isNoneOf": {
+        "description": "Checks that leftOperand is not contained in the rightOperand's set.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.is_none_of_operator(%s,%s)"
       },
       "isPartOf": {
+        "description": "Checks that rightOperand is contained in the leftOperand's set.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.is_part_of_operator(%s,%s)"
       },
       "lt": {
+        "description": "Checks that the leftOperand is lesser than the rightOperand.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.lt_operator(%s,%s)"
       },
       "lteq": {
+        "description": "Checks that the leftOperand is lesser or equal than the rightOperand.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.lt_eq_operator(%s,%s)"
       },
       "neq": {
+        "description": "Checks that both operands are not equal.",
         "regoPackage": "odrl.operator as odrl_operator",
         "regoMethod": "odrl_operator.n_eq_operator(%s,%s)"
       }
@@ -114,18 +133,22 @@
   "operand": {
     "odrl": {
       "and": {
+        "description": "Requires that all given constraints evaluate to  true.",
         "regoPackage": "odrl.operand as odrl_operand",
         "regoMethod": "odrl_operand.and_operand(%s)"
       },
       "andSequence": {
+        "description": "Requires that all given constraints evaluate to  true.",
         "regoPackage": "odrl.operand as odrl_operand",
         "regoMethod": "odrl_operand.and_sequence_operand(%s)"
       },
       "or": {
+        "description": "Requires that at least one of the given constraints evaluates to true.",
         "regoPackage": "odrl.operand as odrl_operand",
         "regoMethod": "odrl_operand.or_operand(%s)"
       },
       "xone": {
+        "description": "Requires that exactly one of the given constraints evaluates to true.",
         "regoPackage": "odrl.operand as odrl_operand",
         "regoMethod": "odrl_operand.only_one_operand(%s)"
       }
@@ -134,12 +157,14 @@
   "rightOperand": {
     "odrl": {
       "policyUsage": {
+        "description": "Returns the current-time, e.g. the time that the policy is evaluated at.",
         "regoPackage": "odrl.rightOperand as odrl_ro",
         "regoMethod": "odrl_ro.policy_usage"
       }
     },
     "dome-op": {
       "currentParty": {
+        "description": "Returns the current party, e.g. the issuer of the provided credential.",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.current_party(helper.verifiable_credential)"
       }
@@ -148,94 +173,114 @@
   "leftOperand": {
     "http": {
       "path": {
+        "description": "Returns the path from the http-request(without host and query-elements).",
         "regoPackage": "http.leftOperand as http_lo",
         "regoMethod": "http_lo.path(helper.http_part)"
       },
       "bodyValue": {
+        "description": "Returns the value from the requested element in the http-body. Requires the body to be in json-format",
         "regoPackage": "http.leftOperand as http_lo",
         "regoMethod": "http_lo.body_value(helper.http_part.body, %s)"
       }
     },
     "vc": {
       "role": {
+        "description": "Retrieves the role from a verifiable credential for the organization running the PAP. Role needs to be contained in the json as roles[{target:id, names:[role1,role2]}]",
         "regoPackage": "vc.leftOperand as vc_lo",
         "regoMethod": "vc_lo.role(helper.verifiable_credential, helper.organization_did)"
       },
       "currentParty": {
+        "description": "Returns the current party, e.g. the issuer of the provided credential.",
         "regoPackage": "vc.leftOperand as vc_lo",
         "regoMethod": "vc_lo.current_party(helper.verifiable_credential)"
       },
       "type": {
+        "description": "Returns the type of the provided credential.",
         "regoPackage": "vc.leftOperand as vc_lo",
         "regoMethod": "vc_lo.types(helper.verifiable_credential)"
       }
     },
     "ngsi-ld": {
       "entityType": {
+        "description": "Returns the entity-type from an ngsi-ld request, either from the path or the request body.",
         "regoPackage": "ngsild.leftOperand as ngsild_lo",
         "regoMethod": "ngsild_lo.entity_type(helper.http_part)"
       },
       "entityTypeGroup": {
+        "description": "Returns the entity-type from an ngsi-ld request, either from the path or the request body.",
         "regoPackage": "ngsild.leftOperand as ngsild_lo",
         "regoMethod": "ngsild_lo.entity_type_group(helper.http_part)"
       }
     },
     "odrl": {
       "dateTime": {
+        "description": "Returns the current time(taken from the Open-Policy-Agent system-time).",
         "regoPackage": "odrl.leftOperand as odrl_lo",
         "regoMethod": "odrl_lo.current_time"
       },
       "dayOfWeek": {
+        "description": "Returns the day of week from the current time(taken from the Open-Policy-Agent system-time).",
         "regoPackage": "odrl.leftOperand as odrl_lo",
         "regoMethod": "odrl_lo.day_of_week(odrl_lo.current_time)"
       },
       "hourOfDay": {
+        "description": "Returns the hour of day from the current time(taken from the Open-Policy-Agent system-time).",
         "regoPackage": "odrl.leftOperand as odrl_lo",
         "regoMethod": "odrl_lo.hour_of_day(odrl_lo.current_time)"
       }
     },
     "dome-op": {
       "role": {
+        "description": "Retrieves the role from a verifiable credential for the organization running the PAP. Role needs to be contained in the json as roles[{target:id, names:[role1,role2]}]",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.role(helper.verifiable_credential, helper.organization_did)"
       },
       "currentParty": {
+        "description": "Returns the current party, e.g. the issuer of the provided credential.",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.current_party(helper.verifiable_credential)"
       },
       "relatedParty": {
+        "description": "Returns the related party from the targeted TMForum Entity. Retrieves the entity from the request's target.",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.related_party(helper.http_part)"
       },
       "owner": {
+        "description": "Returns the related party with role `Owner` from the list of related parties.",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.owner(dome_lo.related_party(helper.http_part))"
       },
       "relatedParty_role": {
+        "description": "Returns the role of the related party.",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.related_party_role(helper.entity)"
       },
       "validFor_startDateTime": {
+        "description": "Returns the start of validity for a given entity.",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.valid_for_start_date_time(helper.entity)"
       },
       "validFor_endDateTime": {
+        "description": "Returns the end of validity for a given entity.",
         "regoPackage": "dome.leftOperand as dome_lo",
         "regoMethod": "dome_lo.valid_for_end_date_time(helper.entity)"
       }
     },
     "tmf": {
       "lifecycleStatus": {
+        "description": "Returns the current lifeCycleStatus for a requested TMF-Entity.",
         "regoPackage": "tmf.leftOperand as tmf_lo",
         "regoMethod": "tmf_lo.life_cycle_status(helper.entity)"
       },
       "resource": {
+        "description": "Returns the type for a requested TMF-Resource.",
         "regoPackage": "tmf.leftOperand as tmf_lo",
         "regoMethod": "tmf_lo.resource_type(helper.http_part)"
       }
     },
     "ovc": {
       "leftOperand": {
+        "description": "Retrieves the claim from the incoming Verifiable Credential by its Json-Path.",
         "regoPackage": "gaiax.leftOperand as gaia_x_lo",
         "regoMethod": "gaia_x_lo.getClaim(helper.verifiable_credential,%s)"
       }
@@ -243,17 +288,15 @@
   },
   "assignee": {
     "odrl": {
-      "uid": {
-        "regoPackage": "odrl.assignee as odrl_assignee",
-        "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
-      },
       "assignee": {
+        "description": "Is the incoming User-ID the same as the given ID.",
         "regoPackage": "odrl.assignee as odrl_assignee",
         "regoMethod": "odrl_assignee.is_user(helper.issuer,%s)"
       }
     },
     "vc": {
       "any": {
+        "description": "Allows access for any requesting user.",
         "regoPackage": "vc.assignee as vc_assignee",
         "regoMethod": "vc_assignee.is_any"
       }
@@ -262,10 +305,12 @@
   "target": {
     "odrl": {
       "uid": {
+        "description": "Checks that the request target is equal to the given id.",
         "regoPackage": "odrl.target as odrl_target",
         "regoMethod": "odrl_target.is_target(helper.target,%s)"
       },
       "target": {
+        "description": "Checks that the request target is equal to the given id.",
         "regoPackage": "odrl.target as odrl_target",
         "regoMethod": "odrl_target.is_target(helper.target,%s)"
       }
@@ -274,10 +319,12 @@
   "constraint": {
     "ovc": {
       "constraint": {
+        "description": "Checks that all included constraints are true.",
         "regoPackage": "gaiax.constraint as gaia_x_constraint",
         "regoMethod": "gaia_x_constraint.evaluate(%s)"
       },
       "credentialSubjectType": {
+        "description": "Checks that the provided Verifiable Credentials subject type is equal to the provided one.",
         "regoPackage": "gaiax.constraint as gaia_x_constraint",
         "regoMethod": "gaia_x_constraint.credentialSubjectType(helper.verifiable_credential,%s)"
       }
