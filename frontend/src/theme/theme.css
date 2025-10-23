@@ -1,0 +1,17 @@
+:root {
+  --primary-color: #0B2B40;
+  --secondary-color: #F07D00;
+  --background-color: #FFFFFF;
+  --text-color: #333333;
+  --font-family: 'Lato', sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.navbar-dark {
+    background-color: var(--primary-color);
+}

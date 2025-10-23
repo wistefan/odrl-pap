@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "release.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "chart.name" . }}
+    release: {{ .Release.Name }}
+    chart: {{ template "chart.name_version" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "chart.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: {{ template "release.name" . }}
+      labels:
+        app: {{ template "chart.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Values.app.serviceAccountName }}
+      containers:
+        - name: {{ template "release.name" . }}
+          image: {{ if .Values.image.repositoryNameAndTag }}{{ .Values.image.repositoryNameAndTag }}{{- else }}{{ .Values.image.repository }}/mockserver:mockserver-{{- if .Values.image.snapshot }}snapshot{{- else }}{{ .Chart.AppVersion }}{{- end }}{{- end }}
+          imagePullPolicy: Always
+          ports:
+            - name: serviceport
+              containerPort: {{ .Values.app.serverPort }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: serviceport
+            initialDelaySeconds: 2
+            periodSeconds: 2
+            successThreshold: 1
+            failureThreshold: 10
+          livenessProbe:
+            tcpSocket:
+              port: serviceport
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          env:
+            - name: MOCKSERVER_LOG_LEVEL
+              value: {{ .Values.app.logLevel | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.app.serverPort | quote }}

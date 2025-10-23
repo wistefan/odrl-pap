@@ -8,4 +8,4 @@ appVersion: 3.8.0
 dependencies:
   - name: apisix
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 3.0.2
+    version: 3.5.1

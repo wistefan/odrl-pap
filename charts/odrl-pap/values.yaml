@@ -4,7 +4,7 @@ deployment:
     # -- tag of the image to be used
     tag: test
     # -- specification of the image pull policy
-    pullPolicy: IfNotPresent
+    pullPolicy: Never
   logLevel: DEBUG
   odrlPap:
     organizationId: did:web:test-org

@@ -3,9 +3,14 @@ info:
   title: ODRL PAP
   description: ODRL PAP
   version: 1.0.0
+tags:
+  - name: pap
+  - name: ui
 paths:
   /policy:
     post:
+      tags:
+        - pap
       operationId: createPolicy
       summary: Creates a new policy from the given odrl-json
       requestBody:
@@ -27,6 +32,8 @@ paths:
                 type: string
               description: location of the created policy
     get:
+      tags:
+        - pap
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
@@ -43,6 +50,8 @@ paths:
           description: No such policy exists
   /policy/{id}:
     put:
+      tags:
+        - pap
       parameters:
         - $ref: '#/components/parameters/Id'
       operationId: createPolicyWithId
@@ -68,6 +77,8 @@ paths:
         '409':
           description: Should be returned in case the policy is not allowed to be modified
     get:
+      tags:
+        - pap
       parameters:
         - $ref: '#/components/parameters/Id'
       summary: Return the given policy by its ID.
@@ -82,6 +93,8 @@ paths:
         '404':
           description: No such policy exists
     delete:
+      tags:
+        - pap
       parameters:
         - $ref: '#/components/parameters/Id'
       summary:  Delete the given policy.
@@ -93,6 +106,8 @@ paths:
           description: No such policy exists
   /policy/odrl/{id}:
     get:
+      tags:
+        - pap
       parameters:
         - $ref: '#/components/parameters/Id'
       summary: Return the given policy by its ID.
@@ -107,6 +122,8 @@ paths:
         '404':
           description: No such policy exists
     delete:
+      tags:
+        - pap
       parameters:
         - $ref: '#/components/parameters/Id'
       summary:  Delete the given policy.
@@ -116,6 +133,39 @@ paths:
           description: Policy was successfully removed.
         '404':
           description: No such policy exists
+
+  /validate:
+    post:
+      tags:
+        - ui
+      operationId: validatePolicy
+      summary: Validates a policy with a demo request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequest'
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+  /mappings:
+    get:
+      tags:
+        - ui
+      operationId: getMappings
+      summary: Gets the supported by the PAP.
+      responses:
+        '200':
+          description: Successfully retrieved the Mappings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mappings'
 
 components:
   parameters:
@@ -140,6 +190,94 @@ components:
         type: integer
         default: 25
   schemas:
+    ValidationRequest:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/OdrlPolicyJson'
+        testRequest:
+          $ref: '#/components/schemas/TestRequest'
+    TestRequest:
+      type: object
+      properties:
+        method:
+          type: string
+          enum: ["POST","PATCH","PUT","GET","DELETE"]
+        host:
+          type: string
+        path:
+          type: string
+        protocol:
+          type: string
+          enum: ["https"]
+        body:
+          type: object
+        headers:
+          $ref: '#/components/schemas/Headers'
+    Headers:
+      type: object
+      properties:
+        accept:
+          type: string
+        authorization:
+          type: string
+        content-type:
+          type: string
+    ValidationResponse:
+      type: object
+      properties:
+        allow:
+          description: indicates if the request was allowed by the policy
+          type: boolean
+        explanation:
+          description: Explanation of the detailed error, in case the policy evaluation failed.
+          type: array
+          items:
+            type: string
+    Mappings:
+      type: object
+      description: Mappings available to be used for building policies
+      properties:
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        operators:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        operands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        rightOperands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        leftOperands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        constraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+    Mapping:
+      type: object
+      description: A concrete mapping.
+      properties:
+        name:
+          type: string
+        description:
+          type: string
     Policy:
       type: object
       properties:

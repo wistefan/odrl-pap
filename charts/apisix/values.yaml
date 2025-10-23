@@ -1,17 +1,30 @@
 apisix:
+  global:
+    security:
+      allowInsecureImages: true
+  waitContainer:
+    image:
+      repository: bitnamilegacy/os-shell
   image:
     repository: bitnamilegacy/apisix
   controlPlane:
     enabled: true
+    resourcesPreset: small
   ingressController:
     enabled: false
+  dashboard:
+    enabled: false
   etcd:
+    global:
+      security:
+        allowInsecureImages: true
     image:
       repository: bitnamilegacy/etcd
     enabled: true
     persistence:
       enabled: false
   dataPlane:
+    resourcesPreset: micro
     service:
       ports:
         http: 8082

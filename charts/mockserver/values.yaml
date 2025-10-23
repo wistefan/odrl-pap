@@ -1,6 +1,17 @@
-mockserver:
-  service:
-    # we need it accessible from the tests
-    type: LoadBalancer
-    port: 1080
-  releasenameOverride: mockserver
+service:
+  # we need it accessible from the tests
+  type: LoadBalancer
+  port: 1080
+  test:
+    image: quay.io/curl/curl:8.1.2
+releasenameOverride: mockserver
+
+app:
+  logLevel: "INFO"
+  serverPort: "1080"
+  propertiesFileName: "mockserver.properties"
+
+image:
+  repository: mockserver
+  snapshot: false
+  pullPolicy: IfNotPresent
