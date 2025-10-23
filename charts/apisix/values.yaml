@@ -1,8 +1,10 @@
 apisix:
   global:
     security:
-      # allow the image from the legacy repo
       allowInsecureImages: true
+  waitContainer:
+    image:
+      repository: bitnamilegacy/os-shell
   image:
     repository: bitnamilegacy/apisix
   controlPlane:
@@ -13,6 +15,9 @@ apisix:
   dashboard:
     enabled: false
   etcd:
+    global:
+      security:
+        allowInsecureImages: true
     image:
       repository: bitnamilegacy/etcd
     enabled: true
