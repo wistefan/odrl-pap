@@ -1,0 +1,158 @@
+# Default standard .gitignore
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary files
+*~
+*.swp
+*~.nib
+.#*
+~$*
+
+# Logs and databases
+*.log
+logs/
+*.sql
+*.sqlite
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.next/
+.dist/
+build/
+out/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.coverage
+htmlcov/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+target/
+build/
+out/
+
+# Maven / Gradle
+.m2/
+.gradle/
+build/
+gradle-app.setting
+.gradle-test-kit/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.iml
+*.classpath
+*.project
+*.settings/
+*.tmproj
+*.sw?
+
+# JetBrains
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Visual Studio
+.vs/
+*.sdf
+*.cache
+*.dbmdl
+
+# Archives and packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Compiled object files, executables
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.a
+*.lib
+
+# Containers and virtualization
+docker-compose.override.yml
+docker-compose.*.yml
+.vagrant/
+.vagrant.d/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+.env.test
+*.env
+
+# Secrets and keys
+*.pem
+*.key
+*.crt
+
+# Coverage and reports
+coverage/
+coverage.xml
+lcov-report/
+
+# Misc build outputs
+dist/
+tmp/
+temp/
+cache/
+target/
+*.cache
+
+# Generated documentation
+docs/_build/
+site/
+
+# Others
+.idea/
+*.bak
+*.backup
+*.orig
+*.rej
