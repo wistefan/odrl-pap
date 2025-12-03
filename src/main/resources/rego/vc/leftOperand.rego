@@ -15,5 +15,8 @@ role(verifiable_credential,organization_id) := r if {
 current_party(credential) := credential.issuer
 
 ## vc:type
-# the type(s) of the current credential
-types(verifiable_credential) := verifiable_credential.type
+# the type(s) of the current credential. Converted to array if string type.
+types(verifiable_credential) := result if {
+    is_array(verifiable_credential.type)
+    result = verifiable_credential.type
+} else := [verifiable_credential.type]
