@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class PersistentPolicyRepository implements PolicyRepository {
 
+    private static final String DEFAULT_SORT = "id";
+
 	@Inject
 	private EntityMapper entityMapper;
 
@@ -43,12 +46,12 @@ public class PersistentPolicyRepository implements PolicyRepository {
 
 	@Override
 	public Optional<PolicyWrapper> getPolicy(String id) {
-		return PolicyEntity.findByPolicyId(id).map(PolicyEntity.class::cast).map(entityMapper::map);
+		return PolicyEntity.findByPolicyId(id).map(entityMapper::map);
 	}
 
 	@Override
 	public Optional<PolicyWrapper> getPolicyByUid(String uid) {
-		return PolicyEntity.findByPolicyUid(uid).map(PolicyEntity.class::cast).map(entityMapper::map);
+		return PolicyEntity.findByPolicyUid(uid).map(entityMapper::map);
 	}
 
 	private String getUniqueId() {
@@ -69,7 +72,7 @@ public class PersistentPolicyRepository implements PolicyRepository {
 	}
 
 	public Map<String, PolicyWrapper> getPolicies(int page, int pageSize) {
-		PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.findAll();
+		PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.findAll(Sort.ascending(DEFAULT_SORT));
 		List<PolicyEntity> policyEntityList = policyEntities.page(Page.of(page, pageSize)).list();
 
 		return policyEntityList.stream().collect(Collectors.toMap(PolicyEntity::getPolicyId, e -> entityMapper.map(e), (e1, e2) -> e1));
