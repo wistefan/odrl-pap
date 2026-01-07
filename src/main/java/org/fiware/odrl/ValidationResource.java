@@ -10,8 +10,8 @@ import org.fiware.odrl.mapping.MappingResult;
 import org.fiware.odrl.mapping.OdrlMapper;
 import org.fiware.odrl.model.ValidationRequest;
 import org.fiware.odrl.model.ValidationResponse;
+import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.DataResponse;
-import org.fiware.odrl.rego.PolicyRepository;
 import org.openapi.quarkus.opa_yaml.api.DataApiApi;
 import org.openapi.quarkus.opa_yaml.api.PolicyApiApi;
 

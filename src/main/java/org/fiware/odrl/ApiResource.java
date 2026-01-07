@@ -24,6 +24,7 @@ public abstract class ApiResource {
     private static final String POLICY_PACKAGE = "policy";
 
     protected final ObjectMapper objectMapper;
+    protected final OdrlMapper odrlMapper;
     protected final MappingConfiguration mappingConfiguration;
     protected final PolicyRepository policyRepository;
     protected final ServiceRepository serviceRepository;
@@ -34,8 +35,9 @@ public abstract class ApiResource {
     protected final RightOperandMapper rightOperandMapper;
 
 
-    protected ApiResource(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
+    protected ApiResource(ObjectMapper objectMapper, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
         this.objectMapper = objectMapper;
+        this.odrlMapper = odrlMapper;
         this.mappingConfiguration = mappingConfiguration;
         this.policyRepository = policyRepository;
         this.serviceRepository = serviceRepository;
@@ -51,7 +53,6 @@ public abstract class ApiResource {
             return Response.status(HttpStatus.SC_CONFLICT).entity("Policy `main` cannot be manually modified.").build();
         }
 
-        OdrlMapper odrlMapper = new OdrlMapper(objectMapper, mappingConfiguration, typeVerifiers.stream().toList(), leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
         MappingResult mappingResult = odrlMapper.mapOdrl(policy);
         if (mappingResult.isFailed()) {
             throw new IllegalArgumentException(String.join(",", mappingResult.getFailureReasons()));

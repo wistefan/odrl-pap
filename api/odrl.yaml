@@ -8,6 +8,8 @@ tags:
     description: Set of endpoints to manage policies for a specific service
   - name: Policy
     description: Set of endpoints to manage policies for the main policy
+  - name: UI
+    description: Set of endpoint intended to support integration with frontends
 
 paths:
   /service:
@@ -338,7 +340,7 @@ paths:
   /validate:
     post:
       tags:
-        - ui
+        - UI
       operationId: validatePolicy
       summary: Validates a policy with a demo request
       requestBody:
@@ -357,7 +359,7 @@ paths:
   /mappings:
     get:
       tags:
-        - ui
+        - UI
       operationId: getMappings
       summary: Gets the supported by the PAP.
       responses:

@@ -3,6 +3,7 @@ package org.fiware.odrl.persistence;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ import java.util.Optional;
 @Slf4j
 @ApplicationScoped
 public class PersistentServiceRepository implements ServiceRepository {
+
+    private static final String DEFAULT_SORT = "id";
 
     @Inject
     private EntityMapper entityMapper;
@@ -45,7 +48,7 @@ public class PersistentServiceRepository implements ServiceRepository {
 
     @Override
     public List<ServiceEntity> getServices(int page, int pageSize) {
-        PanacheQuery<ServiceEntity> serviceEntities = ServiceEntity.findAll();
+        PanacheQuery<ServiceEntity> serviceEntities = ServiceEntity.findAll(Sort.ascending(DEFAULT_SORT));
         return serviceEntities.page(Page.of(page, pageSize)).list();
     }
 }
