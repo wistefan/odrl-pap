@@ -1,10 +1,9 @@
 package org.fiware.odrl.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Lob;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -24,6 +23,10 @@ public class PolicyEntity extends PanacheEntity {
 	private String policyId;
 	// uid of the policy as defined by odrl
 	private String uid;
+
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "service_id")
+	private ServiceEntity serviceEntity;
 
 	@JdbcTypeCode(SqlTypes.JSON)
 	private Policy odrl;

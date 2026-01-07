@@ -2,15 +2,12 @@ package org.fiware.odrl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +15,11 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.http.HttpStatus;
 import org.fiware.odrl.bundle.api.BundlesApi;
+import org.fiware.odrl.mapping.EntityMapper;
+import org.fiware.odrl.persistence.ServiceEntity;
+import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.rego.Manifest;
-import org.fiware.odrl.rego.PolicyRepository;
+import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
 
 import java.io.BufferedOutputStream;
@@ -57,6 +57,9 @@ public class BundleResource implements BundlesApi {
     private PolicyRepository policyRepository;
 
     @Inject
+    private ServiceRepository serviceRepository;
+
+    @Inject
     private ObjectMapper objectMapper;
 
     @Inject
@@ -64,6 +67,9 @@ public class BundleResource implements BundlesApi {
 
     @Inject
     private GeneralConfig generalConfig;
+
+    @Inject
+    private EntityMapper entityMapper;
 
     private Map<String, String> methods = new HashMap<>();
 
@@ -82,13 +88,33 @@ public class BundleResource implements BundlesApi {
         }
     }
 
+    private Map<String, String> serviceToPolicyMap(ServiceEntity serviceEntity) {
+        var policyEntities = ImmutableList.copyOf(serviceEntity.getPolicies());
+        ImmutableMap.Builder<String, PolicyWrapper> policyWrapperMapBuilder = ImmutableMap.builder();
+        policyEntities
+                .forEach(pe -> policyWrapperMapBuilder.put(pe.getPolicyId(), entityMapper.map(pe)));
+        var policies = policyWrapperMapBuilder.build();
+        var toZip = policies
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(e -> String.format("%s.%s", serviceEntity.getServiceId(), e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
+        toZip.put(String.format("%s/main", serviceEntity.getServiceId()), getMainPolicy(serviceEntity.getServiceId(), policies));
+        return toZip;
+    }
+
     public Response getPolicies() {
         var policies = ImmutableMap.copyOf(policyRepository.getPolicies());
-        String mainPolicy = getMainPolicy(policies);
+        String mainPolicy = getMainPolicy("policy", policies);
+
 
         var toZip = policies.entrySet().stream()
                 .collect(Collectors.toMap(e -> String.format("policy.%s", e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
         toZip.put("policy.main", mainPolicy);
+
+        var services = ImmutableList.copyOf(serviceRepository.getServices());
+        services.stream()
+                .map(this::serviceToPolicyMap)
+                .forEach(toZip::putAll);
         try {
             return Response.ok(zipMap(toZip, "rego", objectMapper.writeValueAsString(getManifest(toZip)))).build();
         } catch (JsonProcessingException e) {
@@ -237,10 +263,10 @@ public class BundleResource implements BundlesApi {
         return new Manifest().setRoots(List.copyOf(rootPaths));
     }
 
-    private String getMainPolicy(Map<String, PolicyWrapper> policies) {
+    private String getMainPolicy(String packageName, Map<String, PolicyWrapper> policies) {
 
         StringJoiner regoJoiner = new StringJoiner(System.getProperty("line.separator"));
-        regoJoiner.add("package policy.main");
+        regoJoiner.add(String.format("package %s.main", packageName));
         regoJoiner.add("");
         regoJoiner.add("import rego.v1");
         policies.keySet().stream().map(policy -> String.format("import data.policy.%s as %s", policy, policy)).forEach(regoJoiner::add);
