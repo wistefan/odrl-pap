@@ -98,7 +98,7 @@ public class BundleResource implements BundlesApi {
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(e -> String.format("%s.%s", serviceEntity.getServiceId(), e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
-        toZip.put(String.format("%s/main", serviceEntity.getServiceId()), getMainPolicy(serviceEntity.getServiceId(), policies));
+        toZip.put(String.format("%s.main", serviceEntity.getServiceId()), getMainPolicy(serviceEntity.getServiceId(), policies));
         return toZip;
     }
 

@@ -35,6 +35,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
 
     @Override
     public Response createService(ServiceCreate serviceCreate) {
+        validateServiceId(serviceCreate.getId());
         assureNotReserved(serviceCreate.getId());
         serviceRepository.createService(serviceCreate.getId());
         return Response.ok(new PolicyPath().policyPath(serviceCreate.getId())).build();
@@ -139,6 +140,13 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                         .map(ServiceEntity::getServiceId)
                         .map(serviceId -> new ServiceListInner().id(serviceId).policyPath(String.format("%s/%s", serviceId, MAIN_POLICY_ID)))
                         .toList()).build();
+    }
+
+    private void validateServiceId(String serviceId) {
+        boolean isValid = serviceId != null && serviceId.matches("[a-z]+");
+        if (!isValid) {
+            throw new IllegalArgumentException("Service ids are only allowed to contain lower-case characters.");
+        }
     }
 
     private Optional<Response> checkNotFound(String serviceId) {

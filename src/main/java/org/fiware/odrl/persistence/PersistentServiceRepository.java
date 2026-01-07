@@ -6,6 +6,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.fiware.odrl.mapping.EntityMapper;
 
@@ -22,6 +23,7 @@ public class PersistentServiceRepository implements ServiceRepository {
     private EntityMapper entityMapper;
 
     @Override
+    @Transactional
     public String createService(String id) {
         if (ServiceEntity.findByServiceId(id).isPresent()) {
             throw new IllegalArgumentException(String.format("Service with id %s already exists.", id));
@@ -36,6 +38,7 @@ public class PersistentServiceRepository implements ServiceRepository {
     }
 
     @Override
+    @Transactional
     public void deleteService(String id) {
         ServiceEntity.findByServiceId(id)
                 .ifPresent(PanacheEntityBase::delete);
