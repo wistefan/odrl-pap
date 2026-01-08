@@ -41,7 +41,7 @@ public class ValidationResource implements ValidateApi {
         if (dataApiApi == null) {
             throw new UnsupportedOperationException("Policy validation is not enabled.");
         }
-        String tempId = policyRepository.generatePolicyId();
+        String tempId = PolicyRepository.generatePolicyId();
         try {
             MappingResult mappingResult = odrlMapper.mapOdrl(validationRequest.getPolicy());
             if (mappingResult.isFailed()) {

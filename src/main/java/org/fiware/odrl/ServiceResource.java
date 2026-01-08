@@ -37,13 +37,13 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     public Response createService(ServiceCreate serviceCreate) {
         validateServiceId(serviceCreate.getId());
         assureNotReserved(serviceCreate.getId());
-        serviceRepository.createService(serviceCreate.getId());
-        return Response.ok(new PolicyPath().policyPath(serviceCreate.getId())).build();
+        String packageName = serviceRepository.createService(serviceCreate.getId());
+        return Response.ok(new PolicyPath().policyPath(String.format("%s/%s", packageName, MAIN_POLICY_ID))).build();
     }
 
     @Override
     public Response createServicePolicy(String serviceId, Map<String, Object> requestBody) {
-        return createServicePolicyWithId(serviceId, policyRepository.generatePolicyId(), requestBody);
+        return createServicePolicyWithId(serviceId, PolicyRepository.generatePolicyId(), requestBody);
     }
 
     @Override

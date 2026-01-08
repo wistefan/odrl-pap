@@ -15,6 +15,7 @@ public class ServiceEntity extends PanacheEntity {
     public static final String TABLE_NAME = "service_entity";
 
     private String serviceId;
+    private String packageName;
 
     @OneToMany(mappedBy = "serviceEntity")
     private List<PolicyEntity> policies;
@@ -23,8 +24,13 @@ public class ServiceEntity extends PanacheEntity {
         return Optional.ofNullable(find("serviceId", serviceId).firstResult());
     }
 
-    public ServiceEntity id(String serviceId){
+    public ServiceEntity id(String serviceId) {
         this.serviceId = serviceId;
+        return this;
+    }
+
+    public ServiceEntity packageName(String packageName) {
+        this.packageName = packageName;
         return this;
     }
 }

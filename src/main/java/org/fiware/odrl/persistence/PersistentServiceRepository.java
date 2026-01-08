@@ -28,8 +28,12 @@ public class PersistentServiceRepository implements ServiceRepository {
         if (ServiceEntity.findByServiceId(id).isPresent()) {
             throw new IllegalArgumentException(String.format("Service with id %s already exists.", id));
         }
-        new ServiceEntity().id(id).persist();
-        return id;
+        ServiceEntity serviceEntity = new ServiceEntity()
+                .id(id)
+                .packageName(PolicyRepository.generatePolicyId());
+        serviceEntity.persist();
+        ;
+        return serviceEntity.getPackageName();
     }
 
     @Override

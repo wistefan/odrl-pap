@@ -13,7 +13,7 @@ public interface PolicyRepository {
 
     Random RANDOM = new Random();
 
-    default String generatePolicyId() {
+    static String generatePolicyId() {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'
         int targetStringLength = 10;

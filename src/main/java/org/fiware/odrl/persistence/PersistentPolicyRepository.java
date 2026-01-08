@@ -57,7 +57,7 @@ public class PersistentPolicyRepository implements PolicyRepository {
     }
 
     private String getUniqueId() {
-        String generatedId = generatePolicyId();
+        String generatedId = PolicyRepository.generatePolicyId();
         if (getPolicy(generatedId).isPresent()) {
             return getUniqueId();
         }

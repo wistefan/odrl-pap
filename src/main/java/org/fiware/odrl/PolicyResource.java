@@ -33,7 +33,7 @@ public class PolicyResource extends ApiResource implements PolicyApi {
 
     @Override
     public Response createPolicy(Map<String, Object> requestBody) {
-        return super.createPolicyWithId(policyRepository.generatePolicyId(), Optional.empty(), requestBody);
+        return super.createPolicyWithId(PolicyRepository.generatePolicyId(), Optional.empty(), requestBody);
     }
 
     @Override
