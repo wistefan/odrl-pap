@@ -83,9 +83,14 @@ public class OdrlMapper {
         if (mappingResult.isFailed()) {
             return;
         }
-        Map<String, Object> thePermission = convertToMap(thePolicy.get(PERMISSION_KEY));
-
-        mapPermission(thePermission);
+        Object permissionObject = thePolicy.get(PERMISSION_KEY);
+        if (permissionObject instanceof List permissionList) {
+            for (Object o : permissionList) {
+                mapPermission(convertToMap(o));
+            }
+        } else {
+            mapPermission(convertToMap(permissionObject));
+        }
     }
 
     private void verifyObject(Map<String, Object> theObject) throws MappingException {
