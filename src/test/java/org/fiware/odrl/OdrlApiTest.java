@@ -106,22 +106,16 @@ public class OdrlApiTest extends OdrlTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"test-service", "1", "TestService", "test_service", "!=$&"})
-    public void testInvalidServiceId(String invalidId) throws IOException {
-        assertThrows(IllegalArgumentException.class, () -> serviceResource.createService(new ServiceCreate().id(invalidId)), "Ids with invalid contents should be rejected.");
-    }
-
-    @ParameterizedTest
     @MethodSource("odrlPolicyPath")
     public void testCreationOfValidPolicyForService(String policyPath) throws IOException {
         String serviceId = "myservice";
         Response response = serviceResource.createService(new ServiceCreate().id(serviceId));
+        PolicyPath path = response.readEntity(PolicyPath.class);
         assertEquals(200, response.getStatus());
 
         Map<String, Object> theOdrl = getJsonFromResource(objectMapper, policyPath);
         Response serviceResponse = serviceResource.createServicePolicyWithId("myservice", "test", theOdrl);
-
-        assertValidPolicy(serviceId, serviceResponse);
+        assertValidPolicy(path.getPolicyPath().split("/")[0], serviceResponse);
     }
 
     @ParameterizedTest

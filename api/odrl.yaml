@@ -416,6 +416,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/Id'
+        policyPath:
+          type: string
         policies:
           $ref: '#/components/schemas/PolicyList'
     ServiceList:

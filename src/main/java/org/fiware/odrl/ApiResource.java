@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.Response;
 import org.apache.http.HttpStatus;
 import org.fiware.odrl.mapping.*;
 import org.fiware.odrl.model.Policy;
+import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.rego.OdrlPolicy;
 import org.fiware.odrl.persistence.PolicyRepository;
@@ -57,7 +58,7 @@ public abstract class ApiResource {
         if (mappingResult.isFailed()) {
             throw new IllegalArgumentException(String.join(",", mappingResult.getFailureReasons()));
         }
-        String packageName = serviceId.orElse(POLICY_PACKAGE);
+        String packageName = serviceId.flatMap(serviceRepository::getService).map(ServiceEntity::getPackageName).orElse(POLICY_PACKAGE);
 
         String packagedId = String.format("%s.%s", packageName, id);
         String regoPolicy = mappingResult.getRego(packagedId);
