@@ -29,6 +29,7 @@
     <version.io.quarkiverse.openapi.generator>2.4.1</version.io.quarkiverse.openapi.generator>
     <version.org.projectlombok.lombok>1.18.30</version.org.projectlombok.lombok>
     <version.com.google.guava>33.1.0-jre</version.com.google.guava>
+    <version.com.apicatalog.titanium-json-ld>1.7.0</version.com.apicatalog.titanium-json-ld>
     <version.org.apache.commons.commons-compress>1.26.1</version.org.apache.commons.commons-compress>
     <version.org.keycloak>24.0.2</version.org.keycloak>
     <version.org.awaitility>4.2.1</version.org.awaitility>
@@ -92,10 +93,20 @@
       <version>${version.io.quarkiverse.openapi.generator}</version>
     </dependency>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-health</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${version.org.projectlombok.lombok}</version>
     </dependency>
+
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -106,14 +117,14 @@
       <artifactId>commons-compress</artifactId>
       <version>${version.org.apache.commons.commons-compress}</version>
     </dependency>
+
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-health</artifactId>
+      <groupId>com.apicatalog</groupId>
+      <artifactId>titanium-json-ld</artifactId>
+      <version>${version.com.apicatalog.titanium-json-ld}</version>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
-    </dependency>
+
+    <!-- testing -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>

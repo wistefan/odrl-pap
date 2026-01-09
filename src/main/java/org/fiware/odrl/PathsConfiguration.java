@@ -18,4 +18,7 @@ public interface PathsConfiguration {
 
     // Path to additional rego-methods to be added to the built-in methods. Duplications will be overwritten
     Optional<File> rego();
+
+    // Path to an alternative compactionContext to be used.
+    Optional<File> compactionContext();
 }

@@ -34,7 +34,7 @@
       "@id": "vc:any"
     },
     "odrl:action": {
-      "@id": "dome-op:read"
+      "@id": "http://www.w3.org/ns/odrl/2/use"
     }
   }
 }

@@ -1,0 +1,6 @@
+{
+  "odrl": {
+    "@id": "http://www.w3.org/ns/odrl/2/",
+    "@prefix": true
+  }
+}
