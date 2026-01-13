@@ -52,7 +52,7 @@ jobs:
 
       - uses: actions/setup-java@v1
         with:
-          java-version: '17'
+          java-version: '21'
           java-package: jdk
 
       - name: Log into quay.io

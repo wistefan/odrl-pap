@@ -1,5 +1,7 @@
 package org.fiware.odrl.mapping;
 
+import java.util.List;
+
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
@@ -37,6 +39,8 @@ public class OdrlConstants {
     public static final String TARGET_KEY = "odrl:target";
     public static final String ACTION_KEY = "odrl:action";
     public static final String CONSTRAINT_KEY = "odrl:constraint";
+
+    public static final List<String> SUPPORTED_POLICY_TYPES = List.of("contract", TYPE_POLICY);
 
     private OdrlConstants() {
         // prevent instantiation

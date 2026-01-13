@@ -1,14 +1,16 @@
 package org.fiware.odrl.mapping;
 
+import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.document.JsonDocument;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.fiware.odrl.rego.RegoMethod;
 import org.fiware.odrl.verification.TypeVerifier;
 import org.fiware.odrl.verification.VerificationException;
+import org.hibernate.boot.model.source.internal.hbm.MappingDocument;
 
 import java.util.*;
 
@@ -31,6 +33,8 @@ public class OdrlMapper {
     private final OperatorMapper operatorMapper;
     private final RightOperandMapper rightOperandMapper;
 
+    private final TopLevelElements topLevelElements = new TopLevelElements();
+
 
     private MappingResult mappingResult;
 
@@ -45,6 +49,7 @@ public class OdrlMapper {
     }
 
     public MappingResult mapOdrl(Map<String, Object> policy) {
+
         mappingResult = new MappingResult();
 
         try {
@@ -55,7 +60,7 @@ public class OdrlMapper {
                 for (Map<String, Object> policyMap : policyMaps) {
                     mapPolicy(policyMap);
                 }
-            } else if (policy.containsKey(TYPE_KEY) && policy.get(TYPE_KEY).equals(TYPE_POLICY)) {
+            } else if (policy.containsKey(TYPE_KEY) && isSupportedType(policy.get(TYPE_KEY))) {
                 mapPolicy(policy);
             } else {
                 mappingResult.addFailure("The odrl does not contain valid policies.");
@@ -67,25 +72,62 @@ public class OdrlMapper {
         return mappingResult;
     }
 
-    private void mapPolicy(Map<String, Object> thePolicy) throws MappingException {
+    private boolean isSupportedType(Object policyType) {
+        if (policyType instanceof String policyTypeString) {
+            return SUPPORTED_POLICY_TYPES.contains(policyTypeString);
+        }
+        return false;
+    }
+
+    private Optional<String> getUid(Map<String, Object> thePolicy) {
         if (thePolicy.containsKey(ODRL_UID_KEY) && thePolicy.get(ODRL_UID_KEY) instanceof String uidString) {
-            mappingResult.setUid(uidString);
+            return Optional.of(uidString);
+        }
+        if (thePolicy.containsKey(ID_KEY) && thePolicy.get(ID_KEY) instanceof String uidString) {
+            return Optional.of(uidString);
+        }
+        return Optional.empty();
+    }
+
+    private void mapPolicy(Map<String, Object> thePolicy) throws MappingException {
+        Optional<String> optionalId = getUid(thePolicy);
+        if (optionalId.isPresent()) {
+            mappingResult.setUid(optionalId.get());
         } else {
             log.info("The policy {} does not contain a valid uid.", thePolicy);
             mappingResult.addFailure("The policy does not contain a valid UID.");
         }
-        if (!thePolicy.containsKey(TYPE_KEY) || !thePolicy.get(TYPE_KEY).equals(TYPE_POLICY)) {
+        if (!thePolicy.containsKey(TYPE_KEY) || !isSupportedType(thePolicy.get(TYPE_KEY))) {
             mappingResult.addFailure("The object is not of a valid type odrl:Policy.");
         }
         if (!thePolicy.containsKey(PERMISSION_KEY)) {
             mappingResult.addFailure("The policy has no permission.");
         }
+
         if (mappingResult.isFailed()) {
             return;
         }
-        Map<String, Object> thePermission = convertToMap(thePolicy.get(PERMISSION_KEY));
+        // prepare the top-level elements(if present) for later use
+        fillTopLevel(thePolicy);
 
-        mapPermission(thePermission);
+        Object permissionObject = thePolicy.get(PERMISSION_KEY);
+        if (permissionObject instanceof List permissionList) {
+            for (Object o : permissionList) {
+                mapPermission(convertToMap(o));
+            }
+        } else {
+            mapPermission(convertToMap(permissionObject));
+        }
+    }
+
+    /**
+     * In certain cases(f.e. policies in the edc) certain elements(e.g. target, assigner, assignee) are created at the top-level of the policy and
+     * then be relevant for all sub-elements(f.e. permissions). Therefor we store them for later use.
+     */
+    private void fillTopLevel(Map<String, Object> thePolicy) {
+        Optional.ofNullable(thePolicy.get(ASSIGNER_KEY)).ifPresent(topLevelElements::setAssigner);
+        Optional.ofNullable(thePolicy.get(ASSIGNEE_KEY)).ifPresent(topLevelElements::setAssignee);
+        Optional.ofNullable(thePolicy.get(TARGET_KEY)).ifPresent(topLevelElements::setTarget);
     }
 
     private void verifyObject(Map<String, Object> theObject) throws MappingException {
@@ -113,10 +155,10 @@ public class OdrlMapper {
         if (!thePermission.containsKey(ACTION_KEY)) {
             mappingResult.addFailure("The permission does not contain an action.");
         }
-        if (!thePermission.containsKey(TARGET_KEY)) {
+        if (!thePermission.containsKey(TARGET_KEY) && topLevelElements.getTarget().isEmpty()) {
             mappingResult.addFailure("The permission does not contain a target.");
         }
-        if (!thePermission.containsKey(ASSIGNEE_KEY)) {
+        if (!thePermission.containsKey(ASSIGNEE_KEY) && topLevelElements.getAssignee().isEmpty()) {
             mappingResult.addFailure("The permission does not contain an assignee.");
         }
 
@@ -127,8 +169,8 @@ public class OdrlMapper {
         verifyObject(thePermission);
 
         mapAction(thePermission.get(ACTION_KEY));
-        mapAssignee(thePermission.get(ASSIGNEE_KEY));
-        mapTarget(thePermission.get(TARGET_KEY));
+        mapAssignee(Optional.ofNullable(thePermission.get(ASSIGNEE_KEY)).orElseGet(() -> topLevelElements.getAssignee().get()));
+        mapTarget(Optional.ofNullable(thePermission.get(TARGET_KEY)).orElseGet(() -> topLevelElements.getTarget().get()));
 
         for (Map.Entry<String, Object> entry : thePermission.entrySet()) {
             boolean isConstraint = constraintMapper.isConstraint(entry.getKey());
@@ -493,5 +535,38 @@ public class OdrlMapper {
     }
 
     private record Constraint(String constraint, List<String> packagesToImport) {
+    }
+
+    private class TopLevelElements {
+        private Object target;
+        private Object assignee;
+        private Object assigner;
+
+        public TopLevelElements setTarget(Object target) {
+            this.target = target;
+            return this;
+        }
+
+        public TopLevelElements setAssignee(Object assignee) {
+            this.assignee = assignee;
+            return this;
+        }
+
+        public TopLevelElements setAssigner(Object assigner) {
+            this.assigner = assigner;
+            return this;
+        }
+
+        public Optional<Object> getTarget() {
+            return Optional.ofNullable(target);
+        }
+
+        public Optional<Object> getAssignee() {
+            return Optional.ofNullable(assignee);
+        }
+
+        public Optional<Object> getAssigner() {
+            return Optional.ofNullable(assigner);
+        }
     }
 }
