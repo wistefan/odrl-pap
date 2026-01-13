@@ -6,12 +6,7 @@ import com.apicatalog.jsonld.http.HttpClient;
 import com.apicatalog.jsonld.http.HttpResponse;
 import org.apache.http.Header;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,21 +39,10 @@ public class JsonLdApacheHttpClient implements HttpClient {
         HttpGet httpGet = new HttpGet(targetUri);
         httpGet.addHeader(ACCEPT_HEADER, requestProfile);
 
-        try (JsonLdHttpResponse response = (JsonLdHttpResponse) httpClient
-                .execute(httpGet, (new MappingResponseHandler()))) {
-            return response;
-        } catch (ClientProtocolException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-        } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
-        }
-    }
-
-    private class MappingResponseHandler implements ResponseHandler<HttpResponse> {
-
-        @Override
-        public HttpResponse handleResponse(org.apache.http.HttpResponse httpResponse) throws ClientProtocolException, IOException {
-
+        try {
+            // do not insert a try-with, since the document-loader handles that already. Would lead to stream-already closed exception else.
+            org.apache.http.HttpResponse httpResponse = httpClient
+                    .execute(httpGet);
             return new JsonLdHttpResponse()
                     .setStatusCode(httpResponse.getStatusLine().getStatusCode())
                     .setBody(httpResponse.getEntity().getContent())
@@ -70,6 +54,10 @@ public class JsonLdApacheHttpClient implements HttpClient {
                             .map(Header::getValue)
                             .toList())
                     .setLocation(Optional.ofNullable(httpResponse.getFirstHeader(LOCATION_HEADER)).map(Header::getValue));
+        } catch (ClientProtocolException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+        } catch (IOException e) {
+            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
         }
     }
 
