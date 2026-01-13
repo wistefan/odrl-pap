@@ -199,7 +199,8 @@ public abstract class OdrlTest {
 				Arguments.of("/examples/dome/1005/_1005.json"),
 				Arguments.of("/examples/dome/2001/_2001.json"),
 				Arguments.of("/examples/dome/2001-2/_2001-2.json"),
-				Arguments.of("/examples/dome/2003/_2003.json")
+				Arguments.of("/examples/dome/2003/_2003-original.json"),
+				Arguments.of("/examples/edc/compacted-edc.json")
 		);
 	}
 

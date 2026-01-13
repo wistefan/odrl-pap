@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Provider
 @Priority(Priorities.ENTITY_CODER)
-public class JsonLDCompactionFilter implements ContainerRequestFilter {
+public class JsonLdCompactionFilter implements ContainerRequestFilter {
     @Inject
     private CompactionContext compactionContext;
 

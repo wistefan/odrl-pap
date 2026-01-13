@@ -1,4 +1,8 @@
 {
+  "@context": {
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "ngsi-ld": "https://uri.etsi.org/ngsi-ld/"
+  },
   "@type": "odrl:Policy",
   "odrl:uid": "https://mp-operation.org/policy/common/type",
   "odrl:permission": {
@@ -14,14 +18,16 @@
     "odrl:target": {
       "@type": "odrl:AssetCollection",
       "odrl:source": "urn:asset",
-      "odrl:refinement": {
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "ngsi-ld:entityType",
-        "odrl:operator": {
-          "@id": "odrl:eq"
-        },
-        "odrl:rightOperand": "Test_Car"
-      }
+      "odrl:refinement": [
+        {
+          "@type": "odrl:Constraint",
+          "odrl:leftOperand": "ngsi-ld:entityType",
+          "odrl:operator": {
+            "@id": "odrl:eq"
+          },
+          "odrl:rightOperand": "Test_Car"
+        }
+      ]
     },
     "odrl:constraint": [
       {
@@ -57,19 +63,5 @@
         }
       }
     ]
-  },
-  "@context": {
-    "odrl": {
-      "@id": "http://www.w3.org/ns/odrl/2/",
-      "@prefix": true
-    },
-    "dome-op": {
-      "@id": "https://github.com/DOME-Marketplace/dome-odrl-profile#",
-      "@prefix": true
-    },
-    "xsd": {
-      "@id": "http://www.w3.org/2001/XMLSchema#",
-      "@prefix": true
-    }
   }
 }

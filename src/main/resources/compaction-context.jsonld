@@ -2,5 +2,13 @@
   "odrl": {
     "@id": "http://www.w3.org/ns/odrl/2/",
     "@prefix": true
+  },
+  "dome-op": {
+    "@id": "https://github.com/DOME-Marketplace/dome-odrl-profile#",
+    "@prefix": true
+  },
+  "xsd": {
+    "@id": "http://www.w3.org/2001/XMLSchema#",
+    "@prefix": true
   }
 }

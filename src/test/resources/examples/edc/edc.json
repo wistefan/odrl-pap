@@ -1,0 +1,21 @@
+{
+  "prohibitions": [],
+  "obligations": [],
+  "profiles": [],
+  "permission": [
+    {
+      "edctype": "dataspaceconnector:permission",
+      "action": {
+        "@id": "http://www.w3.org/ns/odrl/2/use"
+      },
+      "constraint": [],
+      "duty": []
+    }
+  ],
+  "assigner": "did:web:provider.io",
+  "assignee": "did:web:fancy-marketplace.biz",
+  "target": "ACN0101",
+  "@type": "contract",
+  "uid": "8dc8b181-9724-4924-8aac-7e76adfb207f",
+  "@context": "http://www.w3.org/ns/odrl.jsonld"
+}

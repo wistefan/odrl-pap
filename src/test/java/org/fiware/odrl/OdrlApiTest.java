@@ -41,9 +41,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.fiware.odrl.mapping.OdrlConstants.GRAPH_KEY;
-import static org.fiware.odrl.mapping.OdrlConstants.ODRL_UID_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.*;
+import static org.fiware.odrl.mapping.OdrlConstants.ID_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -130,11 +131,10 @@ public class OdrlApiTest extends OdrlTest {
         if (thePolicy.containsKey(ODRL_UID_KEY) && thePolicy.get(ODRL_UID_KEY) instanceof String uidString) {
             return uidString;
         }
-        if (thePolicy.containsKey(GRAPH_KEY) && thePolicy.get(GRAPH_KEY) instanceof List<?> theGraph) {
-            // as of now, we dont have multi-policy graph examples.
-            return getIdFromPolicy((Map<String, Object>) theGraph.get(0));
+        if (thePolicy.containsKey(ID_KEY) && thePolicy.get(ID_KEY) instanceof String uidString) {
+            return uidString;
         }
-        throw new IllegalArgumentException("No id in policy.");
+        throw  new IllegalArgumentException("No id.");
     }
 
     @ParameterizedTest
