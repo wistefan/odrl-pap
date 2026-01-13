@@ -7,6 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Produces;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.fiware.odrl.jsonld.CompactionContext;
 import org.fiware.odrl.mapping.*;
 
@@ -96,5 +98,13 @@ public class AppConfig {
     @ApplicationScoped
     public RightOperandMapper rightOperandMapper(ObjectMapper objectMapper, MappingConfiguration mappingConfiguration) {
         return new RightOperandMapper(objectMapper, mappingConfiguration);
+    }
+
+    @Produces
+    @ApplicationScoped
+    public CloseableHttpClient httpClient() {
+        return HttpClients.custom()
+                .disableRedirectHandling() // optional
+                .build();
     }
 }
