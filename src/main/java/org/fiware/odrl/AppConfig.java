@@ -69,6 +69,7 @@ public class AppConfig {
         }
         try {
             InputStream defaultCompactionContextInputStream = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_COMPACTION_CONTEXT_PATH);
+            log.warn("Load default input - stream is {}", defaultCompactionContextInputStream);
             return new CompactionContext(JsonDocument.of(defaultCompactionContextInputStream));
         } catch (JsonLdError e) {
             throw new IllegalArgumentException("Was not able to read the default compaction context", e);

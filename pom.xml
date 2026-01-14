@@ -228,6 +228,7 @@
                 <configuration>
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>json</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>jsonld</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
