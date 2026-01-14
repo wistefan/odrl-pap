@@ -34,6 +34,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
 
     @Override
     public Response createService(ServiceCreate serviceCreate) {
+        log.warn("SC {}", serviceCreate);
         assureNotReserved(serviceCreate.getId());
         String packageName = serviceRepository.createService(serviceCreate.getId());
         return Response.ok(new PolicyPath().policyPath(String.format("%s/%s", packageName, MAIN_POLICY_ID))).build();
