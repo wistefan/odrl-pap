@@ -125,6 +125,12 @@ and the application:
 ./mvnw compile quarkus:dev -Dquarkus.http.port=8081
 ```
 
+To start it for debugging(attach to 5005), use:
+
+```shell
+./mvnw compile quarkus:dev -Dquarkus.http.port=8081 -Dsuspend
+```
+
 ### Getting familiar with policies
 
 The project aims to take [ODRL Policies](https://www.w3.org/TR/odrl-model/) and execute them using
@@ -269,6 +275,55 @@ curl -X POST http://localhost:8181/ -H 'Content-Type: application/json' -d '{
   }
 }'
 ```
+
+### JSON-LD
+
+The policies are provided in Json-LD. In order to be properly translated, they need to be compacted, containing namespace prefixes. E.g.:
+```json
+{
+  "@context": "http://www.w3.org/ns/odrl.jsonld",
+  "assigner": "someone",
+  "assignee": "someoneelse",
+  "target": "my-asset",
+  "uid": "my-policy",
+  "permission": [...]
+}
+```
+should become: 
+```json
+{
+  "odrl:assigner": "someone",
+  "odrl:assignee": "someoneelse",
+  "odrl:target": "my-asset",
+  "@id": "my-policy",
+  "odrl:permission": [...]
+}
+```
+In order to do so, the incoming policies are first expanded according to their context:
+```json
+{
+    "http://www.w3.org/ns/odrl/2/assignee": [
+      {
+        "@id": "someoneelse"
+      }
+    ],
+    "http://www.w3.org/ns/odrl/2/assigner": [
+      {
+        "@id": "someone"
+      }
+    ],
+    "http://www.w3.org/ns/odrl/2/permission": [...],
+    "http://www.w3.org/ns/odrl/2/target": [
+      {
+        "@id": "my-asset"
+      }
+    ],
+    "@id": "my-policy"
+}
+```
+
+And then compacted with the compaction-context. The default context only handles "odrl"-prefixes(see [compaction-context.jsonld](./src/main/resources/compaction-context.jsonld)). 
+If a more complex context is required, provide it by setting the ```paths.compactionContext``` to the custom context file.
 
 ## Configuration
 

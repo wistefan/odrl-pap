@@ -10,8 +10,8 @@ import org.fiware.odrl.mapping.MappingResult;
 import org.fiware.odrl.mapping.OdrlMapper;
 import org.fiware.odrl.model.ValidationRequest;
 import org.fiware.odrl.model.ValidationResponse;
+import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.DataResponse;
-import org.fiware.odrl.rego.PolicyRepository;
 import org.openapi.quarkus.opa_yaml.api.DataApiApi;
 import org.openapi.quarkus.opa_yaml.api.PolicyApiApi;
 
@@ -41,7 +41,7 @@ public class ValidationResource implements ValidateApi {
         if (dataApiApi == null) {
             throw new UnsupportedOperationException("Policy validation is not enabled.");
         }
-        String tempId = policyRepository.generatePolicyId();
+        String tempId = PolicyRepository.generatePolicyId();
         try {
             MappingResult mappingResult = odrlMapper.mapOdrl(validationRequest.getPolicy());
             if (mappingResult.isFailed()) {

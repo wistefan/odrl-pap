@@ -1,0 +1,34 @@
+{
+  "odrl:permission": {
+    "odrl:action": {
+      "@id": "odrl:use"
+    },
+    "odrl:constraint": [],
+    "odrl:duty": []
+  },
+  "odrl:assigner": {
+    "@id": "did:web:provider.io"
+  },
+  "odrl:assignee": {
+    "@id": "did:web:fancy-marketplace.biz"
+  },
+  "odrl:target": {
+    "@id": "ACN0101"
+  },
+  "@type": "contract",
+  "@id": "8dc8b181-9724-4924-8aac-7e76adfb207f",
+  "@context": {
+    "odrl": {
+      "@id": "http://www.w3.org/ns/odrl/2/",
+      "@prefix": true
+    },
+    "dome-op": {
+      "@id": "https://github.com/DOME-Marketplace/dome-odrl-profile#",
+      "@prefix": true
+    },
+    "xsd": {
+      "@id": "http://www.w3.org/2001/XMLSchema#",
+      "@prefix": true
+    }
+  }
+}
