@@ -27,7 +27,6 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     private static final String METHODS_PACKAGE = "methods";
     private static final int DEFAULT_PAGE_SIZE = 25;
 
-    private static final List<String> RESERVED_NAMES = List.of(POLICY_PACKAGE, DATA_PACKAGE, METHODS_PACKAGE);
 
     protected ServiceResource(ObjectMapper objectMapper, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
         super(objectMapper, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
@@ -149,8 +148,8 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     }
 
     private void assureNotReserved(String serviceId) {
-        if (RESERVED_NAMES.contains(serviceId)) {
-            throw new IllegalArgumentException(String.format("%s are reserved names and cannot be used as service id.", RESERVED_NAMES));
+        if (List.of(POLICY_PACKAGE, DATA_PACKAGE, METHODS_PACKAGE).contains(serviceId)) {
+            throw new IllegalArgumentException(String.format("%s cannot be used as service id.", serviceId));
         }
     }
 }

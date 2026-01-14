@@ -17,6 +17,9 @@ import jakarta.json.JsonStructure;
 
 import java.net.URI;
 
+/**
+ * Implementation of the compaction api, that not statically initializes the schema router to avoid breaking the native image
+ */
 public class QuarkusExpansionApi implements CommonApi<QuarkusExpansionApi>, LoaderApi<QuarkusExpansionApi>, ContextApi<QuarkusExpansionApi> {
 
     private final Document document;

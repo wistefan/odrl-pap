@@ -4,7 +4,6 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.api.CommonApi;
-import com.apicatalog.jsonld.api.CompactionApi;
 import com.apicatalog.jsonld.api.LoaderApi;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -13,6 +12,9 @@ import jakarta.json.JsonObject;
 
 import java.net.URI;
 
+/**
+ * Implementation of the compaction api, that not statically initializes the schema router to avoid breaking the native image
+ */
 public class QuarkusCompactionApi implements CommonApi<QuarkusCompactionApi>, LoaderApi<QuarkusCompactionApi> {
 
     private final Document document;
