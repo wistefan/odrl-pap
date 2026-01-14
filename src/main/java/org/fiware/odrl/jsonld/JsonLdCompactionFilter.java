@@ -59,7 +59,7 @@ public class JsonLdCompactionFilter implements ContainerRequestFilter {
             // expand to properly prefix all terms according to there context.
             Document expandedDocument = JsonDocument.of(new QuarkusExpansionApi(orginalDocument, jsonLdOptions).get());
             // compact to set the namespace prefixes.
-            JsonObject jsonObject = JsonLd.compact(expandedDocument, compactionContext.getContext()).options(jsonLdOptions).get();
+            JsonObject jsonObject = new QuarkusCompactionApi(expandedDocument, compactionContext.getContext(), jsonLdOptions).get();
             String jsonString = jsonObject.toString();
             log.debug("Compacted json {}", jsonString);
             requestContext.setEntityStream(new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)));
