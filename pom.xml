@@ -262,6 +262,7 @@
                             <generatorName>jaxrs-spec</generatorName>
                             <configOptions>
                                 <useJakartaEe>true</useJakartaEe>
+                                <useReflectionForSerialization>true</useReflectionForSerialization>
                                 <dateLibrary>java8</dateLibrary>
                                 <useSwaggerAnnotations>false</useSwaggerAnnotations>
                                 <interfaceOnly>true</interfaceOnly>
