@@ -1,0 +1,540 @@
+openapi: 3.0.3
+info:
+  title: ODRL PAP
+  description: ODRL PAP
+  version: 1.0.0
+tags:
+  - name: Service
+    description: Set of endpoints to manage policies for a specific service
+  - name: Policy
+    description: Set of endpoints to manage policies for the main policy
+  - name: UI
+    description: Set of endpoint intended to support integration with frontends
+
+paths:
+  /service:
+    post:
+      tags:
+        - Service
+      operationId: createService
+      summary: Create a new service to group policies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCreate'
+      responses:
+        '200':
+          description: The policy path
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyPath'
+        '409':
+          description: Service already exists
+    get:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      operationId: getServices
+      summary: Get all services and the path to their policy
+      responses:
+        '200':
+          description: The services
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceList'
+  /service/{service-id}:
+    get:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+      operationId: getService
+      summary: Get the service with the given id
+      responses:
+        '200':
+          description: The service
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '404':
+          description: No such service exists
+    delete:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+      operationId: deleteService
+      summary: Delete the service with the given id and all policies below
+      responses:
+        '204':
+          description: Successfully deleted
+  /service/{service-id}/policy:
+    post:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+      operationId: createServicePolicy
+      summary: Creates a new policy from the given odrl-json under the service-id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OdrlPolicyJson'
+      responses:
+        '200':
+          description: The rego policy
+          content:
+            text/plain:
+              schema:
+                type: string
+          headers:
+            Location:
+              schema:
+                type: string
+              description: location of the created policy
+    get:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      operationId: getServicePolicies
+      summary: Get the policies in the ODRL-Format under the service-id
+      responses:
+        '200':
+          description: Successfully retrieved the policis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyList'
+        '404':
+          description: No such policy exists
+  /service/{service-id}/policy/{id}:
+    put:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+        - $ref: '#/components/parameters/Id'
+      operationId: createServicePolicyWithId
+      summary: Creates or overwrites the given policy under the service-id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OdrlPolicyJson'
+      responses:
+        '200':
+          description: The rego policy
+          content:
+            text/plain:
+              schema:
+                type: string
+          headers:
+            Location:
+              schema:
+                type: string
+              description: location of the created policy
+        '409':
+          description: Should be returned in case the policy is not allowed to be modified
+    get:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+        - $ref: '#/components/parameters/Id'
+      summary: Return the given policy by its ID under the service-id.
+      operationId: getServicePolicyById
+      responses:
+        '200':
+          description: Successfully retrieved the policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        '404':
+          description: No such policy exists
+    delete:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+        - $ref: '#/components/parameters/Id'
+      summary:  Delete the given policy under the service-id.
+      operationId: deleteServicePolicyById
+      responses:
+        '204':
+          description: Policy was successfully removed.
+        '404':
+          description: No such policy exists
+  /service/{service-id}/policy/odrl/{id}:
+    get:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+        - $ref: '#/components/parameters/Id'
+      summary: Return the given policy by its ID under the service-id.
+      operationId: getServicePolicyByUid
+      responses:
+        '200':
+          description: Successfully retrieved the policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        '404':
+          description: No such policy exists
+    delete:
+      tags:
+        - Service
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+        - $ref: '#/components/parameters/Id'
+      summary:  Delete the given policy under the service-id.
+      operationId: deleteServicePolicyByUid
+      responses:
+        '204':
+          description: Policy was successfully removed.
+        '404':
+          description: No such policy exists
+
+  /policy:
+    post:
+      tags:
+        - Policy
+      operationId: createPolicy
+      summary: Creates a new policy from the given odrl-json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OdrlPolicyJson'
+      responses:
+        '200':
+          description: The rego policy
+          content:
+            text/plain:
+              schema:
+                type: string
+          headers:
+            Location:
+              schema:
+                type: string
+              description: location of the created policy
+    get:
+      tags:
+        - Policy
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      operationId: getPolicies
+      summary: Get the policies in the ODRL-Format
+      responses:
+        '200':
+          description: Successfully retrieved the policis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyList'
+        '404':
+          description: No such policy exists
+  /policy/{id}:
+    put:
+      tags:
+        - Policy
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      operationId: createPolicyWithId
+      summary: Creates or overwrites the given policy.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OdrlPolicyJson'
+      responses:
+        '200':
+          description: The rego policy
+          content:
+            text/plain:
+              schema:
+                type: string
+          headers:
+            Location:
+              schema:
+                type: string
+              description: location of the created policy
+        '409':
+          description: Should be returned in case the policy is not allowed to be modified
+    get:
+      tags:
+        - Policy
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary: Return the given policy by its ID.
+      operationId: getPolicyById
+      responses:
+        '200':
+          description: Successfully retrieved the policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        '404':
+          description: No such policy exists
+    delete:
+      tags:
+        - Policy
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary:  Delete the given policy.
+      operationId: deletePolicyById
+      responses:
+        '204':
+          description: Policy was successfully removed.
+        '404':
+          description: No such policy exists
+  /policy/odrl/{id}:
+    get:
+      tags:
+        - Policy
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary: Return the given policy by its ID.
+      operationId: getPolicyByUid
+      responses:
+        '200':
+          description: Successfully retrieved the policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        '404':
+          description: No such policy exists
+    delete:
+      tags:
+        - Policy
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary:  Delete the given policy.
+      operationId: deletePolicyByUid
+      responses:
+        '204':
+          description: Policy was successfully removed.
+        '404':
+          description: No such policy exists
+
+  /validate:
+    post:
+      tags:
+        - UI
+      operationId: validatePolicy
+      summary: Validates a policy with a demo request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequest'
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+  /mappings:
+    get:
+      tags:
+        - UI
+      operationId: getMappings
+      summary: Gets the supported by the PAP.
+      responses:
+        '200':
+          description: Successfully retrieved the Mappings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mappings'
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Uid'
+    ServiceId:
+      name: service-id
+      in: path
+      required: true
+      schema:
+        type: string
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 0
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 25
+  schemas:
+    PolicyPath:
+      type: object
+      properties:
+        policyPath:
+          type: string
+    Id:
+      type: string
+    ServiceCreate:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+    Service:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        policyPath:
+          type: string
+        policies:
+          $ref: '#/components/schemas/PolicyList'
+    ServiceList:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/Id'
+          policyPath:
+            type: string
+    ValidationRequest:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/OdrlPolicyJson'
+        testRequest:
+          $ref: '#/components/schemas/TestRequest'
+    TestRequest:
+      type: object
+      properties:
+        method:
+          type: string
+          enum: ["POST","PATCH","PUT","GET","DELETE"]
+        host:
+          type: string
+        path:
+          type: string
+        protocol:
+          type: string
+          enum: ["https"]
+        body:
+          type: object
+        headers:
+          $ref: '#/components/schemas/Headers'
+    Headers:
+      type: object
+      properties:
+        accept:
+          type: string
+        authorization:
+          type: string
+        content-type:
+          type: string
+    ValidationResponse:
+      type: object
+      properties:
+        allow:
+          description: indicates if the request was allowed by the policy
+          type: boolean
+        explanation:
+          description: Explanation of the detailed error, in case the policy evaluation failed.
+          type: array
+          items:
+            type: string
+    Mappings:
+      type: object
+      description: Mappings available to be used for building policies
+      properties:
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        operators:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        operands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        rightOperands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        leftOperands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+        constraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mapping'
+    Mapping:
+      type: object
+      description: A concrete mapping.
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    Policy:
+      type: object
+      properties:
+        id:
+          type: string
+        "odrl:uid":
+          type: string
+        odrl:
+          type: string
+        rego:
+          type: string
+    PolicyList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Policy'
+    Uid:
+      type: string
+      format: https://datatracker.ietf.org/doc/html/rfc3987
+    OdrlPolicyJson:
+      type: object
+      additionalProperties: true

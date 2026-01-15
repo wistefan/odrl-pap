@@ -6,7 +6,6 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.ws.rs.core.Response;
 import org.apache.http.HttpStatus;
 import org.fiware.odrl.mapping.*;
-import org.fiware.odrl.model.Policy;
 import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.rego.OdrlPolicy;
@@ -14,6 +13,7 @@ import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
 import org.fiware.odrl.rego.RegoPolicy;
 import org.fiware.odrl.verification.TypeVerifier;
+import org.openapi.quarkus.odrl_yaml.model.Policy;
 
 import java.util.Map;
 import java.util.Optional;
@@ -74,7 +74,7 @@ public abstract class ApiResource {
     protected Policy toPolicy(PolicyWrapper policyWrapper) {
         return new Policy()
                 .id(policyWrapper.regoId())
-                .odrlColonUid(policyWrapper.odrlUid())
+                .odrlUid(policyWrapper.odrlUid())
                 .odrl(policyWrapper.odrl().policy())
                 .rego(policyWrapper.rego().policy());
     }

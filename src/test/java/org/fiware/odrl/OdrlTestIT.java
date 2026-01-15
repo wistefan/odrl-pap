@@ -8,11 +8,8 @@ import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.Response;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.fiware.odrl.api.PolicyApi;
 import org.fiware.odrl.model.HttpRequest;
-import org.fiware.odrl.model.KongOpaInput;
 import org.fiware.odrl.model.MockEntity;
-import org.fiware.odrl.model.Request;
 import org.fiware.tmforum.api.ProductOfferingApi;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -21,14 +18,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.model.JsonBody;
+import org.openapi.quarkus.odrl_yaml.api.PolicyApi;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>

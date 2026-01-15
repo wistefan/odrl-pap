@@ -1,6 +1,5 @@
 package org.fiware.odrl.jsonld;
 
-import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
@@ -29,6 +28,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 @Provider
+@JsonLdEndpoint
 @Priority(Priorities.ENTITY_CODER)
 public class JsonLdCompactionFilter implements ContainerRequestFilter {
 

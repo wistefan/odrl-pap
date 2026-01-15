@@ -5,13 +5,15 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
-import org.fiware.odrl.api.ServiceApi;
+
+import org.fiware.odrl.jsonld.JsonLdEndpoint;
 import org.fiware.odrl.mapping.*;
-import org.fiware.odrl.model.*;
 import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.verification.TypeVerifier;
+import org.openapi.quarkus.odrl_yaml.api.ServiceApi;
+import org.openapi.quarkus.odrl_yaml.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -40,11 +42,13 @@ public class ServiceResource extends ApiResource implements ServiceApi {
         return Response.ok(new PolicyPath().policyPath(String.format("%s/%s", packageName, MAIN_POLICY_ID))).build();
     }
 
+    @JsonLdEndpoint
     @Override
     public Response createServicePolicy(String serviceId, Map<String, Object> requestBody) {
         return createServicePolicyWithId(serviceId, PolicyRepository.generatePolicyId(), requestBody);
     }
 
+    @JsonLdEndpoint
     @Override
     public Response createServicePolicyWithId(String serviceId, String id, Map<String, Object> requestBody) {
         return checkNotFound(serviceId)
@@ -83,7 +87,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                     serviceEntity.getPolicies()
                             .stream()
                             .map(pe -> new Policy()
-                                    .odrlColonUid(pe.getUid())
+                                    .odrlUid(pe.getUid())
                                     .id(pe.getPolicyId())
                                     .odrl(pe.getOdrl().getPolicy())
                                     .rego(pe.getRego().getPolicy())
@@ -105,7 +109,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                                 .stream()
                                 .map(policyEntry -> new Policy()
                                         .id(policyEntry.getKey())
-                                        .odrlColonUid(policyEntry.getValue().odrlUid())
+                                        .odrlUid(policyEntry.getValue().odrlUid())
                                         .odrl(policyEntry.getValue().odrl().policy())
                                         .rego(policyEntry.getValue().rego().policy()))
                                 .toList()).build());

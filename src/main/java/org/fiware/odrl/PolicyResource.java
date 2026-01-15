@@ -5,13 +5,15 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.fiware.odrl.api.PolicyApi;
+import org.fiware.odrl.jsonld.JsonLdEndpoint;
 import org.fiware.odrl.mapping.*;
-import org.fiware.odrl.model.Policy;
+
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
 import org.fiware.odrl.verification.TypeVerifier;
+import org.openapi.quarkus.odrl_yaml.api.PolicyApi;
+import org.openapi.quarkus.odrl_yaml.model.Policy;
 
 import java.util.List;
 import java.util.Map;
@@ -26,16 +28,17 @@ public class PolicyResource extends ApiResource implements PolicyApi {
     @Inject
     private GeneralConfig generalConfig;
 
-
     protected PolicyResource(ObjectMapper objectMapper, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
         super(objectMapper, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
     }
 
+    @JsonLdEndpoint
     @Override
     public Response createPolicy(Map<String, Object> requestBody) {
         return super.createPolicyWithId(PolicyRepository.generatePolicyId(), Optional.empty(), requestBody);
     }
 
+    @JsonLdEndpoint
     @Override
     public Response createPolicyWithId(String id, Map<String, Object> policy) {
         return super.createPolicyWithId(id, Optional.empty(), policy);
@@ -62,7 +65,7 @@ public class PolicyResource extends ApiResource implements PolicyApi {
                 .stream()
                 .map(policyEntry -> new Policy()
                         .id(policyEntry.getKey())
-                        .odrlColonUid(policyEntry.getValue().odrlUid())
+                        .odrlUid(policyEntry.getValue().odrlUid())
                         .odrl(policyEntry.getValue().odrl().policy())
                         .rego(policyEntry.getValue().rego().policy()))
                 .toList();
