@@ -1,5 +1,5 @@
 package gaiax.constraint
-       
+
 import rego.v1
 
 ## ovc:constraints
@@ -12,5 +12,5 @@ evaluate(constraints) if {
 ## ovc:credentialSubjectType
 # compares the credentials' subject-type with the provided one
 credentialSubjectType(verifiable_credential, credentialSubjectType) if {
-    credentialSubjectType == verifiable_credential.credentialSubject.type
+	credentialSubjectType == verifiable_credential.credentialSubject.type
 }
