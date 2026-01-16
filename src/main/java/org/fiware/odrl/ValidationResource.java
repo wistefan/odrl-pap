@@ -1,9 +1,13 @@
 package org.fiware.odrl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.arc.properties.UnlessBuildProperty;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.fiware.odrl.jsonld.JsonLdHandler;
 import org.fiware.odrl.mapping.*;
 import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.DataResponse;
@@ -15,6 +19,7 @@ import org.openapi.quarkus.odrl_yaml.model.ValidationResponse;
 import org.openapi.quarkus.opa_yaml.api.DataApiApi;
 import org.openapi.quarkus.opa_yaml.api.PolicyApiApi;
 
+import java.io.ByteArrayInputStream;
 import java.util.*;
 
 /**
@@ -38,6 +43,12 @@ public class ValidationResource implements UiApi {
     @Inject
     private MappingConfiguration mappingConfiguration;
 
+    @Inject
+    private JsonLdHandler jsonLdHandler;
+
+    @Inject
+    private ObjectMapper objectMapper;
+
     @Override
     public Response validatePolicy(ValidationRequest validationRequest) {
         if (dataApiApi == null) {
@@ -46,7 +57,11 @@ public class ValidationResource implements UiApi {
         String tempId = PolicyRepository.generatePolicyId();
         try {
             log.info("incoming req is {}", validationRequest);
-            MappingResult mappingResult = odrlMapper.mapOdrl(validationRequest.getPolicy());
+
+            String compactedJson = jsonLdHandler.handleJsonLd(new ByteArrayInputStream(objectMapper.writeValueAsBytes(validationRequest.getPolicy())));
+            Map<String, Object> policyAsMap = objectMapper.readValue(compactedJson, new TypeReference<Map<String, Object>>() {
+            });
+            MappingResult mappingResult = odrlMapper.mapOdrl(policyAsMap);
             if (mappingResult.isFailed()) {
                 throw new IllegalArgumentException(String.format("Was not able to map the policy. Reason: %s", mappingResult.getFailureReasons()));
             }
