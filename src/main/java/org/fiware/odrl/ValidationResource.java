@@ -56,8 +56,6 @@ public class ValidationResource implements UiApi {
         }
         String tempId = PolicyRepository.generatePolicyId();
         try {
-            log.info("incoming req is {}", validationRequest);
-
             String compactedJson = jsonLdHandler.handleJsonLd(new ByteArrayInputStream(objectMapper.writeValueAsBytes(validationRequest.getPolicy())));
             Map<String, Object> policyAsMap = objectMapper.readValue(compactedJson, new TypeReference<Map<String, Object>>() {
             });
