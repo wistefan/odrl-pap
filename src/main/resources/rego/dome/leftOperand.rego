@@ -6,7 +6,7 @@ import rego.v1
 # retrieves the roles from the (lear) credential, that target the current organization
 role(verifiable_credential, organization_id) := r if {
 	rolesAndDuties := verifiable_credential.credentialSubject.rolesAndDuties
-	roleAndDuty := [rad | some rad in rolesAndDuties; rad.target = organization_id]
+	roleAndDuty := [rad | some rad in rolesAndDuties; rad.target == organization_id]
 	r = roleAndDuty[_].roleNames
 	trace(organization_id)
 }
@@ -28,7 +28,7 @@ related_party(http_part) := rp if {
 ## dome-op:owner
 # filter the given list of related_party(ies) for one with role "Owner"
 owner(related_party) := o_id if {
-	owner_rp := [rp | some rp in related_party; rp.role = "Owner"]
+	owner_rp := [rp | some rp in related_party; rp.role == "Owner"]
 	o_id = owner_rp[_].id
 }
 
