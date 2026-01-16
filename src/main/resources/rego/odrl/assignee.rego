@@ -6,4 +6,4 @@ import rego.v1
 # is the given user id the same as the given uid
 default is_user(user, uid) := false
 
-is_user(user, uid) if { user == uid }
+is_user(user, uid) if user == uid

@@ -15,13 +15,13 @@ and_operand(constraints) if {
 # checks if all given constraints are true
 default and_sequence_operand(constraints) := false
 
-and_sequence_operand(constraints) if { and_operand(constraints) }
+and_sequence_operand(constraints) if and_operand(constraints)
 
 ## odrl:or
 # check that at least one of the constraints is true
 default or_operand(constraints) := false
 
-or_operand(constraints) if { true in constraints }
+or_operand(constraints) if true in constraints
 
 ## odrl:xone
 # check that exactly one of the constraints is true
