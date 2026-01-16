@@ -5,7 +5,7 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.fiware.odrl.jsonld.JsonLdEndpoint;
+import org.fiware.odrl.jsonld.JsonLdHandler;
 import org.fiware.odrl.mapping.*;
 
 import org.fiware.odrl.persistence.ServiceRepository;
@@ -28,17 +28,15 @@ public class PolicyResource extends ApiResource implements PolicyApi {
     @Inject
     private GeneralConfig generalConfig;
 
-    protected PolicyResource(ObjectMapper objectMapper, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
-        super(objectMapper, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
+    protected PolicyResource(ObjectMapper objectMapper, JsonLdHandler jsonLdHandler, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
+        super(objectMapper, jsonLdHandler, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
     }
 
-    @JsonLdEndpoint
     @Override
     public Response createPolicy(Map<String, Object> requestBody) {
         return super.createPolicyWithId(PolicyRepository.generatePolicyId(), Optional.empty(), requestBody);
     }
 
-    @JsonLdEndpoint
     @Override
     public Response createPolicyWithId(String id, Map<String, Object> policy) {
         return super.createPolicyWithId(id, Optional.empty(), policy);

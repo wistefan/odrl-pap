@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 
-import org.fiware.odrl.jsonld.JsonLdEndpoint;
+import org.fiware.odrl.jsonld.JsonLdHandler;
 import org.fiware.odrl.mapping.*;
 import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
@@ -30,8 +30,8 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     private static final int DEFAULT_PAGE_SIZE = 25;
 
 
-    protected ServiceResource(ObjectMapper objectMapper, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
-        super(objectMapper, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
+    protected ServiceResource(ObjectMapper objectMapper, JsonLdHandler jsonLdHandler, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
+        super(objectMapper, jsonLdHandler, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
     }
 
     @Override
@@ -41,13 +41,11 @@ public class ServiceResource extends ApiResource implements ServiceApi {
         return Response.ok(new PolicyPath().policyPath(String.format("%s/%s", packageName, MAIN_POLICY_ID))).build();
     }
 
-    @JsonLdEndpoint
     @Override
     public Response createServicePolicy(String serviceId, Map<String, Object> requestBody) {
         return createServicePolicyWithId(serviceId, PolicyRepository.generatePolicyId(), requestBody);
     }
 
-    @JsonLdEndpoint
     @Override
     public Response createServicePolicyWithId(String serviceId, String id, Map<String, Object> requestBody) {
         return checkNotFound(serviceId)

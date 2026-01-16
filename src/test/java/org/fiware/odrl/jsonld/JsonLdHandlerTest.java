@@ -5,16 +5,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.ext.ReaderInterceptorContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -22,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
-public class JsonLdCompactionFilterTest {
+public class JsonLdHandlerTest {
 
     @Inject
-    private JsonLdCompactionFilter jsonLdCompactionFilter;
+    private JsonLdHandler jsonLdHandler;
 
     @Inject
     private ObjectMapper objectMapper;
@@ -33,18 +30,15 @@ public class JsonLdCompactionFilterTest {
 
     @ParameterizedTest
     @MethodSource("getJsonPairs")
-    public void testCompaction(String policy, String expectedPolicyPath) throws IOException {
-        ContainerRequestContext crc = mock(ContainerRequestContext.class);
+    public void testCompaction(String policy, String expectedPolicyPath) throws Exception {
+        ReaderInterceptorContext crc = mock(ReaderInterceptorContext.class);
         InputStream policyStream = this.getClass().getResourceAsStream(policy);
+        String compactedPolicyString = jsonLdHandler.handleJsonLd(policyStream);
         InputStream expectedPolicyStream = this.getClass().getResourceAsStream(expectedPolicyPath);
-        when(crc.getEntityStream()).thenReturn(policyStream);
-        when(crc.hasEntity()).thenReturn(true);
-        ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
-        jsonLdCompactionFilter.filter(crc);
-        verify(crc).setEntityStream(argument.capture());
+
         Map<String, Object> expectedPolicy = objectMapper.readValue(expectedPolicyStream, new TypeReference<Map<String, Object>>() {
         });
-        Map<String, Object> compactedPolicy = objectMapper.readValue(new BufferedReader(new InputStreamReader(argument.getValue())), new TypeReference<Map<String, Object>>() {
+        Map<String, Object> compactedPolicy = objectMapper.readValue(compactedPolicyString, new TypeReference<Map<String, Object>>() {
         });
         assertEquals(expectedPolicy, compactedPolicy, "The policy should have been compacted properly.");
     }
