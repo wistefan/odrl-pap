@@ -2,17 +2,15 @@ package org.fiware.odrl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.Response;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.fiware.odrl.model.HttpRequest;
 import org.fiware.odrl.model.MockEntity;
 import org.fiware.tmforum.api.ProductOfferingApi;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,13 +37,12 @@ public class OdrlTestIT extends OdrlTest {
 
     @BeforeEach
     public void prepare() {
-        ResteasyClient resteasyClient = (ResteasyClient) ClientBuilder.newClient();
-        ResteasyWebTarget policyTarget = resteasyClient.target("http://localhost:8080");
-        policyApi = policyTarget.proxy(PolicyApi.class);
-
-        ResteasyWebTarget productOfferingTarget = resteasyClient.target("http://localhost:8082");
-        productOfferingTarget.register(new BearerTokenFilter(tokenProvider));
-        productOfferingApi = productOfferingTarget.proxy(ProductOfferingApi.class);
+        policyApi = RestClientBuilder.newBuilder()
+                .baseUri("http://localhost:8080")
+                .build(PolicyApi.class);
+        productOfferingApi = RestClientBuilder.newBuilder()
+                .baseUri("http://localhost:8082")
+                .build(ProductOfferingApi.class);
     }
 
 
