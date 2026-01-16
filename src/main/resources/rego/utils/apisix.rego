@@ -36,10 +36,10 @@ decoded_token_payload := decoded_authorization[1]
 
 ##
 # the verifiable credential received as part of the token
-verifiable_credential := verfiableCredential if{
-   verfiableCredential = decoded_token_payload.verifiableCredential
+verifiable_credential := verfiableCredential if {
+	verfiableCredential = decoded_token_payload.verifiableCredential
 } else := vc if {
-    vc = decoded_token_payload.vc
+	vc = decoded_token_payload.vc
 }
 
 ##
@@ -50,7 +50,7 @@ issuer := verifiable_credential.issuer
 # the unprefixed bearer token
 token := t if {
 	output := replace(authorization, "bearer ", "")
-    t = replace(output, "Bearer ", "")
+	t = replace(output, "Bearer ", "")
 }
 
 ##
@@ -60,8 +60,9 @@ entity := body
 ##
 # the target of the request, found as the last part of the path
 target := p if {
- # split the path
- path_parts := split(http_part.path, "/")
- # get the last part of the path, without the query parameters
- p = split(path_parts[count(path_parts)-1], "?")[0]
+	# split the path
+	path_parts := split(http_part.path, "/")
+
+	# get the last part of the path, without the query parameters
+	p = split(path_parts[count(path_parts) - 1], "?")[0]
 }

@@ -35,7 +35,7 @@ issuer := verifiable_credential.issuer
 # the unprefixed bearer token
 token := t if {
 	output := replace(authorization, "bearer ", "")
-    t = replace(output, "Bearer ", "")
+	t = replace(output, "Bearer ", "")
 }
 
 # the entity provided as http-body
@@ -43,8 +43,9 @@ entity := body
 
 # the target of the request, found as the last part of the path
 target := p if {
- # split the path
- path_parts := split(http_part.path, "/")
- # get the last part of the path, without the query parameters
- p = split(path_parts[count(path_parts)-1], "?")[0]
+	# split the path
+	path_parts := split(http_part.path, "/")
+
+	# get the last part of the path, without the query parameters
+	p = split(path_parts[count(path_parts) - 1], "?")[0]
 }

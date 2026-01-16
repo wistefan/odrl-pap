@@ -4,4 +4,5 @@ import rego.v1
 
 ## tmf:create
 # Check if the given request is a creation
-is_creation(request) if request.method == "POST"
+default is_creation(request) := false
+is_creation(request) if { request.method == "POST" }
