@@ -5,13 +5,15 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
-import org.fiware.odrl.api.ServiceApi;
+
+import org.fiware.odrl.jsonld.JsonLdHandler;
 import org.fiware.odrl.mapping.*;
-import org.fiware.odrl.model.*;
 import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.verification.TypeVerifier;
+import org.openapi.quarkus.odrl_yaml.api.ServiceApi;
+import org.openapi.quarkus.odrl_yaml.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -27,10 +29,9 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     private static final String METHODS_PACKAGE = "methods";
     private static final int DEFAULT_PAGE_SIZE = 25;
 
-    private static final List<String> RESERVED_NAMES = List.of(POLICY_PACKAGE, DATA_PACKAGE, METHODS_PACKAGE);
 
-    protected ServiceResource(ObjectMapper objectMapper, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
-        super(objectMapper, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
+    protected ServiceResource(ObjectMapper objectMapper, JsonLdHandler jsonLdHandler, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
+        super(objectMapper, jsonLdHandler, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
     }
 
     @Override
@@ -83,7 +84,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                     serviceEntity.getPolicies()
                             .stream()
                             .map(pe -> new Policy()
-                                    .odrlColonUid(pe.getUid())
+                                    .odrlUid(pe.getUid())
                                     .id(pe.getPolicyId())
                                     .odrl(pe.getOdrl().getPolicy())
                                     .rego(pe.getRego().getPolicy())
@@ -105,7 +106,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                                 .stream()
                                 .map(policyEntry -> new Policy()
                                         .id(policyEntry.getKey())
-                                        .odrlColonUid(policyEntry.getValue().odrlUid())
+                                        .odrlUid(policyEntry.getValue().odrlUid())
                                         .odrl(policyEntry.getValue().odrl().policy())
                                         .rego(policyEntry.getValue().rego().policy()))
                                 .toList()).build());
@@ -149,8 +150,9 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     }
 
     private void assureNotReserved(String serviceId) {
-        if (RESERVED_NAMES.contains(serviceId)) {
-            throw new IllegalArgumentException(String.format("%s are reserved names and cannot be used as service id.", RESERVED_NAMES));
+        log.warn("Incoming id {}", serviceId);
+        if (List.of(POLICY_PACKAGE, DATA_PACKAGE, METHODS_PACKAGE).contains(serviceId)) {
+            throw new IllegalArgumentException(String.format("%s cannot be used as service id.", serviceId));
         }
     }
 }

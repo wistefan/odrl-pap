@@ -5,13 +5,15 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.fiware.odrl.api.PolicyApi;
+import org.fiware.odrl.jsonld.JsonLdHandler;
 import org.fiware.odrl.mapping.*;
-import org.fiware.odrl.model.Policy;
+
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
 import org.fiware.odrl.verification.TypeVerifier;
+import org.openapi.quarkus.odrl_yaml.api.PolicyApi;
+import org.openapi.quarkus.odrl_yaml.model.Policy;
 
 import java.util.List;
 import java.util.Map;
@@ -26,9 +28,8 @@ public class PolicyResource extends ApiResource implements PolicyApi {
     @Inject
     private GeneralConfig generalConfig;
 
-
-    protected PolicyResource(ObjectMapper objectMapper, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
-        super(objectMapper, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
+    protected PolicyResource(ObjectMapper objectMapper, JsonLdHandler jsonLdHandler, OdrlMapper odrlMapper, MappingConfiguration mappingConfiguration, PolicyRepository policyRepository, ServiceRepository serviceRepository, Instance<TypeVerifier> typeVerifiers, LeftOperandMapper leftOperandMapper, ConstraintMapper constraintMapper, OperatorMapper operatorMapper, RightOperandMapper rightOperandMapper) {
+        super(objectMapper, jsonLdHandler, odrlMapper, mappingConfiguration, policyRepository, serviceRepository, typeVerifiers, leftOperandMapper, constraintMapper, operatorMapper, rightOperandMapper);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class PolicyResource extends ApiResource implements PolicyApi {
                 .stream()
                 .map(policyEntry -> new Policy()
                         .id(policyEntry.getKey())
-                        .odrlColonUid(policyEntry.getValue().odrlUid())
+                        .odrlUid(policyEntry.getValue().odrlUid())
                         .odrl(policyEntry.getValue().odrl().policy())
                         .rego(policyEntry.getValue().rego().policy()))
                 .toList();

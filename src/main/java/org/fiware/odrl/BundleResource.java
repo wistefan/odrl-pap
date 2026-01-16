@@ -14,13 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.http.HttpStatus;
-import org.fiware.odrl.bundle.api.BundlesApi;
 import org.fiware.odrl.mapping.EntityMapper;
 import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.rego.Manifest;
 import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
+import org.openapi.quarkus.bundle_yaml.api.DefaultApi;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -48,7 +48,7 @@ import java.util.zip.GZIPOutputStream;
  */
 @Slf4j
 @Startup
-public class BundleResource implements BundlesApi {
+public class BundleResource implements DefaultApi {
 
     private static final String REGO_RESOURCES_FILE = "rego-resources.txt";
     private static final String UTILS_PATH = "rego/utils";

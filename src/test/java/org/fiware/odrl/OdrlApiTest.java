@@ -31,6 +31,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockserver.client.MockServerClient;
+import org.openapi.quarkus.odrl_yaml.model.Policy;
+import org.openapi.quarkus.odrl_yaml.model.PolicyPath;
+import org.openapi.quarkus.odrl_yaml.model.ServiceCreate;
 import org.openapi.quarkus.opa_yaml.api.HealthApiApi;
 import org.openapi.quarkus.opa_yaml.api.PolicyApiApi;
 import org.openapi.quarkus.opa_yaml.api.QueryApiApi;
@@ -150,7 +153,7 @@ public class OdrlApiTest extends OdrlTest {
         assertEquals(policyByIdResponse.getStatus(), HttpStatus.SC_OK, "The request should have been successfully responded.");
         Policy policyById = policyByIdResponse.readEntity(Policy.class);
         assertEquals(regoId, policyById.getId(), "The correct policy should have been returned.");
-        assertEquals(odrlId, policyById.getOdrlColonUid(), "The correct policy should have been returned.");
+        assertEquals(odrlId, policyById.getOdrlUid(), "The correct policy should have been returned.");
         assertNotNull(policyById.getOdrl(), "The odrl should be contained");
         assertNotNull(policyById.getRego(), "The rego should be contained");
 
@@ -158,7 +161,7 @@ public class OdrlApiTest extends OdrlTest {
         assertEquals(policyByOdrlIdResponse.getStatus(), HttpStatus.SC_OK, "The request should have been successfully responded.");
         Policy policyByOdrlId = policyByIdResponse.readEntity(Policy.class);
         assertEquals(regoId, policyByOdrlId.getId(), "The correct policy should have been returned.");
-        assertEquals(odrlId, policyByOdrlId.getOdrlColonUid(), "The correct policy should have been returned.");
+        assertEquals(odrlId, policyByOdrlId.getOdrlUid(), "The correct policy should have been returned.");
         assertNotNull(policyByOdrlId.getOdrl(), "The odrl should be contained");
         assertNotNull(policyByOdrlId.getRego(), "The rego should be contained");
     }
