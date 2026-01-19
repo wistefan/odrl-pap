@@ -6,9 +6,8 @@ import rego.v1
 # retrieves the roles from the credential, that target the current organization
 role(verifiable_credential, organization_id) := r if {
 	roles := verifiable_credential.credentialSubject.roles
-	role := [rad | some rad in roles; rad.target = organization_id]
+	role := [rad | some rad in roles; rad.target == organization_id]
 	r = role[_].names
-	trace(organization_id)
 }
 
 ## vc:currentParty
