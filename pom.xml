@@ -176,6 +176,9 @@
       <resource>
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>**/*_test.rego</exclude>
+        </excludes>
       </resource>
     </resources>
     <testResources>
