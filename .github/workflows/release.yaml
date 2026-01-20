@@ -6,8 +6,8 @@ on:
       - main
 
 env:
-  REGISTRY: quay.io
-  REPOSITORY: fiware
+  REGISTRY: docker.io
+  REPOSITORY: mortega5
 
 jobs:
   generate-version:
@@ -27,7 +27,7 @@ jobs:
       - uses: zwaldowski/semver-release-action@v2
         with:
           dry_run: true
-          bump: ${{ steps.pr.outputs.labels }}
+          bump: ${{ steps.pr.outputs.labels || 'patch' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set version output

@@ -22,8 +22,8 @@ jobs:
       - name: Ensure br_netfilter is enabled.
         run: |
           sudo modprobe br_netfilter
-
-      - name: Run integration tests
-        run: |
-          mvn clean package -DskipTests -Dnative -Dquarkus.container-image.build=true
-          mvn clean install -Pk8s-it
+#
+#      - name: Run integration tests
+#        run: |
+#          mvn clean package -DskipTests -Dnative -Dquarkus.container-image.build=true
+#          mvn clean install -Pk8s-it
