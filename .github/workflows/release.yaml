@@ -6,8 +6,8 @@ on:
       - main
 
 env:
-  REGISTRY: docker.io
-  REPOSITORY: mortega5
+  REGISTRY: quay.io
+  REPOSITORY: fiware
 
 jobs:
   generate-version:
