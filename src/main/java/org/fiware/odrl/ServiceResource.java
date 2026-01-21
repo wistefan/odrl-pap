@@ -82,7 +82,9 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     public Response getService(String serviceId) {
         return serviceRepository.getService(serviceId)
                 .map(serviceEntity -> {
-                    Service service = new Service().id(serviceId);
+                    Service service = new Service()
+                            .id(serviceId)
+                            .policyPath(String.format("%s/%s", serviceEntity.getPackageName(), MAIN_POLICY_ID));
                     serviceEntity.getPolicies()
                             .stream()
                             .map(pe -> new Policy()
