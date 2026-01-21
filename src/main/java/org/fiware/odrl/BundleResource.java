@@ -269,7 +269,7 @@ public class BundleResource implements DefaultApi {
         regoJoiner.add(String.format("package %s.main", packageName));
         regoJoiner.add("");
         regoJoiner.add("import rego.v1");
-        policies.keySet().stream().map(policy -> String.format("import data.policy.%s as %s", policy, policy)).forEach(regoJoiner::add);
+        policies.keySet().stream().map(policy -> String.format("import data.%s.%s as %s", packageName, policy, policy)).forEach(regoJoiner::add);
         regoJoiner.add("");
         regoJoiner.add("default allow := false");
         regoJoiner.add("");
