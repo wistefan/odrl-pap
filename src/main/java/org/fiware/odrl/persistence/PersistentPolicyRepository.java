@@ -76,21 +76,21 @@ public class PersistentPolicyRepository implements PolicyRepository {
     public Map<String, PolicyWrapper> getPoliciesByServiceId(String serviceId) {
         Map<String, PolicyWrapper> policies = new HashMap<>();
 
-        List<PolicyEntity> policyEntityList = PolicyEntity.list("serviceEntity.serviceId", serviceId);
+        List<PolicyEntity> policyEntityList = PolicyEntity.list("serviceEntity.serviceId = ?1", serviceId);
         policyEntityList.forEach(e -> policies.put(e.getPolicyId(), entityMapper.map(e)));
 
         return ImmutableMap.copyOf(policies);
     }
 
     public Map<String, PolicyWrapper> getPolicies(int page, int pageSize) {
-        PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.findAll(Sort.ascending(DEFAULT_SORT));
+        PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.find("serviceEntity is null", Sort.ascending(DEFAULT_SORT));
         List<PolicyEntity> policyEntityList = policyEntities.page(Page.of(page, pageSize)).list();
 
         return policyEntityList.stream().collect(Collectors.toMap(PolicyEntity::getPolicyId, e -> entityMapper.map(e), (e1, e2) -> e1));
     }
 
     public Map<String, PolicyWrapper> getPoliciesByServiceId(String serviceId, int page, int pageSize) {
-        PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.find("service_id", Sort.ascending(DEFAULT_SORT), serviceId);
+        PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.find("serviceEntity.serviceId = ?1", Sort.ascending(DEFAULT_SORT), serviceId);
         List<PolicyEntity> policyEntityList = policyEntities.page(Page.of(page, pageSize)).list();
 
         return policyEntityList.stream().collect(Collectors.toMap(PolicyEntity::getPolicyId, e -> entityMapper.map(e), (e1, e2) -> e1));

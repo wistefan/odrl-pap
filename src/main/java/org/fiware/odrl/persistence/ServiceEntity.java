@@ -1,13 +1,17 @@
 package org.fiware.odrl.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 import java.util.List;
 import java.util.Optional;
 
+@RegisterForReflection
 @Entity(name = ServiceEntity.TABLE_NAME)
 @Data
 public class ServiceEntity extends PanacheEntity {
@@ -33,4 +37,5 @@ public class ServiceEntity extends PanacheEntity {
         this.packageName = packageName;
         return this;
     }
+
 }

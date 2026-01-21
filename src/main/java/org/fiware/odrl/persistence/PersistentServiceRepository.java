@@ -32,7 +32,7 @@ public class PersistentServiceRepository implements ServiceRepository {
                 .id(id)
                 .packageName(PolicyRepository.generatePolicyId());
         serviceEntity.persist();
-        ;
+
         return serviceEntity.getPackageName();
     }
 

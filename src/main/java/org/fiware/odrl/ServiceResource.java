@@ -2,6 +2,7 @@ package org.fiware.odrl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.inject.Instance;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -76,6 +77,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
         return Response.noContent().build();
     }
 
+    @Transactional
     @Override
     public Response getService(String serviceId) {
         return serviceRepository.getService(serviceId)
@@ -97,6 +99,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                 .orElse(Response.status(HttpStatus.SC_NOT_FOUND).build());
     }
 
+    @Transactional
     @Override
     public Response getServicePolicies(String serviceId, Integer page, Integer pageSize) {
         return checkNotFound(serviceId)
@@ -112,6 +115,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                                 .toList()).build());
     }
 
+    @Transactional
     @Override
     public Response getServicePolicyById(String serviceId, String id) {
         return checkNotFound(serviceId).orElseGet(() -> policyRepository.getPolicy(id)
@@ -122,6 +126,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                 .orElse(Response.status(HttpStatus.SC_NOT_FOUND).build()));
     }
 
+    @Transactional
     @Override
     public Response getServicePolicyByUid(String serviceId, String uid) {
         return checkNotFound(serviceId).orElseGet(() -> policyRepository.getPolicyByUid(uid)
@@ -132,6 +137,7 @@ public class ServiceResource extends ApiResource implements ServiceApi {
                 .orElse(Response.status(HttpStatus.SC_NOT_FOUND).build()));
     }
 
+    @Transactional
     @Override
     public Response getServices(Integer page, Integer pageSize) {
         return Response.ok(

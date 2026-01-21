@@ -1,6 +1,7 @@
 package org.fiware.odrl.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,6 +14,7 @@ import java.util.Optional;
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
+@RegisterForReflection
 @Entity(name = PolicyEntity.TABLE_NAME)
 @Data
 public class PolicyEntity extends PanacheEntity {
@@ -25,11 +27,22 @@ public class PolicyEntity extends PanacheEntity {
 	private String uid;
 
 	@ManyToOne(optional = true)
-	@JoinColumn(name = "service_id")
+	@JoinColumn(name = "serviceId")
 	private ServiceEntity serviceEntity;
 
 	@JdbcTypeCode(SqlTypes.JSON)
 	private Policy odrl;
+
+	@Override
+	public String toString() {
+		return "PolicyEntity{" +
+				"policyId='" + policyId + '\'' +
+				", uid='" + uid + '\'' +
+				", odrl=" + odrl +
+				", rego=" + rego +
+				", service=" + serviceEntity.getServiceId() +
+				'}';
+	}
 
 	@JdbcTypeCode(SqlTypes.JSON)
 	private Policy rego;
@@ -41,6 +54,5 @@ public class PolicyEntity extends PanacheEntity {
 	public static Optional<PolicyEntity> findByPolicyUid(String uid) {
 		return Optional.ofNullable(find("uid", uid).firstResult());
 	}
-
 
 }
