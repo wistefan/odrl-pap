@@ -5,6 +5,8 @@ import org.openapi.quarkus.odrl_yaml.model.Policy;
 import org.openapi.quarkus.odrl_yaml.model.Service;
 
 /**
+ * Register the output objects for reflection
+ *
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @RegisterForReflection(targets = {Policy.class, Service.class})
