@@ -14,6 +14,7 @@ import java.util.List;
 @ConfigMapping(prefix = "general")
 public interface GeneralConfig {
 
+	@WithName("organization-did")
 	String organizationDid();
 
 	Pep pep();

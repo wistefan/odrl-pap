@@ -158,7 +158,6 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     }
 
     private void assureNotReserved(String serviceId) {
-        log.warn("Incoming id {}", serviceId);
         if (List.of(POLICY_PACKAGE, DATA_PACKAGE, METHODS_PACKAGE).contains(serviceId)) {
             throw new IllegalArgumentException(String.format("%s cannot be used as service id.", serviceId));
         }
