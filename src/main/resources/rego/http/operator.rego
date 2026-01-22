@@ -7,23 +7,27 @@ import rego.v1
 default is_in_path_operator(leftOperand, rightOperand) := false
 
 is_in_path_operator(leftOperand, rightOperand) if {
-  base_segs := path_segments(rightOperand)
-  cand_segs := path_segments(leftOperand)
+   	base_segs := split_path(rightOperand)
+    cand_segs := split_path(leftOperand)
 
-  count(cand_segs) >= count(base_segs)
+    # candidate must be at least as deep as base
+    count(cand_segs) >= count(base_segs)
 
-  segments_match(base_segs, cand_segs)
+    # there must be NO mismatching segment
+    not segment_mismatch(base_segs, cand_segs)
 }
 
-# Split path into segments, ignoring empty parts
-path_segments(p) = segs {
-    segs := [s |
-        s := split(trim(p, "/"), "/")[_]
-    ]
+# -------- helpers --------
+
+# Normalize path into segments
+split_path(p) = segs if {
+    segs := split(trim(p, "/"), "/")
 }
 
-# Check base segments against candidate segments
-segments_match(base, cand) {
-    forall(i, base[i] == "*" ; true)
-    forall(i, base[i] != "*" ; base[i] == cand[i])
+# True if ANY segment mismatches
+segment_mismatch(base, cand) if {
+    some i
+    i < count(base)
+    base[i] != "*"
+    base[i] != cand[i]
 }
