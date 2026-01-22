@@ -46,7 +46,9 @@ jobs:
   build-and-push:
     needs: [ "generate-version" ]
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - uses: actions/checkout@v2
 
@@ -63,7 +65,13 @@ jobs:
       - name: Build image
         run: |
           mvn versions:set -DnewVersion=${{ needs.generate-version.outputs.version }}
-          mvn clean package -Dquarkus.package.type=native -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
+          mvn clean package \
+            -Dquarkus.package.type=native \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.jib.platforms=linux/${{ matrix.arch }}
+            -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }}-${{ matrix.arch }} \
+            -Dquarkus.container-image.registry="${{ env.REGISTRY }}" \
+            -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
 
       - name: Ensure br_netfilter is enabled.
         run: |
@@ -75,11 +83,26 @@ jobs:
 
       - name: Push
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}
+          docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}-${{ matrix.arch }}
 
+  multi-arch:
+    needs: "build-and-push"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log into quay.io
+        run: docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" ${{ env.REGISTRY }}
+
+      - name: Create and push manifest
+        run: |
+          docker manifest create ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }} \
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}-amd64 \
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}-arm64
+          
+          docker manifest push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}
 
   git-release:
-    needs: ["generate-version","build-and-push"]
+    needs: ["generate-version","multi-arch"]
     runs-on: ubuntu-latest
 
     steps:

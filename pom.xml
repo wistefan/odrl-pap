@@ -10,6 +10,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <quarkus.container-image.group>wi_stefan</quarkus.container-image.group>
         <quarkus.container-image.name>odrl-pap</quarkus.container-image.name>
         <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
@@ -18,6 +19,7 @@
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.30.6</quarkus.platform.version>
+
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
         <version.com.apicatalog.titanium-json-ld>1.7.0</version.com.apicatalog.titanium-json-ld>
