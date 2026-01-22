@@ -2,10 +2,7 @@ package org.fiware.odrl.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
@@ -21,7 +18,10 @@ public class ServiceEntity extends PanacheEntity {
     private String serviceId;
     private String packageName;
 
-    @OneToMany(mappedBy = "serviceEntity")
+    @OneToMany(mappedBy = "serviceEntity",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<PolicyEntity> policies;
 
     public static Optional<ServiceEntity> findByServiceId(String serviceId) {
