@@ -10,6 +10,11 @@ test_path_returns_path if {
 	leftOperand.path(http_part) == "/api/v1/users"
 }
 
+test_path_returns_stripped_path if {
+	http_part := {"path": "/some-sub-route/api/v1/users", "headers": {""x-stripped-path": "/api/v1/users"}}
+	leftOperand.path(http_part) == "/api/v1/users"
+}
+
 # -----------------------
 # Tests for http:body_value
 # -----------------------
