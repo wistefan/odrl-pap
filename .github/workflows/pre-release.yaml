@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [amd64, arm64]
+        arch: [ amd64, arm64 ]
     steps:
       - uses: actions/checkout@v2
 
@@ -86,7 +86,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}-${{ matrix.arch }}
 
   multi-arch:
-    needs: "build-and-push"
+    needs: [ "generate-version","build-and-push" ]
     runs-on: ubuntu-latest
 
     steps:
@@ -102,7 +102,7 @@ jobs:
           docker manifest push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/odrl-pap:${{ needs.generate-version.outputs.version }}
 
   git-release:
-    needs: ["generate-version","multi-arch"]
+    needs: [ "generate-version","multi-arch" ]
     runs-on: ubuntu-latest
 
     steps:
