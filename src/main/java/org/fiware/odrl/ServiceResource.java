@@ -6,12 +6,11 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
-
 import org.fiware.odrl.jsonld.JsonLdHandler;
 import org.fiware.odrl.mapping.*;
+import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
-import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.verification.TypeVerifier;
 import org.openapi.quarkus.odrl_yaml.api.ServiceApi;
 import org.openapi.quarkus.odrl_yaml.model.*;
@@ -158,7 +157,6 @@ public class ServiceResource extends ApiResource implements ServiceApi {
     }
 
     private void assureNotReserved(String serviceId) {
-        log.warn("Incoming id {}", serviceId);
         if (List.of(POLICY_PACKAGE, DATA_PACKAGE, METHODS_PACKAGE).contains(serviceId)) {
             throw new IllegalArgumentException(String.format("%s cannot be used as service id.", serviceId));
         }

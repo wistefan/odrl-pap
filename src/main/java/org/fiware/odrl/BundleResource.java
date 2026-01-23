@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -15,31 +15,18 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.http.HttpStatus;
 import org.fiware.odrl.mapping.EntityMapper;
+import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.persistence.ServiceEntity;
 import org.fiware.odrl.persistence.ServiceRepository;
 import org.fiware.odrl.rego.Manifest;
-import org.fiware.odrl.persistence.PolicyRepository;
 import org.fiware.odrl.rego.PolicyWrapper;
 import org.openapi.quarkus.bundle_yaml.api.DefaultApi;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
@@ -47,7 +34,7 @@ import java.util.zip.GZIPOutputStream;
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @Slf4j
-@Startup
+@ApplicationScoped
 public class BundleResource implements DefaultApi {
 
     private static final String REGO_RESOURCES_FILE = "rego-resources.txt";

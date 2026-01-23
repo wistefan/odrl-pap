@@ -4,7 +4,9 @@ import rego.v1
 
 ## http:path
 # returns the currently requested path
-path(http_part) := http_part.path
+path(http_part) := path if {
+    path := http_part.headers["x-stripped-path"]
+} else := http_part.path
 
 ## http:bodyValue
 # retrieves the value of the body content at the given path.
