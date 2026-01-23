@@ -6,7 +6,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.annotations.RuntimeInit;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -48,7 +50,7 @@ import java.util.zip.GZIPOutputStream;
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
 @Slf4j
-@Startup
+@ApplicationScoped
 public class BundleResource implements DefaultApi {
 
     private static final String REGO_RESOURCES_FILE = "rego-resources.txt";
@@ -73,11 +75,6 @@ public class BundleResource implements DefaultApi {
     private EntityMapper entityMapper;
 
     private Map<String, String> methods = new HashMap<>();
-
-    @PostConstruct
-    void init() {
-        log.warn("ORG DID = " + generalConfig.organizationDid());
-    }
 
     public void initMethods(@Observes StartupEvent event) throws IOException {
         log.warn("Startup bundle resource!");

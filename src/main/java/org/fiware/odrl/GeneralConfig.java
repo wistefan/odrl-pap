@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
  */
-@StaticInitSafe
 @ConfigMapping(prefix = "general")
 public interface GeneralConfig {
 
