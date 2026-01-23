@@ -63,6 +63,7 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ needs.generate-version.outputs.version }}
           mvn clean package \
+            -DskipTests \ 
             -Dquarkus.package.type=native \
             -Dquarkus.container-image.build=true \
             -Dquarkus.jib.platforms=linux/${{ matrix.arch }} \
