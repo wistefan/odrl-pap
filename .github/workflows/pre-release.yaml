@@ -65,7 +65,7 @@ jobs:
           mvn clean package \
             -Dquarkus.package.type=native \
             -Dquarkus.container-image.build=true \
-            -Dquarkus.jib.platforms=linux/${{ matrix.arch }} \
+            -Dquarkus.jib.platforms=linux/arm64 \
             -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }}-arm64 \
             -Dquarkus.container-image.registry="${{ env.REGISTRY }}" \
             -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
@@ -104,8 +104,8 @@ jobs:
           mvn clean package \
             -Dquarkus.package.type=native \
             -Dquarkus.container-image.build=true \
-            -Dquarkus.jib.platforms=linux/${{ matrix.arch }} \
-            -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }}-arm64 \
+            -Dquarkus.jib.platforms=linux/amd64 \
+            -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }}-amd64 \
             -Dquarkus.container-image.registry="${{ env.REGISTRY }}" \
             -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
 
