@@ -64,7 +64,6 @@ jobs:
           mvn versions:set -DnewVersion=${{ needs.generate-version.outputs.version }}
           mvn clean package \
             -Dquarkus.package.type=native \
-            -DskipTests=true \
             -Dquarkus.container-image.build=true \
             -Dquarkus.jib.platforms=linux/${{ matrix.arch }} \
             -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }}-arm64 \
@@ -104,7 +103,6 @@ jobs:
           mvn versions:set -DnewVersion=${{ needs.generate-version.outputs.version }}
           mvn clean package \
             -Dquarkus.package.type=native \
-            -DskipTests=true \
             -Dquarkus.container-image.build=true \
             -Dquarkus.jib.platforms=linux/${{ matrix.arch }} \
             -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }}-arm64 \
