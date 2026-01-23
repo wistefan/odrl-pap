@@ -1,14 +1,11 @@
 package org.fiware.odrl.resources;
 
-import com.google.common.collect.ImmutableMap;
-import io.quarkus.test.common.DevServicesContext;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import lombok.extern.slf4j.Slf4j;
 import org.mockserver.client.MockServerClient;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
