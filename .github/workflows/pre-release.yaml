@@ -79,7 +79,7 @@ jobs:
 
       - name: Test image
         run: |
-          mvn integration-test -Pk8s-it  -DskipTests -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
+          mvn integration-test -Pk8s-it  -DskipTests -Dquarkus.container-image.tag=${{ needs.generate-version.outputs.version }}-${{ matrix.arch }} -Dquarkus.container-image.registry="${{ env.REGISTRY }}" -Dquarkus.container-image.group="${{ env.REPOSITORY }}"
 
       - name: Push
         run: |
