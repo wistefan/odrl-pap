@@ -21,7 +21,7 @@ public class MockServerTestResource implements QuarkusTestResourceLifecycleManag
 
     @Override
     public Map<String, String> start() {
-        mockServerContainer = new GenericContainer("mockserver/mockserver:5.15.0")
+        mockServerContainer = new GenericContainer("quay.io/wi_stefan/mockserver:5.15.0")
                 .withEnv("MOCKSERVER_SERVER_PORT", "1080")
                 .withNetworkMode("host");
         mockServerContainer.start();

@@ -23,7 +23,7 @@ spec:
       serviceAccountName: {{ .Values.app.serviceAccountName }}
       containers:
         - name: {{ template "release.name" . }}
-          image: {{ if .Values.image.repositoryNameAndTag }}{{ .Values.image.repositoryNameAndTag }}{{- else }}{{ .Values.image.repository }}/mockserver:mockserver-{{- if .Values.image.snapshot }}snapshot{{- else }}{{ .Chart.AppVersion }}{{- end }}{{- end }}
+          image: quay.io/wi_stefan/mockserver:5.15.0
           imagePullPolicy: Always
           ports:
             - name: serviceport
