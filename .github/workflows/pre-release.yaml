@@ -45,7 +45,7 @@ jobs:
   # image build&push
   build-arm:
     needs: [ "generate-version" ]
-    runs-on: ubuntu-latest-arm64
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v2
 
@@ -84,7 +84,7 @@ jobs:
 
   build-amd:
     needs: [ "generate-version" ]
-    runs-on: ubuntu-latest-amd64
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
 
