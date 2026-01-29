@@ -106,13 +106,12 @@ public class ServiceResource extends ApiResource implements ServiceApi {
         return checkNotFound(serviceId)
                 .orElse(
                         Response.ok(policyRepository.getPoliciesByServiceId(serviceId, Optional.ofNullable(page).orElse(0), Optional.ofNullable(pageSize).orElse(DEFAULT_PAGE_SIZE))
-                                .entrySet()
                                 .stream()
                                 .map(policyEntry -> new Policy()
-                                        .id(policyEntry.getKey())
-                                        .odrlUid(policyEntry.getValue().odrlUid())
-                                        .odrl(policyEntry.getValue().odrl().policy())
-                                        .rego(policyEntry.getValue().rego().policy()))
+                                        .id(policyEntry.regoId())
+                                        .odrlUid(policyEntry.odrlUid())
+                                        .odrl(policyEntry.odrl().policy())
+                                        .rego(policyEntry.rego().policy()))
                                 .toList()).build());
     }
 

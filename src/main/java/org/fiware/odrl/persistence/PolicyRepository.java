@@ -2,6 +2,7 @@ package org.fiware.odrl.persistence;
 
 import org.fiware.odrl.rego.PolicyWrapper;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -29,13 +30,13 @@ public interface PolicyRepository {
 
     Optional<PolicyWrapper> getPolicyByUid(String uid);
 
-    Map<String, PolicyWrapper> getPolicies();
+    List<PolicyWrapper> getPolicies();
 
-    Map<String, PolicyWrapper> getPoliciesByServiceId(String serviceId);
+    List<PolicyWrapper> getPoliciesByServiceId(String serviceId);
 
-    Map<String, PolicyWrapper> getPolicies(int page, int pageSize);
+    List<PolicyWrapper> getPolicies(int page, int pageSize);
 
-    Map<String, PolicyWrapper> getPoliciesByServiceId(String serviceId, int page, int pageSize);
+    List<PolicyWrapper> getPoliciesByServiceId(String serviceId, int page, int pageSize);
 
     void deletePolicy(String id);
 

@@ -76,26 +76,21 @@ public class BundleResource implements DefaultApi {
     }
 
     private Map<String, String> serviceToPolicyMap(ServiceEntity serviceEntity) {
-        var policyEntities = ImmutableList.copyOf(serviceEntity.getPolicies());
-        ImmutableMap.Builder<String, PolicyWrapper> policyWrapperMapBuilder = ImmutableMap.builder();
-        policyEntities
-                .forEach(pe -> policyWrapperMapBuilder.put(pe.getPolicyId(), entityMapper.map(pe)));
-        var policies = policyWrapperMapBuilder.build();
-        var toZip = policies
-                .entrySet()
+        var policyEntities = serviceEntity.getPolicies().stream().map(entityMapper::map).toList();
+        var toZip = policyEntities
                 .stream()
-                .collect(Collectors.toMap(e -> String.format("%s.%s", serviceEntity.getPackageName(), e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
-        toZip.put(String.format("%s.main", serviceEntity.getPackageName()), getMainPolicy(serviceEntity.getPackageName(), policies));
+                .collect(Collectors.toMap(e -> String.format("%s.%s", serviceEntity.getPackageName(), e.regoId()), e -> e.rego().policy(), (e1, e2) -> e1));
+        toZip.put(String.format("%s.main", serviceEntity.getPackageName()), getMainPolicy(serviceEntity.getPackageName(), policyEntities));
         return toZip;
     }
 
     public Response getPolicies() {
-        var policies = ImmutableMap.copyOf(policyRepository.getPolicies());
+        List<PolicyWrapper> policies = policyRepository.getPolicies();
         String mainPolicy = getMainPolicy("policy", policies);
 
 
-        var toZip = policies.entrySet().stream()
-                .collect(Collectors.toMap(e -> String.format("policy.%s", e.getKey()), e -> e.getValue().rego().policy(), (e1, e2) -> e1));
+        var toZip = policies.stream()
+                .collect(Collectors.toMap(e -> String.format("policy.%s", e.regoId()), e -> e.rego().policy(), (e1, e2) -> e1));
         toZip.put("policy.main", mainPolicy);
 
         var services = ImmutableList.copyOf(serviceRepository.getServices());
@@ -250,17 +245,17 @@ public class BundleResource implements DefaultApi {
         return new Manifest().setRoots(List.copyOf(rootPaths));
     }
 
-    private String getMainPolicy(String packageName, Map<String, PolicyWrapper> policies) {
+    private String getMainPolicy(String packageName, List<PolicyWrapper> policies) {
 
-        StringJoiner regoJoiner = new StringJoiner(System.getProperty("line.separator"));
+        StringJoiner regoJoiner = new StringJoiner(System.lineSeparator());
         regoJoiner.add(String.format("package %s.main", packageName));
         regoJoiner.add("");
         regoJoiner.add("import rego.v1");
-        policies.keySet().stream().map(policy -> String.format("import data.%s.%s as %s", packageName, policy, policy)).forEach(regoJoiner::add);
+        policies.stream().map(policy -> String.format("import data.%s.%s as %s", packageName, policy.regoId(), policy.regoId())).forEach(regoJoiner::add);
         regoJoiner.add("");
         regoJoiner.add("default allow := false");
         regoJoiner.add("");
-        policies.keySet().stream().map(policy -> String.format("allow if %s.is_allowed", policy)).forEach(regoJoiner::add);
+        policies.stream().map(policy -> String.format("allow if %s.is_allowed", policy.regoId())).forEach(regoJoiner::add);
         return regoJoiner.toString();
     }
 
