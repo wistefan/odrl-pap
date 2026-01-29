@@ -64,36 +64,30 @@ public class PersistentPolicyRepository implements PolicyRepository {
         return generatedId;
     }
 
-    public Map<String, PolicyWrapper> getPolicies() {
-        Map<String, PolicyWrapper> policies = new HashMap<>();
+    public List<PolicyWrapper> getPolicies() {
 
         List<PolicyEntity> policyEntityList = PolicyEntity.list("serviceEntity is null");
-        policyEntityList.forEach(e -> policies.put(e.getPolicyId(), entityMapper.map(e)));
-
-        return ImmutableMap.copyOf(policies);
+        return policyEntityList.stream().map(entityMapper::map).toList();
     }
 
-    public Map<String, PolicyWrapper> getPoliciesByServiceId(String serviceId) {
-        Map<String, PolicyWrapper> policies = new HashMap<>();
+    public List<PolicyWrapper> getPoliciesByServiceId(String serviceId) {
 
         List<PolicyEntity> policyEntityList = PolicyEntity.list("serviceEntity.serviceId = ?1", serviceId);
-        policyEntityList.forEach(e -> policies.put(e.getPolicyId(), entityMapper.map(e)));
-
-        return ImmutableMap.copyOf(policies);
+        return policyEntityList.stream().map(entityMapper::map).toList();
     }
 
-    public Map<String, PolicyWrapper> getPolicies(int page, int pageSize) {
+    public List<PolicyWrapper> getPolicies(int page, int pageSize) {
         PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.find("serviceEntity is null", Sort.ascending(DEFAULT_SORT));
         List<PolicyEntity> policyEntityList = policyEntities.page(Page.of(page, pageSize)).list();
 
-        return policyEntityList.stream().collect(Collectors.toMap(PolicyEntity::getPolicyId, e -> entityMapper.map(e), (e1, e2) -> e1));
+        return policyEntityList.stream().map(entityMapper::map).toList();
     }
 
-    public Map<String, PolicyWrapper> getPoliciesByServiceId(String serviceId, int page, int pageSize) {
+    public List<PolicyWrapper> getPoliciesByServiceId(String serviceId, int page, int pageSize) {
         PanacheQuery<PolicyEntity> policyEntities = PolicyEntity.find("serviceEntity.serviceId = ?1", Sort.ascending(DEFAULT_SORT), serviceId);
         List<PolicyEntity> policyEntityList = policyEntities.page(Page.of(page, pageSize)).list();
 
-        return policyEntityList.stream().collect(Collectors.toMap(PolicyEntity::getPolicyId, e -> entityMapper.map(e), (e1, e2) -> e1));
+        return policyEntityList.stream().map(entityMapper::map).toList();
     }
 
     @Override
