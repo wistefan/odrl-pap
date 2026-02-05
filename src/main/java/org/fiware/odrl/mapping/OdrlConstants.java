@@ -40,7 +40,7 @@ public class OdrlConstants {
     public static final String ACTION_KEY = "odrl:action";
     public static final String CONSTRAINT_KEY = "odrl:constraint";
 
-    public static final List<String> SUPPORTED_POLICY_TYPES = List.of("contract", TYPE_POLICY);
+    public static final List<String> SUPPORTED_POLICY_TYPES = List.of(TYPE_POLICY, "odrl:Agreement");
 
     private OdrlConstants() {
         // prevent instantiation
