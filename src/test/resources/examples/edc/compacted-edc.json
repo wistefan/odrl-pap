@@ -15,7 +15,7 @@
   "odrl:target": {
     "@id": "ACN0101"
   },
-  "@type": "contract",
+  "@type": "odrl:Agreement",
   "@id": "8dc8b181-9724-4924-8aac-7e76adfb207f",
   "@context": {
     "odrl": {
