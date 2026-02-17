@@ -1,7 +1,5 @@
 package org.fiware.odrl.mapping;
 
-import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.RequestScoped;
@@ -10,11 +8,31 @@ import lombok.extern.slf4j.Slf4j;
 import org.fiware.odrl.rego.RegoMethod;
 import org.fiware.odrl.verification.TypeVerifier;
 import org.fiware.odrl.verification.VerificationException;
-import org.hibernate.boot.model.source.internal.hbm.MappingDocument;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.StringJoiner;
 
-import static org.fiware.odrl.mapping.OdrlConstants.*;
+import static org.fiware.odrl.mapping.OdrlConstants.ACTION_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.ASSIGNEE_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.ASSIGNER_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.GRAPH_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.ID_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.ODRL_UID_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.PERMISSION_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.REFINEMENT_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.SUPPORTED_POLICY_TYPES;
+import static org.fiware.odrl.mapping.OdrlConstants.TARGET_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.TYPE_ASSET;
+import static org.fiware.odrl.mapping.OdrlConstants.TYPE_ASSET_COLLECTION;
+import static org.fiware.odrl.mapping.OdrlConstants.TYPE_KEY;
+import static org.fiware.odrl.mapping.OdrlConstants.TYPE_LOGICAL_CONSTRAINT;
+import static org.fiware.odrl.mapping.OdrlConstants.TYPE_PARTY;
+import static org.fiware.odrl.mapping.OdrlConstants.TYPE_PARTY_COLLECTION;
+import static org.fiware.odrl.mapping.OdrlConstants.TYPE_PERMISSION;
+import static org.fiware.odrl.mapping.OdrlConstants.VALUE_KEY;
 
 /**
  * @author <a href="https://github.com/wistefan">Stefan Wiedemann</a>
@@ -105,13 +123,14 @@ public class OdrlMapper {
         }
 
         if (mappingResult.isFailed()) {
+            log.info("Error validation policy: {}", mappingResult.getFailureReasons());
             return;
         }
         // prepare the top-level elements(if present) for later use
         fillTopLevel(thePolicy);
 
         Object permissionObject = thePolicy.get(PERMISSION_KEY);
-        if (permissionObject instanceof List permissionList) {
+        if (permissionObject instanceof List<?> permissionList) {
             for (Object o : permissionList) {
                 mapPermission(convertToMap(o));
             }
@@ -163,6 +182,7 @@ public class OdrlMapper {
         }
 
         if (mappingResult.isFailed()) {
+            log.info("Error validation permission: {}", mappingResult.getFailureReasons());
             return;
         }
 
@@ -368,7 +388,7 @@ public class OdrlMapper {
 
         List<String> regoPackages = new ArrayList<>();
 
-        if (!rightOperandValue.isEmpty() && rightOperandValue.get() instanceof List<?> valueList) {
+        if (rightOperandValue.isPresent() && rightOperandValue.get() instanceof List<?> valueList) {
             mappedConstraint = String.format(operatorMethod.regoMethod(), leftOperand, valueList.stream().map(operand -> {
                 if (operand instanceof String stringOperand) {
                     return String.format(STRING_ESCAPE_TEMPLATE, stringOperand);
